@@ -225,6 +225,30 @@
 ここまで、検証環境構築が完了となる。
 以後、oracle_12cシリーズファイルは検証環境を使用する。
 
+* 検証環境の起動について
+
+  リモートで接続できるように、ファイアウォールの設定およびリスナーの起動が必要です。
+
+  ~~~bash
+  # ファイアウォールの設定
+  # root
+  firewall-cmd --add-port=1521/tcp --zone=public --permanent
+  firewall-cmd --reload
+  ~~~
+
+  ~~~bash
+  # oracle
+  export ORACLE_HOME=/u01/app/oracle/product/12.2.0/dbhome_1
+  export PATH=$ORACLE_HOME/bin:$PATH
+  export ORACLE_SID=orcl
+  # データベース起動
+  sqlplus / as sysdba
+  SQL> startup
+  SQL> exit
+  # リスナー起動
+  lsnrctl start
+  ~~~
+
 ## 高可用性環境セットアップ ##
 
 試験の一部問題は高可用性にかかわるため、動作環境作成する。
