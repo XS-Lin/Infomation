@@ -162,10 +162,6 @@ ORACLE MASTER Gold Oracle Database 12c資格(試験 1Z0-063)の[試験内容 チ
 1. すべての制御ファイル
    [現行の制御ファイルがすべて消失した場合のリカバリ](https://docs.oracle.com/cd/E82638_01/bradv/user-managed-recovery-advanced.html#GUID-3913B513-ECF0-469A-A50A-A5A573C85DC0)
    [バックアップ制御ファイルを使用したリカバリの実行](https://docs.oracle.com/cd/E82638_01/bradv/rman-recovery-advanced.html#GUID-77C2B092-4BEB-4BAC-91F9-7368EA16A2B6)
-   1. オンラインREDOログ使用、現行データファイル使用
-   1. オンラインREDOログ不使用、現行データファイル使用
-   1. オンラインREDOログ使用、バックアップ使用
-   1. オンラインREDOログ不使用、バックアップ使用
 1. 一部の制御ファイル
    1. 多重制御ファイルをコピー
 1. すべてのオンラインREDOログ・ファイル
@@ -198,63 +194,3 @@ ORACLE MASTER Gold Oracle Database 12c資格(試験 1Z0-063)の[試験内容 チ
 1. データブロック
    1. データファイル・リカバリ
    1. ブロック・メディア・リカバリ
-
-### Data Files ###
-
-* データベースが完全消滅　=> 練習1
-* データファイルすべて損失 => 練習2
-* SYSTEM表領域故障 => 練習3
-* SYSAUX表領域故障 => 練習4
-* 一時表領域故障 => 練習5
-* UNDO表領域故障  => 練習6
-* ユーザ表領域故障 => 練習7
-  * 読み取り専用表領域
-  * Offline
-  * ReadOnly
-  * ReadWrite
-  * インデックス専用表領域
-
-### Control Files ###
-
-* 部分損失 => 練習8
-* すべて損失 => 練習9
-
-### SP File ###
-
-* SPファイル損失 => 練習10
-
-### Online Redo Log ###
-
-* ACTIVEグループ内一部損失 => 練習11
-* ACTIVEグループまるごと損失
-* CURRENTグループ内一部損失 => 練習12
-* CURRENTグループまるごと損失
-* INACTIVEグループ内一部損失 => 練習13
-* INACTIVEグループまるごと損失
-
-### Archived Redo Log ###
-
-* アーカイブREDOログ・ファイル一部損失 => 練習14
-* アーカイブREDOログ・ファイル全部損失
-
-### Flashback Log ###
-
-* フラッシュバック・ログ一部損失 => 練習15
-
-## データロス ##
-
-### Delete or update row ###
-
-* UPDATE => 練習16
-* DELETE
-
-### Drop or alter table ###
-
-* DROP TABLE => 練習17
-* ALTER TABLE
-
-## ロジック故障 ##
-
-### Not recognize the block ###
-
-* データブロック破損 => 練習18
