@@ -42,7 +42,7 @@ RMAN> startup mount
 # バックアップ実施
 RMAN> backup database;
 # データベースファイル削除(データファイル,制御ファイル,オンラインREDOログ・ファイル)
-rm /u01/app/oracle/oradata/ORCL
+rm -r /u01/app/oracle/oradata/ORCL
 # エラー状態確認
 sqlplus / as sysdba
 SQL> select * from dba_objects; # ORA-01116,ORA-01110,ORA-27041 データファイル見つかりません。
@@ -69,6 +69,7 @@ SQL> show parameter control_files
 # /u01/app/oracle/fast_recovery_area/orcl/ORCL/controlfile/o1_mf_gc0cx9qw_.ctl
 SQL> exit
 # 制御ファイルをコピー
+mkdir /u01/app/oracle/fast_recovery_area/orcl/ORCL
 mkdir /u01/app/oracle/fast_recovery_area/orcl/ORCL/controlfile
 cp /u01/app/oracle/fast_recovery_area/orcl/ORCL/controlfile/o1_mf_gc0cx9qw_.ctl /u01/app/oracle/oradata/ORCL/controlfile/o1_mf_gc0cx9od_.ctl
 
