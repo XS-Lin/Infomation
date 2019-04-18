@@ -127,23 +127,23 @@ ORACLE MASTER Gold Oracle Database 12c資格(試験 1Z0-063)の[試験内容 チ
 
 1. すべてのデータベースファイル
 
-   1. NOARCHIVELOGモード、全体バックアップ
-   1. NOARCHIVELOGモード、増分バックアップ
-   1. NOARCHIVELOGモード、増分更新バックアップ
-   1. ARCHIVELOGモード、全体バックアップ
-   1. ARCHIVELOGモード、増分バックアップ
-   1. ARCHIVELOGモード、増分更新バックアップ
-   1. データベース2台運用(ロードバランシング)で1台正常(データベース・コピー作成)
+   1. [NOARCHIVELOGモード、全体バックアップ]
+   1. [NOARCHIVELOGモード、増分バックアップ]
+   1. [NOARCHIVELOGモード、増分更新バックアップ]
+   1. [ARCHIVELOGモード、全体バックアップ]
+   1. [ARCHIVELOGモード、増分バックアップ]
+   1. [ARCHIVELOGモード、増分更新バックアップ]
+   1. [データベース2台運用(ロードバランシング)で1台正常(データベース・コピー作成)]
 
 1. すべてのデータファイル
 
-   1. NOARCHIVELOGモード、全体バックアップ
-   1. NOARCHIVELOGモード、増分バックアップ
-   1. NOARCHIVELOGモード、増分更新バックアップ
-   1. ARCHIVELOGモード、全体バックアップ
-   1. ARCHIVELOGモード、増分バックアップ
-   1. ARCHIVELOGモード、増分更新バックアップ
-   1. データベース2台運用(ロードバランシング)で1台正常(インポート可能な表領域コピーの作成)
+   1. [NOARCHIVELOGモード、全体バックアップ]
+   1. [NOARCHIVELOGモード、増分バックアップ]
+   1. [NOARCHIVELOGモード、増分更新バックアップ]
+   1. [ARCHIVELOGモード、全体バックアップ]
+   1. [ARCHIVELOGモード、増分バックアップ]
+   1. [ARCHIVELOGモード、増分更新バックアップ]
+   1. [データベース2台運用(ロードバランシング)で1台正常(インポート可能な表領域コピーの作成)]
 
 1. SYSTEM表領域のデータファイル
    1. ARCHIVELOGモード、全体バックアップ

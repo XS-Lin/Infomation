@@ -42,7 +42,7 @@
       Sql Developer : SQL実行用(DBソフトウェア付随または最新版をダウンロード、SqlPlusで代用可)
       Oracle Client : VM通信用(RMAN等ツールはVM内で使用のため、オプショナル)
 
-## 検証環境セットアップ ##
+## 検証環境セットアップ:CDB ##
 
 * インストールに慣れていない方は以下のファイル参照
 
@@ -249,10 +249,15 @@
   lsnrctl start
   ~~~
 
+## 検証環境セットアップ:非CDB + Data Guard ##
+
+## 検証環境セットアップ:非CDB + RAC ##
+
+## 検証環境セットアップ:CDB + GI + RAC + Restart ##
+
 ## 高可用性環境セットアップ ##
 
 試験の一部問題は高可用性にかかわるため、動作環境作成する。
 高可用性の概要は以下の資料参照
 
 [高可用性構成](https://www.oracle.com/technetwork/jp/database/articles/kusakabe/kusakabe-4-4648839-ja.html)
-
