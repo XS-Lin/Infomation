@@ -130,7 +130,7 @@
       1. すべてデフォルトのまま
       1. 「次へ」
 
-  * データベース作成
+  * データベース作成(CDB+PDB)
 
     ~~~bash
     export ORACLE_BASE=/u01/app/oracle/
@@ -249,7 +249,109 @@
   lsnrctl start
   ~~~
 
-## 検証環境セットアップ:非CDB + Data Guard ##
+## 検証環境セットアップ:非CDB ##
+
+* 前提条件
+  
+  前述「検証環境セットアップ」の「データベース作成(CDB+PDB)」までは同様に新環境を作成する。
+  または「検証環境セットアップ」の結果を利用する。
+
+* DBCAでデータベース作成
+
+  * データベース作成(非CDB)
+
+    ~~~bash
+    export DISPLAY=:0
+    export ORACLE_HOME=/u01/app/oracle/product/12.2.0/dbhome_1
+    export PATH=$ORACLE_HOME/bin:$PATH
+    dbca
+    ~~~
+
+    * DBCA
+      * データベース操作
+        1. データベースの作成
+        1. 「次へ」
+      * 作成モード
+        1. 拡張構成
+        1. 「次へ」
+      * デプロイタイプ
+        1. データベースタイプ
+        1. Oracle単一インスタンス・データベース
+        1. テンプレート: 汎用またはトランザクション処理
+        1. 「次へ」
+      * データベース識別
+        1. グローバル・データベース名:orcl_noncdb
+        1. SID: orclnoncdb
+        1. コンテナ・データベースとして作成: チェックオフ
+        1. 「次へ」
+      * 記憶域オプション
+        1. データベース記憶域属性に次を使用
+        1. データベース・ファイルの記憶域タイプ: ファイルシステム
+        1. データベース・ファイルの位置: {ORACLE_BASE}/oradata/{DB_UNIQUE_NAME}
+        1. 「次へ」
+      * 高速リカバリオプション
+        1. 高速リカバリ領域の指定：チェックON
+        1. リカバリ・ファイルの記憶域タイプ：ファイルシステム
+        1. 高速リカバリ領域：{ORACLE_BASE}/fast_recover_area/{DB_UNIQUE_NAME}
+        1. 高速リカバリ領域のサイズ：8192MB
+        1. アーカイブ有効化：チェックON
+        1. 「次へ」
+      * ネットワーク構成
+        1. 新規リスナーの作成
+        1. リスナー名:lsnr_noncdb
+        1. リスナー・ポート: 1522
+        1. 「次へ」
+      * Data Vaultオプション
+        1. 「次へ」
+      * 構成オプション
+        * メモリー
+          1. 自動メモリー管理の使用 メモリー・ターゲット:1500MB
+        * サイズ設定
+          1. 処理: 300
+        * キャラクタ・セット
+          1. 次の文字セットから選択: AL32UTF8
+        * 接続サーバー・モード
+          1. 専用サーバー・モード
+        * サンプルスキーマ
+          1. データベースにサンプル・スキーマを追加: チェックON
+      * 管理オプション
+        1. Enterprise Manager (EM) Database Expressの構成: チェックON
+        1. 「次へ」
+      * ユーザ資格証明の指定
+        1. すべてのアカウントに同じパスワードを使用:ora
+        1. 「次へ」
+        1. 「はい」
+      * 作成オプション
+        1. 「次へ」
+      * サマリー
+        1. 「終了」
+
+  * 接続テスト
+
+    ~~~bash
+    export ORACLE_SID=orclnoncdb
+    # 日本語環境のNLS_LANG設定範囲: Japanese_Japan.UTF8,Japanese_Japan.JA16SJIS,Japanese_Japan.JA16EUC
+    export NLS_LANG=Japanese_Japan.UTF8
+    sqlplus / as sysdba
+    SQL> select * from v$instance;
+    SQL> exit
+    ~~~
+
+  * リモート接続を許可する
+
+    ~~~bash
+    # リモート接続を許可する
+    firewall-cmd --add-port=1522/tcp --zone=public --permanent
+    firewall-cmd --add-port=5500/tcp --zone=public --permanent
+    firewall-cmd --reload
+    ~~~
+
+  * リモート接続テスト
+
+    ~~~bash
+    # cmd
+    sqlplus system/ora@192.168.56.102:1522/orcl_noncdb
+    ~~~
 
 ## 検証環境セットアップ:非CDB + RAC ##
 
