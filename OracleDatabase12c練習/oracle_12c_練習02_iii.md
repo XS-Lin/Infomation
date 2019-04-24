@@ -23,7 +23,7 @@ DBをリカバリしようとしています。
 2回目はLEVEL1増分バックアップ作成のみ
 3回目は前回LEVEL1増分バックアップをイメージコピーに適用し、さらにLEVEL1増分バックアップを作成
 4回目以後は3回目の繰り返し
-よって、3回目実行完了以後、データベースファイルを削除します。
+よって、4回目実行完了以後、データベースファイルを削除する必要があります。
 
 ~~~bash
 # oracleユーザ
@@ -31,79 +31,94 @@ export ORACLE_HOME=/u01/app/oracle/product/12.2.0/dbhome_1
 export PATH=$ORACLE_HOME/bin:$PATH
 export ORACLE_SID=orcl
 sqlplus / as sysdba
+# データベースが停止した場合: startup;
 SQL> select name,open_mode from v$pdbs;
-# orcl_pdbがREAD WRITE以外の場合：alter pluggable database orcl_pdb open;
-SQL> alter session set container = orcl_pdb;
+# orcl_pdbがMOUNTEDの場合：alter pluggable database orcl_pdb open;
+SQL> alter session set container = orcl_pdb; # cdbに戻る場合: alter session set container = cdb$root;
 SQL> CREATE USER test_usr IDENTIFIED BY "test_usr" DEFAULT TABLESPACE users TEMPORARY TABLESPACE temp;
 SQL> GRANT CONNECT,PUBLIC,SELECT ANY TABLE,CREATE TABLE,UNLIMITED TABLESPACE TO test_usr;
 SQL> exit
 lsnrctl start
-# LEVEL 0 増分バックアップ
+# 1回目
 rman TARGET /
 RMAN> shutdown immediate
 (略)
 RMAN> startup mount
 (略)
-RMAN> BACKUP INCREMENTAL LEVEL 0 DATABASE;
+RMAN> RUN
+2> {
+3>   RECOVER COPY OF DATABASE WITH TAG 'insr_update';
+4>   BACKUP INCREMENTAL LEVEL 1 FOR RECOVER OF COPY WITH TAG 'insr_update' DATABASE;
+5> }
 (略)
 RMAN> alter database open;
 (略)
 RMAN> alter pluggable database orcl_pdb open;
 (略)
 RMAN> exit
-# 空テーブル作成
+# データ変更
 sqlplus test_usr/test_usr@localhost:1521/orcl_pdb
 SQL> CREATE TABLE backup_test ( id NUMBER(6), name VARCHAR2(60), description VARCHAR(4000));
 SQL> exit
-# 1回目 LEVEL 1 差分増分バックアップ
+# 2回目
 rman TARGET /
 RMAN> shutdown immediate
 (略)
 RMAN> startup mount
 (略)
-RMAN> BACKUP INCREMENTAL LEVEL 1 DATABASE;
+RMAN> RUN
+2> {
+3>   RECOVER COPY OF DATABASE WITH TAG 'insr_update';
+4>   BACKUP INCREMENTAL LEVEL 1 FOR RECOVER OF COPY WITH TAG 'insr_update' DATABASE;
+5> }
 (略)
 RMAN> alter database open;
 (略)
 RMAN> alter pluggable database orcl_pdb open;
 (略)
 RMAN> exit
-# データINSERT
+# データ変更
 sqlplus test_usr/test_usr@localhost:1521/orcl_pdb
 (略)
-SQL> INSERT INTO backup_test VALUES ( 1, 'TEST DATA', '2 LEVEL 1');
-1 row created.
+SQL> INSERT INTO backup_test VALUES ( 1, 'TEST DATA', 'INCREMENTAL RECOVER 1');
+(略)
 SQL> exit
-# 2回目 LEVEL 1 差分増分バックアップ
+# 3回目
 rman TARGET /
 RMAN> shutdown immediate
 (略)
 RMAN> startup mount
 (略)
-RMAN> BACKUP INCREMENTAL LEVEL 1 DATABASE;
+RMAN> RUN
+2> {
+3>   RECOVER COPY OF DATABASE WITH TAG 'insr_update';
+4>   BACKUP INCREMENTAL LEVEL 1 FOR RECOVER OF COPY WITH TAG 'insr_update' DATABASE;
+5> }
 (略)
 RMAN> alter database open;
 (略)
 RMAN> alter pluggable database orcl_pdb open;
 (略)
 RMAN> exit
-# データ更新と新規
+# データ変更
 sqlplus test_usr/test_usr@localhost:1521/orcl_pdb
 SQL> UPDATE backup_test SET name = 'UPDATED' WHERE id = 1;
 1 row updated.
-SQL> INSERT INTO backup_test VALUES ( 2, 'TEST DATA', '3 LEVEL 1');
+SQL> INSERT INTO backup_test VALUES ( 2, 'TEST DATA', 'INCREMENTAL RECOVER 2');
 1 row created.
 SQL> exit
-# 3回目 LEVEL 1 差分増分バックアップ
+# 4回目
 rman TARGET /
-(略)
-Connected to target database: ORCL (DBID=1533186745)
 (略)
 RMAN> shutdown immediate
 (略)
 RMAN> startup mount
 (略)
-RMAN> BACKUP INCREMENTAL LEVEL 1 DATABASE;
+RMAN> RUN
+2> {
+3>   RECOVER COPY OF DATABASE WITH TAG 'insr_update';
+4>   BACKUP INCREMENTAL LEVEL 1 FOR RECOVER OF COPY WITH TAG 'insr_update' DATABASE;
+5> }
 (略)
 RMAN> shutdown
 (略)
@@ -140,8 +155,8 @@ SQL> show parameter control_files
 # /u01/app/oracle/fast_recovery_area/orcl/ORCL/controlfile/o1_mf_gc0cx9qw_.ctl
 SQL> exit
 # 制御ファイルをコピー
-mkdir /u01/app/oracle/fast_recovery_area/orcl/ORCL
-mkdir /u01/app/oracle/fast_recovery_area/orcl/ORCL/controlfile
+mkdir /u01/app/oracle/oradata/ORCL
+mkdir /u01/app/oracle/oradata/ORCL/controlfile
 cp /u01/app/oracle/fast_recovery_area/orcl/ORCL/controlfile/o1_mf_gc0cx9qw_.ctl /u01/app/oracle/oradata/ORCL/controlfile/o1_mf_gc0cx9od_.ctl
 rman TARGET /
 RMAN> startup nomount
@@ -156,7 +171,12 @@ sqlplus test_usr/test_usr@localhost:1521/orcl_pdb
 SQL> select * from backup_test;
   ID NAME           DISCRIPTION
 ---- -------------- -----------
-   2 TEST DATA      3 LEVEL 1
-   1 UPDATED        2 LEVEL 1
+   2 TEST DATA      INCREMENTAL RECOVER 2
+   1 UPDATED        INCREMENTAL RECOVER 1
 SQL> exit
 ~~~
+
+## 補足 ##
+
+リスナー正常起動後、アクセスできるまでおよそ一分間かかります。
+alter system register;ですく接続できるようになります。
