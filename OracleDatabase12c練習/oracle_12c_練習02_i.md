@@ -2,7 +2,7 @@
 
 ## 目標 ##
 
-NOARCHIVEモードで運用しているデータベースがあります。事故で電源が落ちてしまい、データファイルを格納しているハードディスクが壊れました。
+NOARCHIVEモードで運用しているデータベースがあります。データファイルを格納しているハードディスクが壊れました。
 別の場所のリモートストレージで、全体のバックアップがあります。
 既存のバックアップ計画は条件に示しています。
 サーバー構成およびDBソフトインストールが完了前提で、DBをリカバリしようとしています。
@@ -16,7 +16,7 @@ NOARCHIVEモードで運用しているデータベースがあります。事�
    ~~~sql
    rman TARGET /
    (略)
-   RMAN> SHUTDOWN TRANSACTIONAL;
+   RMAN> SHUTDOWN IMMEDIATE;
    (略)
    RMAN> STARTUP MOUNT;
    (略)
@@ -41,53 +41,28 @@ rman TARGET /
 RMAN> startup mount
 # バックアップ実施
 RMAN> backup database;
-# データベースファイル削除(データファイル,制御ファイル,オンラインREDOログ・ファイル)
-rm -r /u01/app/oracle/oradata/ORCL
+RMAN> exit
+# データファイル削除
+rm -r /u01/app/oracle/oradata/ORCL/datafile/*
 # エラー状態確認
 sqlplus / as sysdba
-SQL> select * from dba_objects; # ORA-01116,ORA-01110,ORA-27041 データファイル見つかりません。
-SQL> select * from v$parameter; # 正常
-SQL> shutdown abort
+SQL> alter database open; # ORA-01157
+SQL> shutdown
 SQL> exit
 ~~~
 
 ## 現状 ##
 
-データベースファイルのデータファイル,制御ファイル,オンラインREDOログ・ファイルがすべて無くしたので、データベースをOpenできません。
-SPFILEが残るため、NOMOUNTでインスタンスの起動は可能なので、Sqlplusで接続し、パラメータcontrol_filesでバックアップした制御ファイルの位置がわかります。
-正常状態の制御ファイルを指定位置にコピーしてから、RMANでリスドア・リカバリして復元できます。
+データベースファイルのデータファイルがすべて無くしたので、データベースをOpenできません。
+RMANでデータファイルをリスドア・リカバリして復元できます。
 
 ## リカバリ手順 ##
 
 ~~~bash
 # oracleユーザ
-sqlplus / as sysdba
-SQL> startup nomount;
-SQL> show parameter control_files
-(略)
-# /u01/app/oracle/oradata/ORCL/controlfile/o1_mf_gc0cx9od_.ctl
-# /u01/app/oracle/fast_recovery_area/orcl/ORCL/controlfile/o1_mf_gc0cx9qw_.ctl
-SQL> exit
-# 制御ファイルをコピー
-mkdir /u01/app/oracle/fast_recovery_area/orcl/ORCL
-mkdir /u01/app/oracle/fast_recovery_area/orcl/ORCL/controlfile
-cp /u01/app/oracle/fast_recovery_area/orcl/ORCL/controlfile/o1_mf_gc0cx9qw_.ctl /u01/app/oracle/oradata/ORCL/controlfile/o1_mf_gc0cx9od_.ctl
-
 rman TARGET /
-RMAN> startup nomount
-RMAN> alter database mount;
+RMAN> startup mount
 RMAN> restore database;
-RMAN> select * from v$database;
-RMAN> recover database;
-RMAN> alter database open resetlogs;
+RMAN> alter database open;
 RMAN> exit
-
-sqlplus / as sysdba
-SQL> select * from dba_objects;
-(略)
-SQL> exit
 ~~~
-
-## 補足 ##
-
-制御ファイルがない場合、alter database mountの時にORA-00205が発生します。詳細情報は/u01/app/oracle/diag/rdbms/orcl/orcl/alert/log.xmlにあります。
