@@ -2,7 +2,7 @@
 
 ## 目標 ##
 
-NOARCHIVEモードで運用しているデータベースがあります。事故で電源が落ちてしまい、データファイルを格納しているハードディスクが壊れました。
+NOARCHIVEモードで運用しているデータベースがあります。データファイルを格納しているハードディスクが壊れました。
 高速リカバリ領域は別ディスクで格納したので、増分更新バックアップは利用可能です。
 既存のバックアップ計画は条件に示しています。
 DBをリカバリしようとしています。
@@ -77,7 +77,6 @@ RMAN> alter database open;
 RMAN> alter pluggable database orcl_pdb open;
 (略)
 RMAN> exit
-# データ変更
 sqlplus test_usr/test_usr@localhost:1521/orcl_pdb
 (略)
 SQL> INSERT INTO backup_test VALUES ( 1, 'TEST DATA', 'INCREMENTAL RECOVER 1');
@@ -123,44 +122,27 @@ RMAN> RUN
 RMAN> shutdown
 (略)
 RMAN> exit
-# データベースファイル削除(データファイル,制御ファイル,オンラインREDOログ・ファイル)
-rm -r /u01/app/oracle/oradata/ORCL
+# データファイル削除
+rm -r /u01/app/oracle/oradata/ORCL/datafile/*
 # エラー状態確認
 sqlplus / as sysdba
 (略)
 Connected to an idle instance.
-SQL> startup # ORA-00205 error in identifying control file.
-SQL> SELECT STATUS FROM v$instance;
-STATUS
------------
-STARTED
+SQL> startup # ORA-01157,ORA-01110
 SQL> shudown
 SQL> exit
 ~~~
 
 ## 現状 ##
 
-データベースファイルのデータファイル,制御ファイル,オンラインREDOログ・ファイルがすべて無くしたので、データベースをOpenできません。
-制御ファイル等をリスドアして、リカバリ可能です。
+データベースファイルのデータファイルがすべて無くしたので、データベースをOpenできません。
 
 ## リカバリ手順 ##
 
 ~~~bash
 # oracleユーザ
-sqlplus / as sysdba
-SQL> startup nomount;
-SQL> show parameter control_files
-(略)
-# /u01/app/oracle/oradata/ORCL/controlfile/o1_mf_gc0cx9od_.ctl
-# /u01/app/oracle/fast_recovery_area/orcl/ORCL/controlfile/o1_mf_gc0cx9qw_.ctl
-SQL> exit
-# 制御ファイルをコピー
-mkdir /u01/app/oracle/oradata/ORCL
-mkdir /u01/app/oracle/oradata/ORCL/controlfile
-cp /u01/app/oracle/fast_recovery_area/orcl/ORCL/controlfile/o1_mf_gc0cx9qw_.ctl /u01/app/oracle/oradata/ORCL/controlfile/o1_mf_gc0cx9od_.ctl
 rman TARGET /
-RMAN> startup nomount
-RMAN> alter database mount;
+RMAN> startup mount
 RMAN> restore database;
 RMAN> recover database;
 RMAN> alter database open resetlogs;
