@@ -355,7 +355,7 @@
 
 ## 検証環境セットアップ:非CDB + RAC ##
 
-## 検証環境セットアップ:CDB + GI + RAC + Restart ##
+## 検証環境セットアップ:CDB + GI + RAC + Restart + OSB ##
 
 ## 高可用性環境セットアップ ##
 
