@@ -48,6 +48,8 @@
 
   [Oracle VM VirtualBox を用いた Oracle Database 12c Release 1 環境の構築](https://www.oracle.com/technetwork/jp/database/enterprise-edition/documentation/sionvbox-db12101onol6u4-2080482-ja.pdf)
 
+* Virtual-Box + Oracle Linux 7
+
 * ハードウェア設定
   * CPU プロセッサー:2
   * メインメモリ:4GB
@@ -59,7 +61,7 @@
   * ソフトウェア選択: サーバー(GUI)、システム管理ツール
   * ハードディスク自動構成
   * ネットワーク:enp0s3,enp0s8有効にする
-  * rootパスワード設定
+  * rootパスワード設定　OraServer2
   * admin/OraAdm0001
 * Oracle database 12cR2 インストール
   * rootユーザで以下のコマンドを実行
@@ -489,6 +491,69 @@
     ~~~
 
 ## 検証環境セットアップ:CDB + GI + RAC + Restart + OSB ##
+
+* Hyper-v10 + CentOs7 Minimal
+
+* ハードウェア設定
+  * CPU プロセッサー:2
+  * メインメモリ:8GB
+  * ハードディスク: 127GB
+  * ネットワーク
+    * アダプタ1:VNET10 (ブリッジ)
+* OSインストール
+  * ソフトウェア選択: 最小インストール
+  * ハードディスク自動構成 (swap 10GBに設定)
+  * rootパスワード設定 OraServer2
+  * admin/OraAdm0001
+* Oracle database 12cR2 インストール
+  * rootユーザで以下のコマンドを実行
+
+    ~~~bash
+    nmcli d
+    nmcli c m eth0 connection.autoconnect yes
+    yum update -y
+    yum -y groupinstall "GNOME Desktop"
+    # https://docs.oracle.com/cd/E82638_01/ladbi/supported-red-hat-enterprise-linux-7-distributions-for-x86-64.html#GUID-2E11B561-6587-4789-A583-2E33D705E498
+    yum install # binutils-2.23.52.0.1-12.el7 (x86_64)
+    yum install # bcompat-libcap1-1.10-3.el7 (x86_64)
+    yum install # compat-libstdc++-33-3.2.3-71.el7 (i686)
+    yum install # compat-libstdc++-33-3.2.3-71.el7 (x86_64)
+    yum install # glibc-2.17-36.el7 (i686)
+    yum install # glibc-2.17-36.el7 (x86_64)
+    yum install # glibc-devel-2.17-36.el7 (i686)
+    yum install # glibc-devel-2.17-36.el7 (x86_64)
+    yum install # ksh
+    yum install # libaio-0.3.109-9.el7 (i686)
+    yum install # libaio-0.3.109-9.el7 (x86_64)
+    yum install # libaio-devel-0.3.109-9.el7 (i686)
+    yum install # libaio-devel-0.3.109-9.el7 (x86_64) 
+    yum install # libgcc-4.8.2-3.el7 (i686)
+    yum install # libgcc-4.8.2-3.el7 (x86_64)
+    yum install # libstdc++-4.8.2-3.el7 (i686)
+    yum install # libstdc++-4.8.2-3.el7 (x86_64)
+    yum install # libstdc++-devel-4.8.2-3.el7 (i686)
+    yum install # libstdc++-devel-4.8.2-3.el7 (x86_64)
+    yum install # libxcb-1.9-5.el7 (i686)
+    yum install # libxcb-1.9-5.el7 (x86_64)
+    yum install # libX11-1.6.0-2.1.el7 (i686)
+    yum install # libX11-1.6.0-2.1.el7 (x86_64)
+    yum install # libXau-1.0.8-2.1.el7 (i686)
+    yum install # libXau-1.0.8-2.1.el7 (x86_64)
+    yum install # libXi-1.7.2-1.el7 (i686)
+    yum install # libXi-1.7.2-1.el7 (x86_64)
+    yum install # libXtst-1.2.2-1.el7 (i686)
+    yum install # libXtst-1.2.2-1.el7 (x86_64)
+    yum install # libXrender (i686)
+    yum install # libXrender (x86_64)
+    yum install # libXrender-devel (i686)
+    yum install # libXrender-devel (x86_64)
+    yum install # make-3.82-19.el7 (x86_64)
+    yum install # net-tools-2.0-0.17.20131004git.el7 (x86_64) (Oracle RACおよびOracle Clusterware用)
+    yum install # nfs-utils-1.3.0-0.21.el7.x86_64 (Oracle ACFS用)
+    yum install # smartmontools-6.2-4.el7 (x86_64)
+    yum install # sysstat-10.1.5-1.el7 (x86_64)
+    xhost +
+    ~~~
 
 ## 高可用性環境セットアップ ##
 
