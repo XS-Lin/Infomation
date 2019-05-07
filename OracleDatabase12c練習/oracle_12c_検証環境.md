@@ -37,10 +37,10 @@
 
 * オプション
 
-      WinSCP : VMにファイル転送用(VM設定でも代用可)
+      WinSCP : VMにファイル転送用(VM転送でも代用可)
       Tera Term : リモート接続用(VMで直接操作も可)
       Sql Developer : SQL実行用(DBソフトウェア付随または最新版をダウンロード、SqlPlusで代用可)
-      Oracle Client : VM通信用(RMAN等ツールはVM内で使用のため、オプショナル)
+      Oracle Client : VM通信用(RMAN等ツールはVM内で使用可能なため、オプショナル)
 
 ## 検証環境セットアップ ##
 
@@ -353,7 +353,140 @@
     sqlplus system/ora@192.168.56.102:1522/orcl_noncdb
     ~~~
 
-## 検証環境セットアップ:非CDB + RAC ##
+  * オプション：DB追加（リカバリ・カタログ、その他用）
+
+    ~~~bash
+    # root でログイン
+    xhost +
+    su - oracle
+    export DISPLAY=:0
+    export ORACLE_HOME=/u01/app/oracle/product/12.2.0/dbhome_1
+    export NLS_LANG=Japanese_Japan.UTF8
+    export PATH=$ORACLE_HOME/bin:$PATH
+    dbca
+    ~~~
+
+    * DBCA
+      * データベース操作
+        1. データベースの作成
+        1. 「次へ」
+      * 作成モード
+        1. 拡張構成
+        1. 「次へ」
+      * デプロイタイプ
+        1. データベースタイプ
+        1. Oracle単一インスタンス・データベース
+        1. テンプレート: 汎用またはトランザクション処理
+        1. 「次へ」
+      * データベース識別
+        1. グローバル・データベース名:orcl_other
+        1. SID: orclother
+        1. コンテナ・データベースとして作成: チェックオフ
+        1. 「次へ」
+      * 記憶域オプション
+        1. データベース記憶域属性に次を使用
+        1. データベース・ファイルの記憶域タイプ: ファイルシステム
+        1. データベース・ファイルの位置: {ORACLE_BASE}/oradata/{DB_UNIQUE_NAME}
+        1. 「次へ」
+      * 高速リカバリオプション
+        1. 「次へ」
+      * ネットワーク構成
+        1. 新規リスナーの作成
+        1. リスナー名:lsnr_other
+        1. リスナー・ポート: 1523
+        1. 「次へ」
+      * Data Vaultオプション
+        1. 「次へ」
+      * 構成オプション
+        * メモリー
+          1. 自動メモリー管理の使用 メモリー・ターゲット:1500MB
+        1. 「次へ」
+      * 管理オプション
+        1. Enterprise Manager (EM) Database Expressの構成: チェックOFF
+        1. 「次へ」
+      * ユーザ資格証明の指定
+        1. すべてのアカウントに同じパスワードを使用:ora
+        1. 「次へ」
+        1. 「はい」
+      * 作成オプション
+        1. 「次へ」
+      * サマリー
+        1. 「終了」
+
+    ~~~bash
+    # oracle ユーザ
+    export ORACLE_SID=orclother
+    sqlplus / as sysdba
+    SQL> shutdown immediate
+    SQL> exit
+    # power off して、VMのメモリを6Gに変更
+    ~~~
+
+    ~~~bash
+    # 前提条件：ORACLE RESTART等DB再起動ツールは未使用
+    # oracle ユーザ
+    export ORACLE_HOME=/u01/app/oracle/product/12.2.0/dbhome_1
+    export NLS_LANG=Japanese_Japan.UTF8
+    export PATH=$ORACLE_HOME/bin:$PATH
+    export ORACLE_SID=orclother
+    sqlplus / as sysdba
+    SQL> CREATE TABLESPACE tools
+    2>     DATAFILE '/u01/app/oracle/oradata/orcl_other/tools.dbf'
+    3>       SIZE 60M AUTOEXTEND ON NEXT 15M MAXSIZE 512M;
+    表領域が作成されました。
+    SQL> CREATE USER rco IDENTIFIED BY ora
+    2>     TEMPORARY TABLESPACE temp
+    3>     DEFAULT TABLESPACE tools
+    4>     QUOTA UNLIMITED ON tools;
+    ユーザが作成されました。
+    SQL> GRANT RECOVERY_CATALOG_OWNER TO rco;
+    権限付与が成功しました。
+    SQL> exit
+    lsnrctl start lsnr_other
+    (略)
+    rman catalog rco/ora@localhost:1523/orcl_other
+    リカバリ・カタログ・データベースに接続されました。
+    RMAN> CREATE CATALOG;
+    リカバリ・カタログが作成されました。
+    RMAN> exit
+    sqlplus rco/ora@localhost:1523/orcl_other
+    SQL> SELECT TABLE_NAME FROM USER_TABLES;
+    (略)
+    SQL> exit
+    export ORACLE_SID=orclnoncdb
+    rman target / catalog rco/ora@localhost:1523/orcl_other
+    RMAN> STARTUP MOUNT;
+    (略)
+    RMAN> REGISTER DATABASE;
+    データベースがカタログに登録されました。
+    リカバリ・カタログの完全再同期を開始しています
+    完全再同期が完了しました
+    RMAN> REPORT SCHEMA;
+    (略)
+    RMAN> CREATE SCRIPT full_backup
+    2> {
+    3>   BACKUP DATABASE PLUS ARCHIVELOG;
+    4>   DELETE OBSOLETE;
+    5> }
+    スクリプトfull_backupが作成されました
+    RMAN> LIST SCRIPT NAMES;
+    (略)
+    RMAN> PRINT SCRIPT full_backup;
+    (略)
+    RMAN> RUN
+    2> {
+    3>   EXECUTE SCRIPT full_backup;
+    4> }
+    (略)
+    RMAN> exit
+    sqlplus sys/ora@localhost:1523/orcl_other as sysdba
+    SQL> shutdown immediate
+    SQL> exit
+    sqlplus / as sysdba
+    SQL> shutdown immediate
+    SQL> exit
+    # power off
+    ~~~
 
 ## 検証環境セットアップ:CDB + GI + RAC + Restart + OSB ##
 
