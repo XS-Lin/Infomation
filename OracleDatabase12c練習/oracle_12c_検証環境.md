@@ -42,7 +42,7 @@
       Sql Developer : SQL実行用(DBソフトウェア付随または最新版をダウンロード、SqlPlusで代用可)
       Oracle Client : VM通信用(RMAN等ツールはVM内で使用可能なため、オプショナル)
 
-## 検証環境セットアップ ##
+## 検証環境:基本 ##
 
 * インストールに慣れていない方は以下のファイル参照
 
@@ -251,7 +251,7 @@
   lsnrctl start
   ~~~
 
-## 検証環境セットアップ:非CDB ##
+## 検証環境:非CDB ##
 
 * 前提条件
   
@@ -419,6 +419,13 @@
     # oracle ユーザ
     export ORACLE_SID=orclother
     sqlplus / as sysdba
+    SQL> select log_mode from v$database;
+    LOG_MODE
+    ------------
+    NOARCHIVELOG
+    SQL> shutdown immediate
+    SQL> startup mount
+    SQL> alter databse archivelog;
     SQL> shutdown immediate
     SQL> exit
     # power off して、VMのメモリを6Gに変更
@@ -428,7 +435,7 @@
     # 前提条件：ORACLE RESTART等DB再起動ツールは未使用
     # oracle ユーザ
     export ORACLE_HOME=/u01/app/oracle/product/12.2.0/dbhome_1
-    export NLS_LANG=Japanese_Japan.UTF8
+    export NLS_LANG=Japanese_Japan.AL32UTF8
     export PATH=$ORACLE_HOME/bin:$PATH
     export ORACLE_SID=orclother
     sqlplus / as sysdba
@@ -490,7 +497,76 @@
     # power off
     ~~~
 
-## 検証環境セットアップ:CDB + GI + RAC + Restart + OSB ##
+    仮想プライベート・カタログ
+
+    ~~~bash
+    # oracle ユーザ
+    export ORACLE_HOME=/u01/app/oracle/product/12.2.0/dbhome_1
+    export NLS_LANG=Japanese_Japan.AL32UTF8
+    export PATH=$ORACLE_HOME/bin:$PATH
+    export ORACLE_SID=orclother
+    lsnrctl start lsnr_other
+
+    sqlplus / as sysdba
+    SQL> CREATE TABLESPACE vpcusers
+    2>     DATAFILE '/u01/app/oracle/oradata/orcl_other/vpcusers.dbf'
+    3>       SIZE 15M AUTOEXTEND ON NEXT 1M MAXSIZE 100M;
+    表領域が作成されました。
+    SQL> CREATE USER vpc1 IDENTIFIED BY ora
+    2>     DEFAULT TABLESPACE vpcusers
+    3>     QUOTA UNLIMITED ON vpcusers;
+    ユーザが作成されました。
+    SQL> GRANT CREATE SESSION TO vpc1;
+    権限付与が成功しました。
+    SQL> CREATE USER vpc2 IDENTIFIED BY ora
+    2>     DEFAULT TABLESPACE vpcusers
+    3>     QUOTA UNLIMITED ON vpcusers;
+    ユーザが作成されました。
+    SQL> GRANT CREATE SESSION TO vpc2;
+    権限付与が成功しました。
+    SQL> EXIT;
+
+    # 仮想プライベート・カタログの有効化
+    sqlplus / as sysdba
+    SQL> @$ORACLE_HOME/rdbms/admin/dbmsrmanvpc.sql -vpd rco
+    (略)
+  
+    rman catalog rco/ora@localhost:1523/orcl_other
+    RMAN> upgrade catalog
+    リカバリ・カタログの所有者はRCOです。
+    UPGRADE CATALOGのコマンドを再入力し、カタログのアップグレードを確認してください。
+    RMAN> upgrade catalog
+    (略)
+    RMAN> list db_unique_name all;
+    データベースリスト
+    DBキー DB名      DBID      データベース・ロール Db_unique_name
+    ------ -------- ---------- ------------------ ------------
+    1      ORCL_NON 3635247963 PRIMARY            ORCL_NONCDB
+    RMAN> GRANT CATALOG FOR DATABASE ORCL_NON TO vpc1;
+    権限付与が成功しました。
+    RMAN> GRANT REGISTER DATABASE TO vpc2;
+    権限付与が成功しました。
+    RMAN> exit
+
+    rman catalog vpc1/ora@localhost:1523/orcl_other
+    RMAN> CREATE VIRTUAL CATALOG;
+    (略)
+    RMAN> list db_unique_name all;
+    データベースリスト
+    DBキー DB名      DBID      データベース・ロール Db_unique_name
+    ------ -------- ---------- ------------------ ------------
+    1      ORCL_NON 3635247963 PRIMARY            ORCL_NONCDB
+    RMAN> exit
+
+    rman catalog vpc2/ora@localhost:1523/orcl_other
+    RMAN> CREATE VIRTUAL CATALOG;
+    (略)
+    RMAN> list db_unique_name all;
+
+    RMAN> exit
+    ~~~
+
+## 検証環境:CDB + GI + RAC + Restart + OSB ##
 
 * Hyper-v10 + CentOs7 Minimal
 
@@ -505,7 +581,7 @@
   * ハードディスク自動構成 (swap 10GBに設定)
   * rootパスワード設定 OraServer2
   * admin/OraAdm0001
-* Oracle database 12cR2 インストール
+* Oracle database 12cR2 等インストール
   * rootユーザで以下のコマンドを実行
 
     ~~~bash
