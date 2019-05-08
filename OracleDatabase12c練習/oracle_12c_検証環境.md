@@ -83,7 +83,7 @@
   groupadd -g 54326 kmdba
   groupadd -g 54327 racdba
   usermod -u 1200 -g oinstall -G dba,oper,backupdba,dgdba,kmdba,racdba oracle #CentOSの場合、エラー。代わりに以下のコマンド実行
-  # useradd -u 1200 -g oinstall -G dba,oper,backupdba,dgdba,kmdba,racdba-d /home/oracle oracle
+  # useradd -u 1200 -g oinstall -G dba,oper,backupdba,dgdba,kmdba,racdba -d /home/oracle oracle
 
   # /etc/security/limits.conf ファイルに以下の内容を追加
   oracle soft nproc 2047
@@ -590,45 +590,115 @@
     yum update -y
     yum -y groupinstall "GNOME Desktop"
     # https://docs.oracle.com/cd/E82638_01/ladbi/supported-red-hat-enterprise-linux-7-distributions-for-x86-64.html#GUID-2E11B561-6587-4789-A583-2E33D705E498
-    yum install # binutils-2.23.52.0.1-12.el7 (x86_64)
-    yum install # bcompat-libcap1-1.10-3.el7 (x86_64)
-    yum install # compat-libstdc++-33-3.2.3-71.el7 (i686)
-    yum install # compat-libstdc++-33-3.2.3-71.el7 (x86_64)
-    yum install # glibc-2.17-36.el7 (i686)
-    yum install # glibc-2.17-36.el7 (x86_64)
-    yum install # glibc-devel-2.17-36.el7 (i686)
-    yum install # glibc-devel-2.17-36.el7 (x86_64)
-    yum install # ksh
-    yum install # libaio-0.3.109-9.el7 (i686)
-    yum install # libaio-0.3.109-9.el7 (x86_64)
-    yum install # libaio-devel-0.3.109-9.el7 (i686)
-    yum install # libaio-devel-0.3.109-9.el7 (x86_64) 
-    yum install # libgcc-4.8.2-3.el7 (i686)
-    yum install # libgcc-4.8.2-3.el7 (x86_64)
-    yum install # libstdc++-4.8.2-3.el7 (i686)
-    yum install # libstdc++-4.8.2-3.el7 (x86_64)
-    yum install # libstdc++-devel-4.8.2-3.el7 (i686)
-    yum install # libstdc++-devel-4.8.2-3.el7 (x86_64)
-    yum install # libxcb-1.9-5.el7 (i686)
-    yum install # libxcb-1.9-5.el7 (x86_64)
-    yum install # libX11-1.6.0-2.1.el7 (i686)
-    yum install # libX11-1.6.0-2.1.el7 (x86_64)
-    yum install # libXau-1.0.8-2.1.el7 (i686)
-    yum install # libXau-1.0.8-2.1.el7 (x86_64)
-    yum install # libXi-1.7.2-1.el7 (i686)
-    yum install # libXi-1.7.2-1.el7 (x86_64)
-    yum install # libXtst-1.2.2-1.el7 (i686)
-    yum install # libXtst-1.2.2-1.el7 (x86_64)
-    yum install # libXrender (i686)
-    yum install # libXrender (x86_64)
-    yum install # libXrender-devel (i686)
-    yum install # libXrender-devel (x86_64)
-    yum install # make-3.82-19.el7 (x86_64)
-    yum install # net-tools-2.0-0.17.20131004git.el7 (x86_64) (Oracle RACおよびOracle Clusterware用)
-    yum install # nfs-utils-1.3.0-0.21.el7.x86_64 (Oracle ACFS用)
-    yum install # smartmontools-6.2-4.el7 (x86_64)
-    yum install # sysstat-10.1.5-1.el7 (x86_64)
+    # I:インストール済み(yum list installed <lib_name> で確認) N:プラットフォームのため不要
+    # I # binutils-2.23.52.0.1-12.el7 (x86_64)
+    yum install bcompat-libcap1 # bcompat-libcap1-1.10-3.el7 (x86_64)
+    # N # compat-libstdc++-33-3.2.3-71.el7 (i686)
+    yum install compat-libstdc++-33 # compat-libstdc++-33-3.2.3-71.el7 (x86_64)
+    # N # glibc-2.17-36.el7 (i686)
+    # I # glibc-2.17-36.el7 (x86_64)
+    # N # glibc-devel-2.17-36.el7 (i686)
+    yum install glibc-devel # glibc-devel-2.17-36.el7 (x86_64)
+    yum install ksh # ksh
+    # N # libaio-0.3.109-9.el7 (i686)
+    # I # libaio-0.3.109-9.el7 (x86_64)
+    # N # libaio-devel-0.3.109-9.el7 (i686)
+    yum install libaio-devel # libaio-devel-0.3.109-9.el7 (x86_64)
+    # N # libgcc-4.8.2-3.el7 (i686)
+    # I # libgcc-4.8.2-3.el7 (x86_64)
+    # N # libstdc++-4.8.2-3.el7 (i686)
+    # I # libstdc++-4.8.2-3.el7 (x86_64)
+    # N # libstdc++-devel-4.8.2-3.el7 (i686)
+    yum install libstdc++-devel # libstdc++-devel-4.8.2-3.el7 (x86_64)
+    # N # libxcb-1.9-5.el7 (i686)
+    # I # libxcb-1.9-5.el7 (x86_64)
+    # N # libX11-1.6.0-2.1.el7 (i686)
+    # I # libX11-1.6.0-2.1.el7 (x86_64)
+    # N # libXau-1.0.8-2.1.el7 (i686)
+    # I # libXau-1.0.8-2.1.el7 (x86_64)
+    # N # libXi-1.7.2-1.el7 (i686)
+    # I # libXi-1.7.2-1.el7 (x86_64)
+    # N # libXtst-1.2.2-1.el7 (i686)
+    # I # libXtst-1.2.2-1.el7 (x86_64)
+    # N # libXrender (i686)
+    # I # libXrender (x86_64)
+    # N # libXrender-devel (i686)
+    yum install libXrender-devel # libXrender-devel (x86_64)
+    # I # make-3.82-19.el7 (x86_64)
+    # I # net-tools-2.0-0.17.20131004git.el7 (x86_64) (Oracle RACおよびOracle Clusterware用)
+    # I # nfs-utils-1.3.0-0.21.el7.x86_64 (Oracle ACFS用)
+    # I # smartmontools-6.2-4.el7 (x86_64)
+    # I # sysstat-10.1.5-1.el7 (x86_64)
+
+    groupadd -g 54321 oinstall
+    groupadd -g 54322 dba
+    groupadd -g 54323 oper
+    groupadd -g 54324 backupdba
+    groupadd -g 54325 dgdba
+    groupadd -g 54326 kmdba
+    groupadd -g 54327 racdba
+    useradd -u 1200 -g oinstall -G dba,oper,backupdba,dgdba,kmdba,racdba -d /home/oracle oracle
+
+    # /etc/security/limits.conf ファイルに以下の内容を追加
+    oracle soft nproc 2047
+    oracle hard nproc 16384
+    oracle soft nofile 1024
+    oracle hard nofile 65536
+    oracle soft stack 10240
+    oracle hard stack 32768  
+
+    mkdir -p /u01/app/oracle
+    chown -R oracle:oinstall /u01/app/oracle
+    chmod -R 775 /u01
+
+    startx
     xhost +
+
+    # WinSCP upload "linuxx64_12201_grid_home.zip" to "/var/tmp/"
+    # WinSCP upload "linuxx64_12201_database.zip" to "/var/tmp/"
+
+    # oracle ユーザ
+    su - oracle
+    # TODO: GIインストール
+    # mkdir -p /u01/app/oracle/grid
+    # unzip /var/tmp/linuxx64_12201_grid_home.zip -d /u01/app/oracle/grid
+    unzip /var/tmp/linuxx64_12201_database.zip -d /u01/app/oracle
+    export ORACLE_BASE=/u01/app/oracle
+    export DISPLAY=:0
+    ~~~
+
+    ~~~bash
+    $ORACLE_BASE/database/runInstaller
+    ~~~
+
+    * インストール設定(OUI)
+      * セキュリティ・アップデートの構成
+        1. セキュリティ・アップデートをMy Oracle Support経由で受け取ります。: チェックを外す
+        1. 「次へ」
+        1. ダイアログで「はい」
+      * インストールオプション
+        1. データベース・ソフトウェアのみインストール
+        1. 「次へ」
+      * データベース・インストールオプション
+        1. Oracle Real Application Clustersデータベースのインストール
+        1. 「次へ」
+      * データベースのエディション
+        1. Enterprise Edition (7.5GB)]
+        1. 「次へ」
+      * インストール場所
+        1. Oracleベース: /u01/app/oracle
+        1. ソフトウェアの場所: /u01/app/oracle/product/12.2.0/dbhome_1
+        1. 「次へ」
+      * インベントリの作成
+        1. インベントリ・ディレクトリ: /u01/app/oraInventory
+        1. oraInventoryグループ名: oinstall
+        1. 「次へ」
+      * オペレーティング・システム・グループ
+        1. すべてデフォルトのまま
+        1. 「次へ」
+
+    ~~~bash
+    export ORACLE_HOME=$ORACLE_BASE/product/12.2.0/dbhome_1
     ~~~
 
 ## 高可用性環境セットアップ ##
