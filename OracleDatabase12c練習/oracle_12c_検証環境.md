@@ -566,7 +566,7 @@
     RMAN> exit
     ~~~
 
-## 検証環境:CDB + GI + RAC + Restart + OSB ##
+## 検証環境:CDB + GI + RAC + OSB ##
 
 * Hyper-v10 + CentOs7 Minimal
 
