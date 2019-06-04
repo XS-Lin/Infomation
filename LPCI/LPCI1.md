@@ -280,4 +280,64 @@
 1. テキスト処理フィルタ
 
    ~~~sh
+    # cat [-n] [ファイル名]
+    cat file1 file2 > new file
+    # nl [-b -h -f ] <a|t|n>
+    nl /etc/passwd
+    # od [-t] <c|o|x> [ファイル名]
+    od /etc/localtime
+    od -t x /etc/localtime
+    # head [-n 行数 -行数 -c バイト数] [ファイル名]
+    head -5 /etc/services
+    # tail [-n 行数 -行数 -c バイト数 -f] [ファイル名]
+    tail -f /var/log/messages
+    # cut [-c 文字数 -d 区切り文字 -f フィールド] [ファイル名]
+    cut -d: -f 6 /etc/passwd
+    # paste [-d] ファイル名1 ファイル名2 ...
+    paste -d";" sample1.txt sample2.txt
+    # tr [-d -s] [文字列1 [文字列2]]
+    #    [:alpha:][:lower:][:upper:][:digit:][:alnum:][:space:]
+    cat /etc/hosts | tr [:lower:] [:upper:]
+    tr -d : < file1
+    # sort [-b -f -r -n] [+開始位置 [-終了位置]] [ファイル名]
+    # split [-行数] [入力ファイル名 [出力ファイル名]]
+    # uniq [-d -u] [入力ファイル名 [出力ファイル名]]
+    # wc [-c -l -w] [ファイル名]
+    # xargs 標準入力から受け取る文字列を引数で実施
+    find . -mtime +60 -type f | xargs rm　# 60日更新がないファイルを削除
+    # md5sum,sha1sum,sha256sum,sha512sum
+    # grep [-c -f -i -n -v -E] 検索パターン [ファイル名]
+    # grep [-f ファイル名] [ファイル名]
+    egrep '\s(22|53)/tcp' /etc/services
+    grep -E '\s(22|53)/tcp' /etc/services
+    grep -v '^#' /etc/httpd/conf/httpd.conf
+    # sed [オプション] コマンド [ファイル]
+    # sed [オプション] -e コマンド1 [-e コマンド2 ...] [ファイル]
+    # sed [オプション] -f スクリプト [ファイル]
+    sed '1,5d' file1.txt > file2.txt # file1.txtの1行目から5行目まで削除しfile2.txtに保存
+    sed s/linux/Linux/ file1.txt # file1.txtのlinuxを大文字に変換
+    sed -i 's/\r//' file1.sh # file1.shの\rを削除(windowsで編集したファイルをlinuxで実行など)
+    sed '1,5s/^/>/' /etc/passwd # /etc/passwdの1行から5行目に>を追加
+    sed y/ABC/123/ sample.txt # sample.txtのA->1,B->2,C->3に変更する
    ~~~
+
+1. ファイルの基本的な編集
+
+   ~~~sh
+   # vi [-R] [ファイル名]
+   # vi の編集モード
+   #    i a I A o O
+   #    x X dd dw yy p P r
+   # vi のコマンドモード
+   #    h l k j 0 $ H L gg G nG :n
+   #    :q :q! :wq ZZ :W :e! :r :!コマンド :r!コマンド
+   # vi の検索
+   #    /パターン ?パターン n N :noh :%s/A/B :%s/A/B/g
+   # vi の設定変更
+   #    :set nu
+   #    :set nonu
+   #    :set ts=タブ幅
+   ~~~
+
+## 4.ファイルとプロセスの管理 ##
+
