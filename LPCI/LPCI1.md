@@ -678,3 +678,560 @@
    # whichはPATHの通ったコマンドのみ検索
    ~~~
 
+## 7.シェルとシェルスクリプト ##
+
+1. シェル環境のカスタマイズ
+
+   ~~~sh
+   # 環境変数:コマンドや別のシェルで有効
+   # シェル変数:シェル内有効
+   # export でシェル変数を環境変数へ
+   # env/printenv 環境変数
+   # set 環境変数+シェル変数
+   # set [-o][+o] [allexport emacs ignoreeof noglob vi]
+   #    -o 有効にする +o 無効にする
+   alias ls='ls -l'
+   \ls # エイリアス使用しない
+   alias lsless='ls -l | less'
+   unalias lsless
+   # [function] 関数名() { コマンド; } # 注意：{}の前後スペースが必要
+   # [function] 関数名() {
+   # {
+   #     コマンド
+   # }
+   function lslink() { ls -l | grep '^l'; }
+   function lslink() {
+       ls -l $1 | grep '^l'
+   }
+   declare -f lslink # 関数定義表示
+   unset lslink
+   # bash設定ファイル
+   /etc/profile # ログイン時に実行され、すべてのユーザ参照できる
+   /etc/bash.bashrc # bash起動時に実行され、すべてのユーザ参照できる
+   /etc/bashrc # ~/.bashrcから参照
+   ~/.bash_profile # ログイン時に実行される
+   ~/.bash_login # ~/.bash_profileがない場合、ログイン時に実行される
+   ~/.profile # ~/.bash_profileも~/.bash_loginもない場合、ログイン時に実行される
+   ~/.bashrc # bash起動時に実行される
+   ~/.bash_logout # ログアウト時に実行される
+   ~~~
+
+   **/etc以下の設定ファイルははすべてユーザ影響、ホームはユーザーごと**
+
+   * bash 起動時設定ファイルの実行順番
+    
+      ~~~sh
+      # ログイン
+      #   ↓
+      # /etc/profile
+      #   ↓
+      # /etc/bash.bashrc
+      #   ↓              なければ ↓       なければ ↓
+      # ~/.bash_profile | ~/.bash_login | ~/.profile
+      #   ↓              なければ ↓
+      # ~/.bashrc                ↓
+      #   ↓                      ↓
+      # /etc/bashrc              ↓
+      #   ↓
+      # bash起動
+      ~~~
+
+      ~~~sh
+      # 対話型シェル
+      # ~/.bashrc      なければ   ↓
+      #   ↓                      ↓
+      # /etc/bashrc              ↓
+      #   ↓
+      # bash起動
+      ~~~
+
+1. シェルスクリプト
+
+   ~~~sh
+   # lsld スクリプトがある場合
+   cat lsld
+   bash lsld
+   source lsld
+   . lsld
+   chmod a+x lsld
+   ./lsld
+   # exec コマンド
+   zhs # 現在のプロセスを待機し、新しいzshプロセス起動
+   exec zhs # 現在のプロセスをzshに変更
+   ~~
+
+   |変数名|意味|
+   |---|---|
+   |$0|ファイル名(フルパス)|
+   |$1|1番目の引数|
+   |$2|2番目の引数|
+   |$#|引数の数|
+   |$@|すべての引数(スペース区切り)|
+   |$*|すべての引数(環境変数IFSで指定文字区切り)|
+
+   ~~~sh
+   # 戻り値
+   $? #0:正常終了
+   ~~~
+   
+   ~~~sh
+   # ファイルチェック
+   # test 条件
+   # [ 条件 ]
+   # 主な条件式
+   #   -f ファイル
+   #   -d ディレクトリ
+   #   -r ファイル
+   #   -w ファイル
+   #   -x ファイル
+   #   -s ファイル
+   #   -L ファイル
+   #   -e ファイル
+   #   ファイル1 -nt ファイル2
+   #   ファイル1 -ot ファイル2
+   #   数値1 -eq 数値2
+   #   数値1 -ge 数値2
+   #   数値1 -gt 数値2
+   #   数値1 -le 数値2
+   #   数値1 -lt 数値2
+   #   数値1 -ne 数値2
+   #   -n 文字列
+   #   -z 文字列
+   #   文字列1 = 文字列2
+   #   文字列1 != 文字列2
+   #   ! 条件
+   #   条件1 -a 条件2
+   #   条件1 -o 条件2
+   # 制御構造
+   #   if
+   #     if
+   #     then
+   #       実行文1
+   #     else
+   #       実行文2
+   #     fi
+   #   case
+   #     case 式 in:
+   #       値1)
+   #         実行文1 ;;
+   #       値2)
+   #         実行文2 ;;
+   #     esac
+   # 繰り返し
+   #   for
+   #     for 変数名 in 変数代入する値リスト
+   #     do
+   #       実行文
+   #     done
+   for i in `seq 10 15`
+   do
+     echo $i
+   done
+   #   while
+   #     while 条件文
+   #     do
+   #       実行文
+   #     done
+   # 標準入力
+   #   read 変数
+   # 実行環境
+   # ファイルの一行目: #!/bin/bash
+   ~~~
+
+## 8.ユーザーインターフェースとデスクトップ ##
+
+   ~~~sh
+   /etc/X11/xorg.conf
+   # Files Moudule InputDevice InputClass Device Monitor Modes Screen ServerLayout
+   # xhost [+-] ホスト名
+   xhost +remotepc # local
+   DISPLAY=localpc:0 # remote
+   export DISPLAY # remote
+   rxvt & # remote
+
+   systemctl enable lightdm.service # GUIの自動有効
+   ~~~
+
+## 9.管理タスク ##
+
+1. ユーザとグループの管理
+
+   ~~~sh
+   /etc/passwd
+   # <ユーザ名>:<パスワード>:<UID(ユーザID)>:<GID(グループID)>:<GECOS(コメント)>:<ホームディレクトリ>:<デフォルトシェル>
+   /etc/shadow # パスワード保存(rootユーザのみ)
+   /etc/group
+   # <グループ名>:<グループパスワード>:<GID(グループID)>:<グループメンバー>
+   # useradd [-c -d -g -G -s -D -m] ユーザー名
+   useradd -c "Linux user" -d /home/linux -s /bin/bash linuxuser
+   /etc/skel # ホームディレクトリ作成の時に、自動コピーする
+   # usermod [-c -d -g -G -s -L -U] ユーザー名
+   usermod -G bproject lpic
+   # userdel [-r] ユーザー名
+   userdel -r lpicjp
+   # passwd [-l -u] [ユーザー名]
+   # groupadd グループ名
+   # groupmod [-g -n] グループ名
+   groupmod -n develop devel
+   # groupdel グループ名
+   groupdel sales # グループに所属するユーザがある場合削除失敗
+   # id [ユーザー名]
+   id student
+   # getent [passwd|group]
+   getent passwd
+   ~~~
+
+1. ジョブスケジューリング
+
+   ~~~sh
+   # ユーザ
+   # /var/spool/cron/ユーザ名/ または /var/spool/cron/crontabs/ユーザ名/
+   # crontab [-e -l -r -i -u]
+   # 分[0-59] 時[0-23] 日[1-31] 月[1-12]|[jan-dec] 曜日[0-7][Sun-Sat] コマンド
+   15 23 * * * /usr/local/bin/backup #毎日23:15にbackupプログラム実行
+   0 9,12 * * 1 /usr/local/bin/syscheck #毎週月曜9時と12時syscheck実行
+   0 */2 * * * /usr/local/bin/syscheck #2時間毎にsyscheck実行
+   # システム
+   # /etc/crotab
+   # /etc/cron.d/
+   # /etc/cron.hourly/
+   # /etc/cron.daily/
+   # /etc/cron.weekly/
+   # /etc/cron.monthly/
+   ~~~
+
+   ~~~sh
+   # at オプション
+   # at [-f ファイル名] 日時
+   at 5:00 tomorrow
+   at> /usr/local/sbin/backup
+   at> ^D #crtl+d
+   at -f my_jobs 23:30
+   # 日時
+   #   22:00 10pm noon midnight today tomorrow
+   #   now + 3 days
+   #   10pm + 2 weeks
+   ~~~
+
+   ~~~sh
+   /etc/cron.allow # 優先
+   /etc/cron.deny
+   # どちらもなければすべてのユーザ利用可能
+   /etc/at.allow # 優先
+   /etc/at.deny
+   # どちらもなければrootユーザのみ利用可能
+   ~~~
+
+   ~~~sh
+   /etc/systemd/system/lpic.timer #書式はman 7 systemd.time
+   systemd-run --unit=lpictest --on-active=1s --on-unit-active=60s uptime # lpictest60秒毎に実行
+   systemctl list-timers
+   journalctl -u lpictest # 実行結果確認
+   systemctl stop lpictest.timer
+   ~~~
+
+1. ローカライゼーションと国際化
+
+   ~~~sh
+   # ロケールの主なカテゴリ
+   LC_CTYPE LC_COLLATE LC_MESSAGE LC_MONETARY LC_NUMERIC LC_TIME
+   # 主なロケール名
+   C POSIX # 英語
+   ja_JP.utf8(ja_JP.UTF8)
+   ja_JP.eucJP
+   ja_JP.shiftJIS
+   en_US.utf8
+   # locale [-a -m]
+   LANG=C man ls # 一時的にlsのマニュアルを英語表示
+   # 文字コード
+   ASCII ISO-8859 UTF-8 EUC-JP SHIFT-JIS ISO-2022-JP
+   # iconv [-f -t -l]
+   iconv -f eucjp -t utf8 report.euc.txt > report.utf8.txt
+   iconv -l
+
+   ls /usr/share/zoneinfo/
+   cp /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
+   ln -s /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
+   export TZ="Asia/Tokyo"
+
+   /etc/timezone # すべてのユーザ適用
+   tzselect
+   19
+   1
+   ~~~
+
+## 10.必須サービス ##
+
+1. システムクロック
+
+   ~~~sh
+   date "+%Y/%n/%d (%a)"# %Y %m %d %H %M %a %b
+   # date [MMDDhhmm[CC]YY[.SS]] システムクロック設定
+   tar czf `data "+%Y%m%d"`.tar.gz /data # 20181210.tar.gzのアーカイブ作成
+   hwclock -r # ハードウェアクロック表示
+   hwclock -w(--systohc)
+   hwclock -s(--hctosys)
+   # timedatectl [status set-time set-timezone list-timezone set-ntp]
+   timedatectl set-time 2019-03-12 12:24:00
+   timedatectl set-ntp yes
+   timedatectl list-timezones | grep -i tokyo
+   timedatectl set-timezone Asia/Tokyo
+   # ntpdate サーバ名
+   ntpdate time.server.lpic.jp
+   /etc/init.d/ntpd.start
+   systemctl start ntpd.service
+   ntpq -p localhost
+   /etc/ntp.conf
+   /etc/chrony.conf
+   # chronyd [acrtivity sources sourcestats tracking quit]
+   chronyc sources
+   # 注意：ntpとchronycは同時使用不可
+   /etc/rsyslog.conf
+   /etc/rsyslog.d
+   # rsyslogの主なプラグインモジュール
+   #   imuxsock imjournal imklog immark imudp imtcp
+   #   rsyslog.confの書式
+   #     ファシリティ.プライオリティ 出力先
+   #       ファシリティ:auth,cron,daemon,kern,lpr,mail,user,local0-7
+   #       プライオリティ:emerg,alert,crit,err,warning,notice,info,debug,none
+   #       出力先:/var/log/messages,/dev/tty1,@sv.example.com,@@sv.example.com,violet,*
+   #kern.* -/var/log/kern.log
+   #authpriv.* /var/log/secure
+   #*.*;authrpiv.none /var/log/messages
+   systemctl restart rsyslog
+   # logger [-p ファシリティ.プライオリティ] [-t タグ] メッセージ
+   logger -p syslog.info -t Test "logger test message"
+   # systemd-cat コマンド
+   systemd-cat uptime
+   journalctl -xe
+   # /var/log/message (Debain or Ubuntu の場合 /var/log/syslog)
+   #   日時 出力元ホスト名 メッセージ出力元 メッセージ
+   tail -f /var/log/message
+   grep eth0 /var/log/message
+   # /var/log/secure
+   who
+   w
+   last
+   lastlog
+   # journalctl [-f -r -e -x -k -b -p -u --full --no-pager]
+   journalctl -u ssh.service
+   /etc/systemd/journald.conf
+   sudo systemctl restart systemd-journald # rsyslogdが出力しない場合がある。その時rsyslog.serviceも再起動
+   # ログのローテーション
+   /etc/logrotate.conf
+   ~~~
+
+1. メール管理
+
+   ~~~sh
+   netstat -atnp | grep 25
+   /etc/init.d/postfix start
+   systemctl start postfix.service
+   mail -s samplemail student
+   #Hello!
+   #.
+   mail
+   1
+   q
+   # /etc/aliases
+   newaliases
+   # .forward 各ユーザのホームに定義
+   mailq
+   ~~~
+
+1. プリンター
+
+   ~~~sh
+   #/etc/cups/cupsd.conf
+   #/etc/cups/printers.conf
+   /etc/init.d/cups start
+   systemctl start cups.service
+   netstat -at | grep ipp
+   #lpr [-# -P] filename
+   lpdr -#5 /etc/passwd
+   dmesg | lpdr
+   #lpq [-P printername] [username] [jobnumber]
+   lpq
+   #lprm [-P p]
+   lprm - # rootユーザの場合はすべてのユーザの印刷ジョブ削除
+   ~~~
+
+## 11.ネットワークの基礎 ##
+
+1. TCP/IP
+
+   |クラス|IP範囲|プライベートIP範囲|
+   |---|---|---|
+   |A|0.0.0.0-127.255.255.255|10.0.0.0-10.255.255.255|
+   |B|128.0.0.0-127.255.255.255|172.16.0.0-172.31.255.255|
+   |C|192.0.0.0-223.255.255.255|192.168.0.0-192.168.255.255|
+
+   ~~~sh
+   /etc/services # port
+   /etc/hostname
+   /etc/hosts
+   /etc/sysconfig/network-scripts # /etc/network/interfaces
+   systemctl status NetworkManager
+   # nmcli
+   #   general
+   #     status
+   #     hostname
+   #     hostname ホスト名
+   #   networking
+   #     on|off
+   #     connectivity [check]
+   #   radio
+   #     wifi
+   #     wifi on|off
+   #     wwan
+   #     wwan on|off
+   #     all on|off
+   #   connection
+   #     show [--active]
+   #     modify インターフェース名 パラメータ
+   #     up <id>
+   #     down <id>
+   #   device
+   #     status
+   #     show インターフェース名
+   #     modify インターフェース名 パラメータ
+   #     connect インターフェース名
+   #     disconnect インターフェース名
+   #     delete インターフェース名
+   #     monitor インターフェース名
+   #     wifi list
+   #     wifi connect <ssid>
+   #     wifi hotspot
+   #     wifi rescan
+   nmcli general status
+   nmcli radio wifi on
+   nmcli connection show
+   nmcli connection add type ethernet ifname enp0s3 con-name eth1
+   nmcli connection modify eth1 ipv4.method auto
+   # hostnamectl [status set-hostname]
+   hostnamectl set-hostname vm2
+   ~~~
+
+1. ネットワークトラブルシューティング
+
+   ~~~sh
+   #ping [-c -i]
+   ping -c 4 www.lpi.org # ping6
+   traceroute pepper.lpic.jp # traceroute6
+   tracepath pepper.lpic.jp # tracepath6
+   hostname
+   # netstat [-a -c -i -n -p -r -t -u]
+   netstat -at
+   netstat -r
+   # nc [-l -p -u -o] host port
+   nc -l -p 12345 -o listen.org # ポート12345を待ち状態にして、受信データをlisten.orgに保存
+   nc centos7.example.com 12345 <data.txt
+   # route [-F -C]
+   # route add
+   # route del
+   # ルーティングテーブルの項目
+   #   Destination Gateway Genmask Flags Metric Ref Use Iface
+   route add -net 192.168.0.0 netmask 255.255.255.0 gw 172.30.0.254
+   route add default gw 172.30.0.1
+   route del -net 192.168.0.0 netmask 255.255.255.0 gw 172.30.0.254
+   echo 1 > /proc/sys/net/ipv4/ip_forward
+   # ip link|addr|route [show|add] [デバイス]
+   ip link show
+   ip route show
+   ip addr show eth0
+   ip addr add 192.168.11.12/24 dev eth0
+   ip route add default via 192.168.11.1
+   # RHAT7/CentOS7 はroute,netstat,ifconfigを廃止して、ip,ss推奨
+   # ifconfig [ネットワークインターフェース名] [パラメータ]
+   ifconfig
+   ifconfig eth0 192.168.0.50 netmask 255.255.255.0 # 再起動すると失われる。永久設定はファイルに
+   ifup
+   ifdown
+   /etc/hosts
+   /etc/resolv.donf
+   /etc/nsswitch.conf
+   /etc/systemd/resolved.conf
+   sysytemctl restart systemd-resolved.service
+   # host [-v] ホスト名またはIP [DNSサーバ]
+   host www.lpi.jp
+   host 192.168.0.6
+   # dig [-x] [@DNSサーバ] ホスト名またはIP [a|aaaa|any|mx|ns]
+   dig lpi.jp mx
+   ~~~
+
+## 12.セキュリティ ##
+
+1. ホストレベルのセキュリティ
+
+   ~~~sh
+   /etc/xinetd.conf
+   # instances log_type log_on_success log_on_failure cps includedir
+   /etc/xinetd.d
+   # disable socket_type wait user server server_args log_on_failure nice only_from on_access access_times
+   /etc/init.d/xinetd restart
+
+   /etc/systemd/system/telnet.socket
+   /etc/systemd/system/telnet.service
+
+   /etc/hosts.allow
+   /etc/hosts.deny
+   # ALL
+   # A EXCEPT B
+   # LOCAL
+   # PARANOID
+
+   netstat -atu
+   ss -atu
+   lsof -i
+   nmap
+   fuser -n tcp 8888
+   find / -perm -u+s -ls # SUID濫用は危険
+   ~~~
+
+1. ユーザーに対するセキュリティ管理
+
+   ~~~sh
+   #change [-l -m -M -d -W -E]
+   # 3日以内パスワード変更,有効期限28日,期限きれ7日前に警告,期限きれるとロック,2019-12-31まで使用可
+   change -m 3 -M 28 -W 7 -I 0 -E 2019-12-31 student
+   touch /etc/nologin # root以外のユーザログイン禁止
+   usermod -s /sbin/nologin lpic # ユーザlpicログイン禁止
+   # su [- [username]]
+   /etc/sudoers
+   # ユーザー名 ホスト名 実行ユーザー名 コマンド NOPASSED:
+   student ALL=(ALL) /sbin/shutdown
+   student ALL=(ALL) ALL # rootと同等になる
+   %wheel ALL=(ALL) NOPASSWS:ALL # wheelグループすべてのrootコマンドパスワード不要
+   sudo /sbin/shutdown -h now
+   sudo -l
+   # sudo [-l -i -s -u ユーザー] [コマンド]
+   # ulimit [-a -c -f -n -v [リミット]]
+   ulimit -a
+   ~~~
+
+1. Open SSH
+
+   ~~~sh
+   /etc/ssh/sshd_config
+   # Port Protocol HostKey PermitRootLogin RSAAuthentication AuthorizedKeysFile
+   # PermitEmptyPasswords PasswordAuthentication X11Forwarding
+   /etc/init.d/sshd start
+   /etc/init.d/ssh start
+   systemctl start sshd.service
+   # ssh [[ログインユーザ@]ホスト]
+   ssh sv1.lpic.jp
+   ssh student@sv1.lpic
+   ~/.ssh/known_hosts # 公開認証鍵保存
+   # ssh-keygen [-t -p -f -R -b]
+   ssh-keygen -t dsa
+   # idenity id_dsa id_rsa id_ecdsa id_ed25519
+   scp ~/.ssh/id_dsa.pub sv1.lpic.jp:publickey # pulickey転送
+   ssh sv1.lpicljp # 接続(パスワード必要)
+   cat publickey >> ~/.ssh/authorized_keys # 公開鍵追加
+   ~~~
+
+1. GnuPG
+
+   ~~~sh
+
+   ~~~
