@@ -44,18 +44,6 @@ ForEach($tb in $dtSet.Tables){
 $OraCon.close()
 ~~~
 
-* C#
-
-~~~csharp
-
-~~~
-
-* Java
-
-~~~java
-
-~~~
-
 ## SqlServer ##
 
 検証環境:SqlServer2017
@@ -65,25 +53,12 @@ $OraCon.close()
 * Python
 
 ~~~python
-import openpyxl
 
 ~~~
 
 * PowerShell
 
 ~~~powershell
-
-~~~
-
-~~~csharp
-
-~~~
-
-~~~java
-
-~~~
-
-~~~bash
 
 ~~~
 
@@ -99,18 +74,6 @@ import openpyxl
 
 ~~~
 
-~~~csharp
-
-~~~
-
-~~~java
-
-~~~
-
-~~~bash
-# xmllint
-~~~
-
 ## CSV ##
 
 * Python
@@ -118,7 +81,6 @@ import openpyxl
 ~~~python
 import csv
 # Read
-path = os.path.join(INPUT_INFO_PATH,fileName)
 f = open(path,'r')
 for row in reader:
     print row
@@ -133,14 +95,20 @@ f.close()
 * PowerShell
 
 ~~~powershell
+# Import-Csvの詳細
+# https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/import-csv?view=powershell-6
+# CSVファイルにヘッダあり
+$csv = Import-Csv path -Encoding Default
+$csv | Format-Table
+foreach($row in $csv) {
+    Write-Host $row.PropertyName # PropertyName はCSVファイルのヘッダの名前
+}
+# CSVファイルにヘッダがない場合、-Headerでヘッダ設定
+$csv = Import-Csv path -Header A,B,c -Encoding Default
+foreach($row in $csv) {
+    Write-Host $row.A # AはCSVファイルのヘッダの名前
+}
 
-~~~
-
-~~~csharp
-
-~~~
-
-~~~java
 
 ~~~
 
@@ -157,18 +125,6 @@ import openpyxl
 
 ~~~powershell
 
-~~~
-
-~~~csharp
-
-~~~
-
-~~~java
-
-~~~
-
-~~~bash
-# 実務に見たことがない
 ~~~
 
 ## Selenium ##
@@ -202,12 +158,4 @@ $inputBox = $driver.findElementById("lst-ib")
 $inputBox.SendKeys("HelloWorld by findElementById")
 
 #$driver.Quit()
-~~~
-
-~~~csharp
-
-~~~
-
-~~~java
-
 ~~~
