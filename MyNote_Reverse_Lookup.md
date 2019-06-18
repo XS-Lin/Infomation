@@ -59,7 +59,10 @@ $OraCon.close()
 * PowerShell
 
 ~~~powershell
-
+# ver > 6.2
+$text | Out-File <filename> -Encoding 932
+# 汎用
+[System.IO.File]::WriteAllText($args[3],$text,[System.Text.Encoding]::GetEncoding('shift-jis'))
 ~~~
 
 ## XML ##
@@ -108,8 +111,6 @@ $csv = Import-Csv path -Header A,B,c -Encoding Default
 foreach($row in $csv) {
     Write-Host $row.A # AはCSVファイルのヘッダの名前
 }
-
-
 ~~~
 
 ## Excel ##
@@ -124,7 +125,14 @@ import openpyxl
 * PowerShell
 
 ~~~powershell
-
+$excel = New-Object -ComObject Excel.Application
+$excel.Visible = $false # default false
+$excel.DisplayAlerts = $false # default true
+$book = $excel.WorkBooks.Open($excelFilePath)
+$sheet = $book.Sheets($sheetName)
+$value = $sheet.Range("A1").Text
+$sheet.Range("A1").Text = $value
+$ActiveWorksheet.cells.item(1,2) = "User_Name"
 ~~~
 
 ## Selenium ##
