@@ -167,3 +167,19 @@ $inputBox.SendKeys("HelloWorld by findElementById")
 
 #$driver.Quit()
 ~~~
+
+## Http Post ##
+
+* powershell
+
+~~~powershell
+$postText = @{key="70949d2b88c04e869b074597700dd22d";fileName="test.xml";process_method="fun1"} | ConvertTo-Json -Compress
+$postBody = [Text.Encoding]::UTF8.GetBytes($postText)
+$postUri = "http://localhost:10001/read"
+Invoke-RestMethod -Method POST -Uri $postUri -Body $postBody -ContentType application/json
+
+$postText = @{text="日本語"} | ConvertTo-Json -Compress
+$postBody = [Text.Encoding]::UTF8.GetBytes($postText)
+$postUri = "http://localhost:3000/api/texts"
+Invoke-RestMethod -Method POST -Uri $postUri -Body $postBody -ContentType application/json
+~~~
