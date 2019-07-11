@@ -3174,11 +3174,22 @@
     ~~~
 
     ~~~sh
-    sar
+    sar # 履歴情報を見る
     ~~~
 
+    ~~~sh
+    ps [a | e | x | u | r | l | U <username>| -C <cmd>| -e | -f | -l | -p <PID>| -t <tty> | -u <UID>]
+    ~~~
 
 * トピック201：Linuxカーネル
+
+  [The Linux Kernel Archives](https://https://www.kernel.org/)
+  [Documentation](https://www.kernel.org/doc/html/latest/)
+
+    ~~~sh
+
+    ~~~
+
 * トピック202：システム起動
 * トピック203：ファイルシステムとデバイス
 * トピック204：高度なストレージデバイスの管理
