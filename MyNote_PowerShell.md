@@ -8,6 +8,13 @@
    ~~~
 
    ~~~powershell
+   Get-Process > process.txt # process.txt ファイルの文字コードがUnicode
+   Get-Process | Out-File process.txt # process.txt ファイルの文字コードがUnicode
+   Get-Process | Out-File process.txt -Encoding default # process.txt ファイルの文字コードがutf-8
+   Get-Process | Out-File process.txt -Encoding 932 # PowerShell6.2以後
+   ~~~
+
+   ~~~powershell
    netsh wlan show profiles | %{ $_.Split(":")[1]} | `
    Where-Object{$_ -ne $null -and ( $_  -notmatch "^\s*$" ) } | `
    ForEach-Object{$_.trim()} | `
