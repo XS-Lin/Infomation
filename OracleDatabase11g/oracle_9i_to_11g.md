@@ -10,8 +10,8 @@
 
 移行先:Oracle 11gR2
 
-* host os = redhat linux 7.5
-* database version = 11.2.0.1.0
+* host os = Redhat Linux 7.5
+* database version = 11.2.0.1.4
 * client version = 12.1.0.2.0
 
 ## 方式 ##
@@ -21,6 +21,9 @@
 * 理由
    1. Oracleのバージョン差によって、直接アップグレード不能
    1. OS変更あり
+
+   ※詳細は各バージョンの「Database Upgrade Guide」参照
+   [Oracle 11.2 upgrade path](https://docs.oracle.com/cd/E11882_01/server.112/e23633/preup.htm#UPGRD002)
 
 ## 手順 ##
 
@@ -59,7 +62,7 @@
       1. ソフトウェアのみインストール
 
          ~~~bash
-         # インストール先は以下とする。
+         # 例:インストール先は以下とする。
          /u01/app/oracle
          ~~~
 
@@ -72,7 +75,7 @@
          #   設定対象:controlfile,SYSTEM・SYSAUX・TEMP・UNDOTBS1テーブルスペースのデータファイル
          # ここはデータファイル配置先は以下とする。
          /u01/app/oracle/oradata/<sid>/
-         # スクリプトを保存して、本番機の場合は使用する。デフォルト保存先：
+         # スクリプトを保存して、再作成の場合は使用する。デフォルト保存先：
          /u01/app/oracle/admin/<sid>/scripts
          ~~~
 
