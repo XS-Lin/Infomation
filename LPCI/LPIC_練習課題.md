@@ -733,12 +733,159 @@
 
 1. ネットワーク
 
-   ~~~sh
-   /etc/services
-   IPv4, IPv6
-   Subnetting
-   TCP、UDP、ICMP
+   1. TCP,UDP,ICMPの主な違い
 
+      * TCP
+        * コネクション型
+        * エラーパケット再送
+        * 転送順序整列
+      * UDP
+        * コネクションレス型
+        * エラー確認なし(映像、音声によく使われる)
+      * ICMP
+        * コネクションレス型
+        * エラーメッセージや制御メッセージ転送
+
+   1. プライベートIPアドレス
+
+      * A : 10.0.0.0 ~ 10.255.255.255
+      * B : 172.16.0.0 ~ 172.31.255.255
+      * C : 192.168.0.0 ~ 192.168.255.255
+
+   1. IPv4とIPv6の主な違い
+
+      * IPv6のマルチキャストはIPv4のブロードキャスト相当
+
+   1. 主なネットワークに関するファイルと用途
+
+      * /etc/services
+        * 用途: ポート番号とサービスの対応を記述
+      * /etc/hostname
+        * 用途: ホスト名記述
+      * /etc/hosts
+        * 用途: IPとホスト名の対応を記述
+        * 書式: IP ホスト名 別名
+      * /etc/network/interfaces
+        * 用途: Debian系のネットワークインターフェース定義を記述
+        * 書式
+          * auto lo
+          * iface lo inet loopbacklo
+          * iface eth0 inet static
+          * address 192.168.11.2
+          * netmask 255.255.255.0
+          * broadcast 192.168.11.255
+          * gateway 192.168.11.1
+          * dns-domain example.com
+          * dns-nameservers 192.168.11.1
+      * /etc/sysconfig/network-scripts/
+        * /etc/sysconfig/network-scripts/ifcfg-eth0
+          * 用途: Red Hat系のネットワークインターフェース定義を記述
+          * 書式
+            * TYPE=Ethernet
+            * BOOTPROTO=static
+            * NAME=eth0
+            * ONBOOT=YES
+            * HWADDR=00:00:00:00:00:00
+            * DNS1=192.168.11.1
+            * DOMAIN=example.com
+            * IPADDR=192.168.11.13
+            * NETMASK=255.255.255.0
+            * GATEWAY=192.168.11.1
+      * /etc/resolv.conf
+        * DNSサーバ参照先
+        * 書式
+          * domain example.com
+          * search example.com
+          * nameserver 192.168.11.1
+          * nameserver 8.8.8.8
+      * /etc/nsswitch.conf
+        * 名前解決順序
+        * 書式
+          * 
+      * /etc/systemd/resolved.conf
+        * systemdを採用の名前解決
+
+   1. 主なネットワーク設定・管理コマンド
+
+      ~~~sh
+      ping [-c 回数] [-i 間隔] # ping6
+      traceroute ホスト名はたはIP # traceroute6 # 結果に **** は応答せずフォワーディングのみを意味する。
+      hostname [ホスト名]
+      netstat [-a -c -i -n -p -r -t -u] # n IPのまま表示 r ルーティングテーブル表示
+      nc [-l -p ソースポート -u -o ファイル] [ホスト] [ポート]
+      route [-F -C] # RoutingTable: Destination Gateway Genmask Flags Metric Ref Use Iface
+      route add -net 192.168.0.0 netmask 255.255.255.0 gw 172.30.0.254 # 192.168.0.0/24 ネットワークのパケットをゲートウェイ 172.30.0.254 に転送
+      route add default gw 172.30.0.1
+      route del -net 192.168.0.0 netmask 255.255.255.0 gw 172.30.0.254
+      echo 1 > /proc/sys/net/ipv4/ip_forward # 1 異なるネットワークのパケット転送許可(デフォルト)、Linuxをルータとして運用の前提条件
+      ip link show
+      ip addr show
+      ip route show
+      ip addr add 192.168.11.12/24 dev eth0 # eth0のIPを192.168.11.12/24に設定
+      ip route add default via 192.168.11.1 # デフォルトゲートウェイ192.168.11.1に設定
+      ifconfig eth0 192.168.11.12 netmask 255.255.255.0 # eth0のIPを192.168.11.12/24に設定
+      ifup eth0
+      ifdown eth0
+      # DNS
+      host [-v] ホスト名またはIP [DNSサーバ]
+      dig [-x] [@DNSサーバ] ホスト名またはIP [a aaaa any mx ns]
+      ~~~
+
+   1. NetworkManager
+
+       CentOs7.6基準でnmcliコマンドと設定ファイルの関係を確認する。
+
+       ~~~sh
+       # nmcli 主なコマンド
+       nmcli general status
+       nmcli general hostname # /etc/hostname
+       nmcli general hostname ホスト名 # /etc/hostname更新
+       nmcli networking on | off
+       nmcli networking connectivity [check] # nmcli general status の CONNECTIVITY
+       nmcli radio wifi # nmcli general status の WIFI
+       nmcli radio wifi on | off
+       nmcli radio wwan # nmcli general status の WWAN
+       nmcli radio wwan on | off
+       nmcli radio all on | off
+       nmcli connection show [--active]
+       nmcli connection add COMMON_OPTIONS TYPE_SPECIFIC_OPTIONS SLAVE_OPTIONS IP_OPTIONS [-- ([+|-]<setting>.<property> <value>)+]
+       nmcli connection modify ID ([+|-]<setting>.<property> <value>)+ #
+       nmcli connection delete ID
+       nmcli connection up ID
+       nmcli connection down ID
+       nmcli device [status] # 認識しているデバイス表示
+       nmcli device show [<ifname>]
+       nmcli device modify <ifname> ([+|-]<setting>.<property> <value>)+ #
+       nmcli device connect <ifname>
+       nmcli device disconnect <ifname>
+       nmcli device delete <ifname>
+       nmcli device monitor <ifname>
+       nmcli device wifi list
+       nmcli device wifi connect SSID
+       nmcli device wifi hostpot
+       nmcli device wifi rescan
+       ~~~
+
+       [6.4. NMCLI を使用したホスト名の設定](https://access.redhat.com/documentation/ja-jp/red_hat_enterprise_linux/7/html/networking_guide/sec-configuring_host_names_using_nmcli)
+
+
+
+
+   1. 目的別コマンド整理
+
+       ~~~sh
+       # ホスト名設定
+       vi /etc/hostname
+       nmcli general hostname ホスト名
+       hostnamectl set-hostname ホスト名
+       # ルーティングテーブル表示
+       netstat -r
+       route
+       route -F
+
+       ~~~
+
+   ~~~sh
    / etc / hostname
    /etc/hosts
    /etc/nsswitch.conf
@@ -830,6 +977,145 @@
    ~~~
 
 1. セキュリティ
+
+   1. TCP Wrapper
+
+      * host.allow と host.deny
+        * 評価順:ホストがhost.allowにあれば許可。host.allowにないかつhost.allowにもなければ許可。
+        * /etc/host.allow
+          * 書式
+            * サービス名:対象ホストリスト
+            * 例
+              * sshd: .lpic.jp
+              * ALL:192.168.2.
+        * /etc/host.deny
+            * サービス名:対象ホストリスト
+            * 例
+              * ALL:ALL
+
+      * 主なワイルドカード
+        * ALL
+        * A EXCEPT B
+        * LOCAL
+        * PARANOID
+
+      補足: host.allow と host.deny の変更はサービス再起動しなくても有効になる。
+
+   1. 開いているポート確認
+
+      ~~~sh
+      netstat -atu
+      ss -atu
+      lsof -i
+      nmap 対象ホスト
+      fuser -n tcp 1521 # 結果はPID
+      lsof -i:1521 #
+      ~~~
+
+   1. SUIDが設定されているファイル
+
+      ~~~sh
+      find / -perm -u+s -ls
+      find / -perm -g+s -ls
+      ~~~
+
+   1. ログイン禁止
+
+      ~~~sh
+      touch /etc/nologin # root以外ログイン禁止
+      usermod -s /sbin/nologin test # testユーザのログイン禁止
+      vipw
+      # ---------------
+      test:x:502:502::/home/test:/sbin/nolog
+      # ----------------
+      ~~~
+
+   1. ユーザ切り替え
+
+      ~~~sh
+      su [- [ユーザ名]]
+      ~~~
+
+   1. sudo
+
+      ~~~sh
+      visudo
+      vi /etc/sudoers
+      # ---------------
+      test1 ALL=(ALL) ALL
+      test2 ALL=(ALL) /sbin/shutdown
+      %test ALL=(ALL) NOPASSWD:ALL
+      # ----------------
+      sudo -l # 一般ユーザで許可されているsudoコマンド確認
+      sudo [-i -s -u ユーザ] # i 変更先ユーザでシェル起動(ログイン処理を行う) s 変更先ユーザでシェル起動
+      ~~~
+
+   1. システムリソースの制限
+
+      ~~~sh
+      ulimit [-a -c サイズ -f サイズ -n 数 -u プロセス数 -v サイズ] # c コアファイルサイズ n 同時に開けるファイル数 v 仮想メモリサイズ
+      ~~~
+
+   1. OpenSSH
+
+      * /etc/ssh/sshd_config
+        * Port
+        * Protocol
+          * 1 or 2
+        * HostKey
+          * ssh_host_key
+          * ssh_host_dsa_key
+          * ssh_host_rsa_key
+          * ssh_host_ecdsa_key
+          * ssh_host_ed25519_key
+          * ssh_host_key.pub
+          * ssh_host_dsa_key.pub
+          * ssh_host_rsa_key.pub
+          * ssh_host_ecdsa_key.pub
+          * ssh_host_ed25519_key.pub
+        * PermitRootLogin
+        * RSAAuthentication
+        * PubkeyAuthentication
+        * AuthorizedKeysFile
+        * PermitEmptyPasswords
+        * PasswordAuthentication
+        * X11Forwarding
+
+      ~~~sh
+      ssh [-i identity_file] [-l login_name] [-p port] [[ユーザ名@]ホスト]
+      ssh root@192.168.56.102/ssh -l root -p 22 192.168.56.102
+      # 初回の場合、yesで接続以下のファイルに記載
+      #   LINUX: ~/.ssh/known_hosts
+      #   Windows10: ~/.ssh/known_hosts
+      ssh-keygen [-t rsa1|rsa|dsa|ecdsa|ed25519] [-p] [-f ファイル名] [-R ホスト名] [-b ビット長]
+      # dsaキー作成して公開鍵をsv1.lpic.jpに登録
+      ssh-keygen -t dsa
+      scp ~/.ssh/id_dsa.pub sv1.lpic.jp:publickey
+      ssh sv1.lpic.jp
+      cat publickey >> ~/.ssh/authorized_keys
+      chmod 600 ~/.ssh/authorized_keys
+      ~~~
+
+      ~~~sh
+      scp [-p -r -R ポート] コピー元ファイル名 [ユーザ名@]コピー先ホスト:[コピー先ファイル名] # upload
+      scp [-p -r -R ポート] [ユーザ名@]コピー元ホスト:コピー元ファイル名 コピー先ファイル名 # download
+      ~~~
+
+      ~~~sh
+      ssh-agent bash
+      ssh-add
+      ssh-add -l
+      ~~~
+
+      ~~~sh
+      # ポートフォワーディング
+      ssh -f -N -L 10110:pop.example.net:110 student@pop.example.net # ローカルの10110を接続すると、pop.example.netを接続する。f バックグラウンド N 転送のみ
+      ~~~
+
+      ~~~sh
+      /etc/ssh/sshd_config # X11Forwarding yes
+      ssh -X remote.example.net
+      ~~~
 
    ~~~sh
    find
