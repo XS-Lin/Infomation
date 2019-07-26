@@ -644,13 +644,16 @@
 
 1. リソース使用率監視
 
-   ~~~sh
-   top
-   vmstat
-   iostat
-   sar/sadf
-   w
-   ~~~
+   1. 総合的なリソース使用率
+
+      ~~~sh
+      top [-b] [-d 秒] [-n 回] [-u ユーザ] [-p PID]
+      vmstat [間隔] [回数]
+      iostat [-c -d -k -t] [間隔] [回数]
+      sar {-A -b -c -f ファイル -n DEV -n EDEV -r -u -P id|ALL -R -W} [-s 開始時刻] [-e 終了時刻] [-f ログファイル名] [間隔] [回数]
+      sadf 
+      w [-h -s]
+      ~~~
 
    ~~~sh
    # CPU
