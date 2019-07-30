@@ -121,3 +121,37 @@
    1. 本番環境にデータ投入
 
    1. チューニング
+
+## NOTE ##
+
+9i の exp ツールでエクスポートしたdmpファイルに「CREATE USER "TEST" IDENTIFIED BY VALUES 'B054199D796F24A0'」(パス: database)について、
+11g で 「CREATE USER "TEST" IDENTIFIED BY database;」を実行すると、「SYS.USER$」テーブルのパスワード列が「'9F529D35EF01DE2F'」となる。
+
+試験:
+11gで以下のSQLを実行すると、どちらの場合でもSYS.USE$のパスワード列が「'9F529D35EF01DE2F'」になる。
+
+~~~sql
+CREATE USER "TEST" IDENTIFIED BY "database";
+CREATE USER "TEST" IDENTIFIED BY "databasE";
+CREATE USER "TEST" IDENTIFIED BY "DATABASE";
+~~~
+
+sec_case_sensitive_logonが「TURE」なので、大文字小文字が一致しない場合はログインできない。
+また、以下のようにTESTユーザを作成すると、
+
+~~~sql
+--SYSで
+CREATE USER "TEST" IDENTIFIED BY "TEST";
+ALTER USER IDENTIFIED BY VALUES '9F529D35EF01DE2F';
+GRANT CREATE SESSION TO TEST;
+show parameter sec_case_sensitive_logon --TRUE
+~~~
+
+sec_case_sensitive_logonが「TURE」でも、以下いずれもログイン可能になる。
+
+~~~sh
+sqlplus test/database
+sqlplus test/DATAbase
+sqlplus test/databasE
+sqlplus test/DATABASE
+~~~

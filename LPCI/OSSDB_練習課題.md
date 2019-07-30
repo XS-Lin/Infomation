@@ -105,13 +105,101 @@
       CREATE TABLE PARTITION BY/OF
 
       ~~~sql
+      --以下は同様
+      CREATE ROLE test LOGIN;
+      CREATE USER test;
+
+      --特権ユーザ
+      CREATE USER test SUPERUSER;
+      --一般ユーザ
+      CREATE ROLE test CREATEDB; --DB作成権限
+      CREATE ROLE test CREATROLE; --ユーザ作成権限
+      CREATE ROLE test REPLICATION LOGIN; --ストーミングアプリケーション
+      CREATE ROLE test PASSWORD 'test'; --パスワード
+
+      CREATE ROLE group_role;
+      GRANT group_role TO role1;
+      REVOKE group_role FROM role1;
+
+      SET ROLE group_role; --role1でログインして以後のsqlをgroup_roleとして実行
+      SET ROLE role1; --role1に戻る
+      SET ROLE NONE; --role1に戻る
+      RESET ROLE; --role1に戻る
+
+      DROP ROLE group_role;
+
+      --before drop role
+      REASSING OWNED BY role1 TO other_role;
+      DROP OWNED BY role1;
+      DROP doomed_role;
+      ~~~
+
+      ~~~sql
       CREAET TABLE x (col1 char(2));
       CREATE TABLE y (col2 char(2)) INHERITS(x);
       SELECT * FROM y;
       SELECT * FROM ONLY y;
       ~~~
 
+      ~~~sql
+      ILIKE,IMILAR
+      ISNULL,NOTNULL
+      $number --位置パラメータ
+      expression[subscript] --添え字
+      aggregate_name (expression [ , ... ] [ order_by_clause ] ) [ FILTER ( WHERE filter_clause ) ]
+      aggregate_name (ALL expression [ , ... ] [ order_by_clause ] ) [ FILTER ( WHERE filter_clause ) ]
+      aggregate_name (DISTINCT expression [ , ... ] [ order_by_clause ] ) [ FILTER ( WHERE filter_clause) ]
+      aggregate_name ( * ) [ FILTER ( WHERE filter_clause ) ]
+      aggregate_name ( [ expression [ , ... ] ] ) WITHIN GROUP ( order_by_clause ) [ FILTER( WHERE filter_clause ) ]
+      --window function
+      function_name ([expression [, expression ... ]]) [ FILTER ( WHERE filter_clause ) ] OVER window_name
+      function_name ([expression [, expression ... ]]) [ FILTER ( WHERE filter_clause ) ] OVER( window_definition )
+      function_name ( * ) [ FILTER ( WHERE filter_clause ) ] OVER window_name
+      function_name ( * ) [ FILTER ( WHERE filter_clause ) ] OVER ( window_definition )
+      ~~~
+
+      ~~~sql
+      --window_definition
+      [ existing_window_name ]
+      [ PARTITION BY expression [, ...] ]
+      [ ORDER BY expression [ ASC | DESC | USING operator ] [ NULLS { FIRST | LAST } ] [, ...] ]
+      [ frame_clause ]
+      --frame_clause
+      { RANGE | ROWS | GROUPS } frame_start [ frame_exclusion ]
+      { RANGE | ROWS | GROUPS } BETWEEN frame_start AND frame_end [ frame_exclusion ]
+      --frame_start,frame_end
+      UNBOUNDED PRECEDING
+      offset PRECEDING
+      CURRENT ROW
+      offset FOLLOWING
+      UNBOUNDED FOLLOWING
+      --frame_exclusion
+      EXCLUDE CURRENT ROW
+      EXCLUDE GROUP
+      EXCLUDE TIES
+      EXCLUDE NO OTHERS
+      ~~~
+
+      ~~~sql
+      CAST ( expression AS type )
+      expression::type
+      typename ( expression )
+      ~~~
+
+      ~~~sql
+      POLICY
+      ~~~
+
       ALTER TABLE ATTACH/DETACH PARTITION
+
+      注意:
+      oracle の場合
+        CREATE USER 文で同名のスキーマを自動作成
+        CREATE SCHEMA 文で指定名前のユーザを作成
+      postgresqlの場合
+        CREATE USER は CREATE ROLE の別名[参照](https://www.postgresql.jp/document/9.4/html/sql-createuser.html)
+        CREATE SCHEMA は スキーマ作成
+
 
 1. 組み込み関数 【重要度：2】
 
@@ -318,6 +406,11 @@
       データベースクラスタの構造
       プロセス構造
       データの格納方法
+
+      ~~~sql
+      -- 階層: サーバ -> データベース -> スキーマ -> テーブルや関数等オブジェクト
+      ~~~
+
    1. 重要な用語、コマンド、パラメータなど：
       autovacuum
       TOAST
@@ -570,3 +663,40 @@
   ~~~sql
   select $$Dianne's horse$$;
   ~~~
+
+1. データベース作成
+
+   (デフォルト)実はtemplate1をコピー
+   template0には、標準オブジェクトのみ存在、カスタマイズ不可
+   初期のtemplate1はtemplate0と同様、カスタマイズ可能
+   注意：この方法で実にクラスター内の任意DB複製可能だが、複製中接続不可(副作用が少ないCOPY DATABASE推奨)
+
+   ~~~sql
+   CREATE DATABASE dbname OWNER rolename;
+   CREATE DATABASE dbname TEMPLATE template0;
+   DROP DATABASE dbname;
+   CREATE TABLESPACE fastspace LOCATION '/ssd1/postgresql/data'; --スーパーユーザ必須
+   
+   CREATE TABLE foo(i int) TABLESPACE space1;
+
+   SET default_tablespace = space1;
+   CREATE TABLE foo(i int);
+
+   SELECT spcname FROM pg_tablespace;
+   ~~~
+
+   ~~~sh
+   createdb -O rolename dbname
+   createdb -T template0 dbname
+   dropdb dbname
+   ~~~
+
+1. 個人的な感想(未検証)
+
+   1. postgresqlには、オラクルのようなオプティマイザーはないが、指定できるインデックスの種類が多いため、同等レベルの実装ができる。
+
+   1. postgresqlのロールはoracleのユーザとロール両方に相当  
+
+   1. postgresqlのロールは同一クラスター内共用
+
+   1. postgresqlのcreate schemaは？ oracleのcreate schemaは一連のテーブルやビューとGRANTを一トランザクションで処理するだけで、ユーザとほぼ同意。
