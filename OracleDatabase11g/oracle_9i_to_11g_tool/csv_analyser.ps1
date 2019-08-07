@@ -5,21 +5,6 @@ $ORACLE_9i_11g_DEFAULT_SCHEMA = @(
     'FLOWS_FILES','OWBSYS_AUDIT','OWBSYS','SI_INFORMTN_SCHEMA','SI_INFORMTN_SCHEMA','OPS$ATHENE',
     'PERFSTAT'
 );
-$ORACLE_9i_11g_DEFAULT_ROLE = @(
-    'AQ_ADMINISTRATOR_ROLE','AQ_USER_ROLE','CONNECT','DBA','DELETE_CATALOG_ROLE','EXECUTE_CATALOG_ROLE',
-    'EXP_FULL_DATABASE','GATHER_SYSTEM_STATISTICS','GLOBAL_AQ_USER_ROLE','HS_ADMIN_ROLE','IMP_FULL_DATABASE',
-    'LOGSTDBY_ADMINISTRATOR','OEM_MONITOR','RECOVERY_CATALOG_OWNER','RESOURCE','SELECT_CATALOG_ROLE',
-    'PLUSTRACE','CTXAPP','EJBCLIENT','JAVADEBUGPRIV','JAVAIDPRIV','JAVASYSPRIV','JAVA_ADMIN','JAVA_DEPLOY','WM_ADMIN_ROLE',
-    'PERFSTAT'
-)
-$ORACLE_9i_CONNECT_ROLE_TO_11g_PRIV = 'ALTER SESSION,CREATE SESSION,CREATE CLUSTER,CREATE SYNONYM,CREATE DATABASE LINK,CREATE TABLE,CREATE SEQUENCE,CREATE VIEW'
-
-$csv_objects_9i = ""
-$csv_objects_11g = ""
-
-# -------------機能試験場START--------------------
-
-# -------------機能試験場END  --------------------
 
 # 関数定義
 function GetDiffrentObjects {
@@ -37,7 +22,7 @@ function GetInvalidObjects {
     param (
         [string]$path_csv_objects_11g
     )
-    $data = Import-Csv $path_csv_objects_11g -Encoding Default | Where-Object { ($_.OWNER -notin $ORACLE_9i_11g_DEFAULT_SCHEMA[$sid]) -and ($.STATUS -eq "INVALID") } | Select-Object -Property OWNER,OBJECT_NAME,SUB_OBJECT_NAME,OBJECT_TYPE
+    $data = Import-Csv $path_csv_objects_11g -Encoding Default | Where-Object { ($_.OWNER -notin $ORACLE_9i_11g_DEFAULT_SCHEMA) -and ($_.STATUS -eq "INVALID") } | Select-Object -Property OWNER,OBJECT_NAME,SUB_OBJECT_NAME,OBJECT_TYPE
     return $data
 }
 
@@ -77,9 +62,29 @@ function GenerateCreateSql4Objecdts {
     return $result
 }
 
+function GenerateCompileSql4Objecdts {
+    param (
+        $objects
+    )
+    $result = "--SHOW ERROR`n"
+    foreach ($item in $objects) {
+        if ($item.OBJECT_TYPE -eq "PACKAGE BODY" ) {
+            $result += "ALTER PACKAGE {0}.{1} COMPILE BODY;`n" -f $item.OWNER,$item.OBJECT_NAME
+        }
+        elseif ($item.OBJECT_TYPE -eq "PACKAGE"){
+            $result += "ALTER PACKAGE {0}.{1} COMPILE PACKAGE;`n" -f $item.OWNER,$item.OBJECT_NAME
+        }
+        else {
+            $result += "ALTER {2} {0}.{1} COMPILE;`n" -f $item.OWNER,$item.OBJECT_NAME,$item.OBJECT_TYPE
+        }
+    }
+    return $result
+}
+
 # 例1:
 # GetDiffrentObjects -path_csv_objects_9i C:\Users\linxu\Desktop\work\作業\20190425本番機info\整理後\info\objects_CDBF01.csv -path_csv_objects_11g C:\Users\linxu\Desktop\imp_2\info7\objects_CDBF01.csv
 # GenerateDdl4Objecdts -objects @(@{"OWNER"="test";"OBJECT_NAME"="test_obj";"OBJECT_TYPE"="TABLE"})
+# GetInvalidObjects -path_csv_objects_11g C:\Users\linxu\Desktop\imp_2\info7\objects_CDBF01.csv
 
 # 例2:
 # . .\csv_analyser.ps1

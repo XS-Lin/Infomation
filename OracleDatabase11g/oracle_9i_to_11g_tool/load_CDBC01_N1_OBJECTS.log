@@ -1,0 +1,70 @@
+
+SQL*Loader: Release 12.2.0.1.0 - Production on 水 8月 7 17:57:05 2019
+
+Copyright (c) 1982, 2017, Oracle and/or its affiliates.  All rights reserved.
+
+制御ファイル:    .\load_CDBC01_N1_OBJECTS.ctl
+データファイルC:\Users\linxu\Desktop\work\作業\database_scripts\import\info1\objects_CDBC01.csv
+  不良ファイル:  .\objects_CDBC01.bad
+  廃棄ファイル:  指定なし
+
+ (すべて廃棄できます)
+
+ロード数: ALL
+スキップ数: 1
+許容エラー数: 50
+バインド配列:    64行、最大256000バイト
+継続文字:    指定なし
+使用パス:      従来型
+
+表CDBC01_N1.OBJECTS、 ロード済 すべての論理レコードから
+この表に対する有効な挿入オプション: TRUNCATE
+
+   列名                  位置   長さ  用語暗号化データ型
+------------------------------ ---------- ----- ---- ---- ---------------------
+OWNER                              FIRST    *  ,     CHARACTER            
+OBJECT_NAME                         NEXT    *  ,     CHARACTER            
+SUBOBJECT_NAME                      NEXT    *  ,     CHARACTER            
+OBJECT_ID                           NEXT    *  ,     CHARACTER            
+DATA_OBJECT_ID                      NEXT    *  ,     CHARACTER            
+OBJECT_TYPE                         NEXT    *  ,     CHARACTER            
+CREATED                             NEXT    *  ,     CHARACTER            
+LAST_DDL_TIME                       NEXT    *  ,     CHARACTER            
+TIMESTAMP                           NEXT    *  ,     CHARACTER            
+STATUS                              NEXT    *  ,     CHARACTER            
+TEMPORARY                           NEXT    *  ,     CHARACTER            
+GENERATED                           NEXT    *  ,     CHARACTER            
+
+レコード1: 拒否されました。- 表CDBC01_N1.OBJECTS,列OWNERでエラーが発生しました。
+論理レコードが終了する前に列が見つかりませんでした。(TRAILING NULLCOLSを使用)
+レコード10001: 拒否されました。- 表CDBC01_N1.OBJECTS,列OWNERでエラーが発生しました。
+論理レコードが終了する前に列が見つかりませんでした。(TRAILING NULLCOLSを使用)
+レコード20001: 拒否されました。- 表CDBC01_N1.OBJECTS,列OWNERでエラーが発生しました。
+論理レコードが終了する前に列が見つかりませんでした。(TRAILING NULLCOLSを使用)
+レコード30001: 拒否されました。- 表CDBC01_N1.OBJECTS,列OWNERでエラーが発生しました。
+論理レコードが終了する前に列が見つかりませんでした。(TRAILING NULLCOLSを使用)
+レコード40001: 拒否されました。- 表CDBC01_N1.OBJECTS,列OWNERでエラーが発生しました。
+論理レコードが終了する前に列が見つかりませんでした。(TRAILING NULLCOLSを使用)
+レコード50001: 拒否されました。- 表CDBC01_N1.OBJECTS,列OWNERでエラーが発生しました。
+論理レコードが終了する前に列が見つかりませんでした。(TRAILING NULLCOLSを使用)
+
+表CDBC01_N1.OBJECTS:
+  53026 行は正常にロードされました。
+  6 行はデータ・エラーのためロードされませんでした。
+  0 行は、すべてのWHEN句が失敗したためロードされませんでした。
+  0 行はすべてのフィールドがNULLであったためロードされませんでした。
+
+
+バインド配列に割り当てられた領域:   198144バイト(64行)
+読取りバッファのバイト数:  1048576
+
+スキップされた論理レコードの合計:          1
+読み込まれた論理レコードの合計:         53032
+拒否された論理レコードの合計:               6
+廃棄された論理レコードの合計:        0
+
+実行開始水 8月  07 17:57:05 2019
+実行終了水 8月  07 17:57:11 2019
+
+実行時間:        00: 00: 06.00
+CPU時間 :        00: 00: 00.82
