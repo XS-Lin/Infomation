@@ -63,3 +63,8 @@
    $BasicTestObject = New-Object BasicTest
    $BasicTestObject.Multiply(5, 2)
    ~~~
+
+   ~~~powershell
+   # 指定フォルダのファイルを更新時間順で一覧表示
+   Get-ChildItem -Path C:\Users\linxu\Desktop\work\作業\20190805本番 機info\log -Filter exp_CDBC31_*.log | Sort-Object LastWriteTime
+   ~~~

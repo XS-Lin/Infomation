@@ -60,5 +60,26 @@
     }
     sqlldr.exe $connStr $tempCrtlFileName
 }
-# LoadCsv_objects -db_user system -db_pass ora -db_tnsname 192.168.56.102:1521/orcl01 -tb_owner CDBC01_N -tb_name OBJECTS -csvFile C:\Users\linxu\Desktop\work\作業\database_scripts\export\info\objects_CDBC01.csv
+# LoadCsv_objects -db_user system -db_pass ora -db_tnsname 192.168.56.102:1521/orcl01 -tb_owner CDBC01_N -tb_name OBJECTS -csvFile C:\Users\linxu\Desktop\work\作業\database_scripts\export\info_sjis\objects_CDBC01.csv
+# LoadCsv_objects -db_user system -db_pass ora -db_tnsname 192.168.56.102:1521/orcl01 -tb_owner CDBC11_N -tb_name OBJECTS -csvFile C:\Users\linxu\Desktop\work\作業\database_scripts\export\info_sjis\objects_CDBC11.csv
+# LoadCsv_objects -db_user system -db_pass ora -db_tnsname 192.168.56.102:1521/orcl01 -tb_owner CDBC21_N -tb_name OBJECTS -csvFile C:\Users\linxu\Desktop\work\作業\database_scripts\export\info_sjis\objects_CDBC21.csv
+# LoadCsv_objects -db_user system -db_pass ora -db_tnsname 192.168.56.102:1521/orcl01 -tb_owner CDBC31_N -tb_name OBJECTS -csvFile C:\Users\linxu\Desktop\work\作業\database_scripts\export\info_sjis\objects_CDBC31.csv
+# LoadCsv_objects -db_user system -db_pass ora -db_tnsname 192.168.56.102:1521/orcl01 -tb_owner CDBC41_N -tb_name OBJECTS -csvFile C:\Users\linxu\Desktop\work\作業\database_scripts\export\info_sjis\objects_CDBC41.csv
+# LoadCsv_objects -db_user system -db_pass ora -db_tnsname 192.168.56.102:1521/orcl01 -tb_owner CDBE01_N -tb_name OBJECTS -csvFile C:\Users\linxu\Desktop\work\作業\database_scripts\export\info_sjis\objects_CDBE01.csv
+# LoadCsv_objects -db_user system -db_pass ora -db_tnsname 192.168.56.102:1521/orcl01 -tb_owner CDBE11_N -tb_name OBJECTS -csvFile C:\Users\linxu\Desktop\work\作業\database_scripts\export\info_sjis\objects_CDBE11.csv
+# LoadCsv_objects -db_user system -db_pass ora -db_tnsname 192.168.56.102:1521/orcl01 -tb_owner CDBF01_N -tb_name OBJECTS -csvFile C:\Users\linxu\Desktop\work\作業\database_scripts\export\info_sjis\objects_CDBF01.csv
+# LoadCsv_objects -db_user system -db_pass ora -db_tnsname 192.168.56.102:1521/orcl01 -tb_owner CDBF02_N -tb_name OBJECTS -csvFile C:\Users\linxu\Desktop\work\作業\database_scripts\export\info_sjis\objects_CDBF02.csv
+# LoadCsv_objects -db_user system -db_pass ora -db_tnsname 192.168.56.102:1521/orcl01 -tb_owner CDBH01_N -tb_name OBJECTS -csvFile C:\Users\linxu\Desktop\work\作業\database_scripts\export\info_sjis\objects_CDBH01.csv
+# LoadCsv_objects -db_user system -db_pass ora -db_tnsname 192.168.56.102:1521/orcl01 -tb_owner CDBW01_N -tb_name OBJECTS -csvFile C:\Users\linxu\Desktop\work\作業\database_scripts\export\info_sjis\objects_CDBW01.csv
+
 # LoadCsv_objects -db_user system -db_pass ora -db_tnsname 192.168.56.102:1521/orcl01 -tb_owner CDBC01_N1 -tb_name OBJECTS -csvFile C:\Users\linxu\Desktop\work\作業\database_scripts\import\info1\objects_CDBC01.csv
+# LoadCsv_objects -db_user system -db_pass ora -db_tnsname 192.168.56.102:1521/orcl01 -tb_owner CDBC11_N1 -tb_name OBJECTS -csvFile C:\Users\linxu\Desktop\work\作業\database_scripts\import\info1\objects_CDBC11.csv
+# LoadCsv_objects -db_user system -db_pass ora -db_tnsname 192.168.56.102:1521/orcl01 -tb_owner CDBC21_N1 -tb_name OBJECTS -csvFile C:\Users\linxu\Desktop\work\作業\database_scripts\import\info1\objects_CDBC21.csv
+# LoadCsv_objects -db_user system -db_pass ora -db_tnsname 192.168.56.102:1521/orcl01 -tb_owner CDBC31_N1 -tb_name OBJECTS -csvFile C:\Users\linxu\Desktop\work\作業\database_scripts\import\info1\objects_CDBC31.csv
+# LoadCsv_objects -db_user system -db_pass ora -db_tnsname 192.168.56.102:1521/orcl01 -tb_owner CDBC41_N1 -tb_name OBJECTS -csvFile C:\Users\linxu\Desktop\work\作業\database_scripts\import\info1\objects_CDBC41.csv
+# LoadCsv_objects -db_user system -db_pass ora -db_tnsname 192.168.56.102:1521/orcl01 -tb_owner CDBE01_N1 -tb_name OBJECTS -csvFile C:\Users\linxu\Desktop\work\作業\database_scripts\import\info1\objects_CDBE01.csv
+# LoadCsv_objects -db_user system -db_pass ora -db_tnsname 192.168.56.102:1521/orcl01 -tb_owner CDBE11_N1 -tb_name OBJECTS -csvFile C:\Users\linxu\Desktop\work\作業\database_scripts\import\info1\objects_CDBE11.csv
+# LoadCsv_objects -db_user system -db_pass ora -db_tnsname 192.168.56.102:1521/orcl01 -tb_owner CDBF01_N1 -tb_name OBJECTS -csvFile C:\Users\linxu\Desktop\work\作業\database_scripts\import\info1\objects_CDBF01.csv
+# LoadCsv_objects -db_user system -db_pass ora -db_tnsname 192.168.56.102:1521/orcl01 -tb_owner CDBF02_N1 -tb_name OBJECTS -csvFile C:\Users\linxu\Desktop\work\作業\database_scripts\import\info1\objects_CDBF02.csv
+# LoadCsv_objects -db_user system -db_pass ora -db_tnsname 192.168.56.102:1521/orcl01 -tb_owner CDBH01_N1 -tb_name OBJECTS -csvFile C:\Users\linxu\Desktop\work\作業\database_scripts\import\info1\objects_CDBH01.csv
+# LoadCsv_objects -db_user system -db_pass ora -db_tnsname 192.168.56.102:1521/orcl01 -tb_owner CDBW01_N1 -tb_name OBJECTS -csvFile C:\Users\linxu\Desktop\work\作業\database_scripts\import\info1\objects_CDBW01.csv

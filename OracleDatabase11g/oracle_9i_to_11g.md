@@ -11,7 +11,7 @@
 移行先:Oracle 11gR2
 
 * host os = Redhat Linux 7.5
-* database version = 11.2.0.1.4
+* database version = 11.2.0.4.0
 * client version = 12.1.0.2.0
 
 ## 方式 ##
@@ -155,3 +155,17 @@ sqlplus test/DATAbase
 sqlplus test/databasE
 sqlplus test/DATABASE
 ~~~
+
+## その他補足 ##
+
+1. sqlplusでshutdown immediateの実行途中でctrl+cで強制中止し、sqlplusで再接続してshutdown immediateすると、エラーが発生します。
+
+   **ORA-24324： サービス・ハンドルが初期化されていません。**
+
+   対応方法:shutdown abortでインスタンスを強制終了してstartup
+
+1. 一時ファイルのサイズは本番機と同様に設定しましたが、インデックス作成の時に一時領域不足エラーが発生しました。(多分、発生しない場合が多い)
+
+   **ORA-01652: 一時セグメントを拡張できません**
+
+   対応方法:一時表領域拡張し、インデックスを再作成

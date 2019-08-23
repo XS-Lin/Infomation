@@ -13,3 +13,10 @@
 * エラーと警告を表示:Ctrl+Shift+M
 * 前に戻る:Alt+Left
 * 新しいファイル:Ctrl+N
+* MDプレビュー:Ctrl+Shift+V
+
+## VS Studio(C#) ##
+
+## Eclipse ##
+
+## SqlDeveloper ##
