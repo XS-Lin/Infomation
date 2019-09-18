@@ -4,23 +4,21 @@
 
 移行元:Oracle 9i
 
-* host os = solaris 10
-* database version = 9.2.0.5.0
-* client version = 9.2.0.1.0
+* host os : solaris 10
+* database version : Oracle Database 9i (9.2.0.5.0)
 
 移行先:Oracle 11gR2
 
-* host os = Redhat Linux 7.5
-* database version = 11.2.0.4.0
-* client version = 12.1.0.2.0
+* host os : Redhat Linux 7.5
+* database version : Oracle 11gR2 (11.2.0.4.0)
 
 ## 方式 ##
 
 オリジナルのエクスポート/インポート・ユーティリティ(exp/imp)使用
 
 * 理由
-   1. Oracleのバージョン差によって、直接アップグレード不能
-   1. OS変更あり
+   1. Oracleのバージョン差によって、直接アップグレードできません。
+   1. OS変更があります。
 
    ※詳細は各バージョンの「Database Upgrade Guide」参照
    [Oracle 11.2 upgrade path](https://docs.oracle.com/cd/E11882_01/server.112/e23633/preup.htm#UPGRD002)
@@ -29,7 +27,7 @@
 
 1. Oracle Databaseをアップグレードするための準備
 
-   1. 現行DB情報収集 (info_all.sql)
+   1. 現行DB情報収集 [info_all.sql](https://github.com/XS-Lin/Infomation/blob/master/OracleDatabase11g/oracle_9i_to_11g_tool/get_info/info_all_9i_for_linux.sql)
 
          ~~~sql
          sqlplus system/ora@orcl01 @info_all.sql <path> <sid>
@@ -37,23 +35,41 @@
 
    1. 新データベース計画(容量、配置先等)
 
-      1. DBの移行は一般的に性能劣化はいけないので、CPU/メモリハードディスクなどは現行本番機の同等以上を選択する。
+      1. DBの移行は一般的に性能劣化はいけないので、CPU/メモリハードディスクなどは現行本番機の同等以上を選択します。
 
-      1. DBの移行はフォルダ構成が変わる場合はあるが、ここでは現行本番機と同等配置を前提とする。
+      1. DBの移行はフォルダ構成が変わる場合はありますが、ここでは現行本番機と同等配置を前提とします。
 
-   1. 試験データ取得のためにexp実施
+   1. エクスポート実施 (Oracle 9iサーバのコンソール)
+
+      1. 外部接続を切断のため、リスナー停止してデータベース再起動
+
+         **実行前にユーザセッションや実行中のトランザクションの有無確認**
+
+         ~~~sh
+         lsnrctl stop <listener_name>
+         export ORACLE_SID=<sid>
+         sqlplus / as sysdba
+         shutdown immediate
+         start up
+         ~~~
 
       1. 定義情報取得
 
-         ~~~dos
+         ~~~sh
          exp system/ora%@orcl01 full=y DIRECT=y FILE=full_rows_N.dmp LOG=full_rows_N.log rows=N
          ~~~
 
       1. ユーザ単位でデータ取得
 
-         ~~~dos
+         ~~~sh
          exp USERID=system/ora@orcl01 DIRECT=y FILE=<sid>_<user_name>.dmp OWNER=<user_name> LOG=exp_<sid>_<user_name>.log
          ~~~
+
+   1. よくあるエラーについて
+
+      1. ORA-01455: 列の変換により整数データ型がオーバーフローしました。
+
+      原因は不明です。エラーはマテビューから出たなので、古きSNAPSHOTの文法によると推測します。マテビューは作り直しますので、対処は不要です。
 
 1. Oracle Databaseのアップグレード処理のテスト
 
@@ -87,7 +103,7 @@
          --user_<sid>.csvより、ユーザ情報を取得し、ユーザ作成
          CREATE USER <user_name> IDENTIFIED BY <user_password> DEFAULT TABLESPACE <tablespace> TEMPORARY TABLESPACE <temp_tablespace>;
          --注意点
-         --  1.同一テーブルスペースに複数データファイル含む場合がある。
+         --  1.同一テーブルスペースに複数データファイル含む場合があります。
          --  2.9iと11gの一時表領域の管理方法が違うため、
          --    9i のdba_data_files_<sid>.csvの「CONTENTS」が「TEMPORARY」の場合、
          --    11g で一時表領域として作成必要
@@ -104,7 +120,7 @@
 
    1. impエラー等処置
 
-   1. 個別権限付与
+      1. エクスポートのログファイルに「EXP-00000」がある場合、どこかで不完全の可能性が高い。移行前後のオブジェクト比較、データ件数比較によって特定できます。
 
 1. アップグレードしたテスト用Oracle Databaseのテスト
 
@@ -164,7 +180,7 @@ sqlplus test/DATABASE
 
    対応方法:shutdown abortでインスタンスを強制終了してstartup
 
-1. 一時ファイルのサイズは本番機と同様に設定しましたが、インデックス作成の時に一時領域不足エラーが発生しました。(多分、発生しない場合が多い)
+1. 一時ファイルのサイズは本番機と同様に設定しましたが、インデックス作成の時に一時領域不足エラーが発生しました。(発生しない場合が多い)
 
    **ORA-01652: 一時セグメントを拡張できません**
 
