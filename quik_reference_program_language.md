@@ -6,6 +6,8 @@
 
 ## Python ##
 
+[Python 3.7.4 ドキュメント](https://docs.python.org/ja/3/)
+
 1. 定数と変数
 
 1. 演算子
@@ -24,9 +26,15 @@
 
 ## Java ##
 
+[Java SE API & ドキュメント - Oracle](https://www.oracle.com/technetwork/jp/java/javase/documentation/api-jsp-316041-ja.html)
+
 ## JavaScript ##
 
+[ECMAScript 2019](https://www.ecma-international.org/ecma-262/10.0/index.html)
+
 ## C# ##
+
+[C# リファレンス](https://docs.microsoft.com/ja-jp/dotnet/csharp/language-reference/)
 
 1. 定数と変数
 
@@ -46,11 +54,17 @@
 
 ## C++ ##
 
-## Cmd ##
+[Visual C++ ドキュメント | Microsoft Docs](https://docs.microsoft.com/ja-jp/cpp/?view=vs-2019#pivot=workloads&panel=workloads1)
+
+[MicrosoftDocs/cpp-docs: C++ Documentation - GitHub](https://github.com/MicrosoftDocs/cpp-docs)
+
+[ISOCPP](https://isocpp.org/std/the-standard)
 
 ## PowerShell ##
 
-PowerShell 6
+[PowerShell Documentation | Microsoft Docs](https://docs.microsoft.com/ja-jp/powershell/)
+[PowerShell 6](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/?view=powershell-6)
+[PowerShell 7 preview](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/?view=powershell-7)
 
 1. 定数と変数
 
@@ -249,9 +263,9 @@ PowerShell 6
       Get-Help <command> [-Full]
       ~~~
 
-[PowerShellの詳細](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/?view=powershell-6)
-
 ## Bash ##
+
+[GNU Bash](https://www.gnu.org/software/bash/manual/)
 
 GNU Bash 4.2
 
@@ -278,7 +292,8 @@ GNU Bash 4.2
 
 1. 演算子
 
-   1. 
+   1. q
+
       ~~~bash
       a = 1
       ~~~
