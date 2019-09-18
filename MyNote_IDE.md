@@ -15,7 +15,7 @@
 * 新しいファイル:Ctrl+N
 * MDプレビュー:Ctrl+Shift+V
 
-## VS Studio(C#) ##
+## Visual  Studio(C#) ##
 
 ## Eclipse ##
 
