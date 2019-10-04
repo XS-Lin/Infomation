@@ -12,6 +12,8 @@
 
 [ImageNet](http://www.image-net.org)
 
+[kaggle/titanic](https://www.kaggle.com/c/titanic)
+
 日本語：
 
 [AI Academy](https://aiacademy.jp/texts/)
