@@ -79,7 +79,9 @@
 
 [PlantUML公式サイト](https://plantuml.com/ja/)
 
-## クラス図 ##
+インストール成功した場合は画像表示できる。
+
+### クラス図 ###
 
 ~~~plantuml
 @startuml name
@@ -91,7 +93,7 @@ Class09 -- Class10
 @enduml
 ~~~
 
-## シーケンス図 ##
+### シーケンス図 ###
 
 ~~~plantuml
 @startuml
