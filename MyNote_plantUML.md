@@ -1,6 +1,6 @@
-# MyNote VSCode PlantUML (windows) #
+# MyNote VSCode PlantUML Install (windows) #
 
-## インストール ##
+## インストール(Local) ##
 
 1. Javaインストール
 
@@ -20,6 +20,60 @@
 3. VSCodeにPlantUML(ver 2.11.2)追加
 
 **[2020/06/20時点]上記ローカルRender設定について、2.11.2以後はエラーになる。2.11.3以後はServer版のみ使用可能になる。**
+
+## インストール(PlantUML Server Docker) ##
+
+1. Docker (Windows Home はインストールできない)
+
+1. PlantUML Server
+
+[PlantUML Server](https://github.com/plantuml/plantuml-server)
+
+## インストール(PlantUML Server Tomcat) ##
+
+1. 必要な資材をダウンロード
+
+   * [Java Download (JDK8以後)](http://jdk.java.net/)
+
+   * [Tomcat Download(apache-tomcat-9.0.36-windows-x64.zip)](https://tomcat.apache.org/download-90.cgi)
+
+   * [PlantUML Download(plantuml-v1.2020.13.war)](https://github.com/plantuml/plantuml-server/releases)
+
+   * [Graphviz download(graphviz-windows.zip)](https://graphviz.org/download/)
+
+     **以下の順番でクリックするとダウンロード開始**
+       1. Stable 2.44 Windows install packages
+       1. Environment: build_system=msbuild; Configuration: Release
+       1. artifacts
+       1. graphviz-windows.zip
+
+1. JavaとTomcatを解凍、PlantUMLをTomcatに配置
+
+   **例**
+
+   ~~~dosbatch
+   # D:\Program Files\PlantUML_Server\jdk-14.0.1
+   # D:\Program Files\PlantUML_Server\apache-tomcat-9.0.36
+   # D:\Program Files\PlantUML_Server\Graphviz
+   # D:\Program Files\PlantUML_Server\apache-tomcat-9.0.36\webapps\plantuml-v1.2020.13.war
+   SET JAVA_HOME=D:\Program Files\PlantUML_Server\jdk-14.0.1
+   SET GRAPHVIZ_DOT=D:\Program Files\PlantUML_Server\Graphviz\bin\dot.exe
+   SET CATALINA_HOME=D:\Program Files\PlantUML_Server\apache-tomcat-9.0.36
+   # 起動
+   "%CATALINA_HOME%\bin\startup.bat"
+   # 停止
+   "%CATALINA_HOME%\bin\shutdown.bat"
+   #http://localhost:8080/plantuml-v1.2020.13
+   ~~~
+
+1. VSCodeにPlantUML追加
+
+   **設定変更**
+
+   ~~~json
+   plantuml.server=http://localhost:8080/plantuml-v1.2020.13
+   plantuml.render=PlantUMLServer
+   ~~~
 
 ## 使用 ##
 
