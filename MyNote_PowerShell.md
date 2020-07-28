@@ -1,5 +1,32 @@
 ﻿# PowerShell #
 
+## psqlでPostgresql大量接続 ##
+
+   ~~~powershell
+   # USERとDB作成
+   0 .. 99 | ForEach-Object { "CREATE ROLE testuser{0:00} WITH LOGIN PASSWORD 'testpass{0:00}';" -f $_ } | Out-File create_role.sql -Encoding UTF8
+   0 .. 999 | ForEach-object { "CREATE DATABASE testdb{0:000};" -f $_ } | Out-File create_db.sql -Encoding UTF8
+   # ローカルの接続テスト
+   funciton StartTestinfo {
+     Param(
+       [int]$userCount,
+       [int]$dbCount,
+       [string]$server = "localhost",
+       [int]$port = 5432
+     )
+     for ($i = 0; $i -lt $userCount; $i++) {
+       for ($j = 0; $j -lt $dbCount; $j++) {
+         $usr = "testuser{0:00}" -f $i
+         $db = "testdb{0:000}" -f $j
+         $sql = Resolve-Path "test.sql"
+         Start-Job -ScriptBlock {
+           psql -h $arg[0] -p $arg[1] -U $arg[2] -d $arg[3] -f $arg[4]
+         } -Arguments $server,$port,$usr,$db,$sql
+       }
+     }
+   }
+   ~~~
+
 ## その他 ##
 
    ~~~powershell
