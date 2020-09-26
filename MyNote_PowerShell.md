@@ -1,5 +1,46 @@
 ﻿# PowerShell #
 
+## ファイル存在チェック ##
+
+   ~~~powershell
+   Test-Path $path -PathType Leaf
+   ~~~
+
+## テキストファイル出力 ##
+
+   ~~~powershell
+   "aaa" | Out-File test.txt -Encode ASCII
+   ~~~
+
+## CSV操作 ##
+
+   ~~~powershell
+   # CSV 読み取り(headerあり)
+   $data = Import-Csv -Path <csvpath> -Encoding UTF8
+   # CSV 読み取り(headerなし)
+   $data = Import-Csv -Path <csvpath> -Header Col1,Col2,Col3
+   ~~~
+
+   ~~~powershell
+   # CSV エクスポート
+   @(
+     [pscustomobject]@{ product_code = 'TEST00001'; product_name = 'ボールペン'; price = 100 },
+     [pscustomobject]@{ product_code = 'TEST00002'; product_name = '消しゴム'; price = 50 }
+   ) | Export-Csv -NoTypeInformation products.csv -Encoding UTF8
+
+   @'[
+       { "product_code": "TEST00001", "product_name ": "ボールペン", "price ": 100 },
+       { "product_code": "TEST00002", "product_name ": "消しゴム", "price ": 50 }
+    ]'@ | ConvertFrom-Json | Export-Csv -NoTypeInformation products.csv -Encoding UTF8
+
+   @' "product_code","product_name ","price "
+      "TEST00001","ボールペン","100"
+      "TEST00002","消しゴム","50"
+   '@ | ConvertFrom-Csv | Export-Csv -NoTypeInformation products.csv -Encoding UTF8
+   # Note: PowershellのUTF8はBOMあり、BOMなしにしたいときはASCII
+   # (Windows 10 以前は [System.IO.File]::WriteAllLines(test.txt, @("ファイルの内容"), (New-Object "System.Text.UTF8Encoding" -ArgumentList @($false))))
+   ~~~
+
 ## psqlでPostgresql大量接続 ##
 
    ~~~powershell
@@ -95,3 +136,5 @@
    # 指定フォルダのファイルを更新時間順で一覧表示
    Get-ChildItem -Path C:\Users\linxu\Desktop\work\作業\20190805本番 機info\log -Filter exp_CDBC31_*.log | Sort-Object LastWriteTime
    ~~~
+
+   [Powershell数字フォーマット](https://docs.microsoft.com/ja-jp/dotnet/standard/base-types/custom-numeric-format-strings)

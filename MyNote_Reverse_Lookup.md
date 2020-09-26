@@ -183,3 +183,82 @@ $postBody = [Text.Encoding]::UTF8.GetBytes($postText)
 $postUri = "http://localhost:3000/api/texts"
 Invoke-RestMethod -Method POST -Uri $postUri -Body $postBody -ContentType application/json
 ~~~
+
+## Sqlplus用csv Export sql 作成 ##
+
+* powershell
+
+~~~powershell
+# テーブル定義情報取得(Target.csv)
+#   SELECT TABLE_NAME,COLUMN_NAME,DATA_TYPE,DATA_LENGTH,DATA_PRECISION,DATA_SCALE,NULLABLE,COLUMN_ID FROM USER_TAB_COLUMNS;
+
+function GetExportSql {
+    param(
+        [string[]]$TargetTables = @(),
+        [string]$TargetTabColumnsCsv,
+        [string]$OutputPath
+    )
+    $data = Import-Csv -Path $TargetTabColumnsCsv -Header TABLE_NAME,COLUMN_NAME,DATA_TYPE,DATA_LENGTH,DATA_PRECISION,DATA_SCALE,NULLABLE,COLUMN_ID
+
+    $target_tables = [Oradered]{}
+
+    if ($TargetTables.Count -eq 0 ) {
+        $data | ForEach-Object {
+            if ( -not $target_tables.Contains($_.TABLE_NAME)) {
+                $target_tables.Add($_.TABLE_NAME,@())
+            }
+        }
+    }
+    else {
+        $TargetTables | ForEach-Object {
+            $target_tables.Add($_.TABLE_NAME,@())
+        }
+    }
+
+    $data | ForEach-Object {
+        if ($target_tables.Contains($_.TABLE_NAME)) {
+            $target_tables[$_.TABLE_NAME] += $_
+        }
+    }
+
+    $lines = @()
+    $lines += "SET HEAD OFF TRIMSPOOL ON PAGESIZE 0 TERMOUT ON ECHO OFF LINESIZE 10000 FEEDBACK OFF SQLBL OFF SQLNOFF RECSEP OFF"
+    $lines += ""
+    $target_tables | ForEach-Object {
+        $lines += "SPOOL " + $_.Key + ".csv"
+        $lines += "SELECT"
+        for ($i = 0; $i -lt $_.Value.Count; $i++) {
+            $line = ""
+            if (($_.Value[$i].DATA_TYPE -eq "VARCHAR2") -or ($_.Value[$i].DATA_TYPE -eq "CHAR")) {
+                $line += "CASE WHEN " + $_.Value[$i].COLUMN_NAME + " IS NOT NULL THEN '`"' || REPLACE(" + $_.Value[$i].COLUMN_NAME + ",'`"','`"`"') || '`"' ELSE NULL END "
+            }
+            elseif ($_.Value[$i].DATA_TYPE -eq "NUMBER") {
+                $line += $_.Value[$i].COLUMN_NAME
+            }
+            elseif ($_.Value[$i].DATA_TYPE -eq "DATE") {
+                $line += "TO_CHAR(" + $_.Value[$i].COLUMN_NAME + ",'YYYY-MM-DD HH24:MI:SS')"
+            }
+            elseif ($_.Value[$i].DATA_TYPE -eq "TIMESTAMP") {
+                $line += "TO_CHAR(" + $_.Value[$i].COLUMN_NAME + ",'YYYY-MM-DD HH24:MI:SS.FF')"
+            }
+            elseif ($_.Value[$i].DATA_TYPE -eq "RAW") {
+                $line += "CASE WHEN " + $_.Value[$i].COLUMN_NAME + " IS NOT NULL THEN '\x' || RAWTOHEX(" + $_.Value[$i].COLUMN_NAME + ") LSE NULL END"
+            }
+            else {
+                # 変換できない列は何もしない
+            }
+
+            if ($i -ne $_.Value.Count - 1) {
+                $line += " || ',' ||"
+            }
+            $lines += $line
+        }
+        $lines += "FROM " + $_.Key
+        $lines += ";"
+        $lines += "SPOOL OFF"
+        $lines += ""
+    }
+    $lines += "exit /b"
+    $lines -join "`r`n" | Out-File -FilePath $OutputPath -Encoding ASCII
+}
+~~~
