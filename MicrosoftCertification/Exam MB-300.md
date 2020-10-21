@@ -10,7 +10,7 @@
 
 ## ラーニング パス: Finance and Operations アプリの利用開始 ##
 
-### Dynamics 365 Finance に関する入門情報 ###
+### モジュール: Dynamics 365 Finance に関する入門情報 ###
 
 #### 一般会計 ####
 
@@ -126,7 +126,7 @@
 * 原価会計 [Cost accounting]
 * 原価管理 [Cost control]
 
-### Dynamics 365 Supply Chain Management に関する入門情報 ###
+### モジュール: Dynamics 365 Supply Chain Management に関する入門情報 ###
 
 #### Supply Chain Management の利点 ####
 
@@ -338,7 +338,7 @@ left side
 * 単位と関連する変換 [Units of measure an related conversions]
 * すべての名前と説明の翻訳 [Translations for all names and descriptions]
 
-### Dynamics 365 Supply Chain Management における生産管理の開始 ###
+### モジュール: Dynamics 365 Supply Chain Management における生産管理の開始 ###
 
 #### 生産管理における主要な概念 ####
 
@@ -582,7 +582,59 @@ left side
 * 生産中の消費に関するフィードバック [Feedback on consumption during production]
 * 生産原価の転記 [Production cost posting]
 
+## ラーニング パス: Finance and Operations アプリでの組織の構成 ##
+
+### モジュール: Finance and Operations アプリの法人を計画して実装する ###
+
+#### 組織階層と作業単位について理解する ####
+
+* 作業単位 [Operating units]
+  * コスト センター [Cost center]
+  * 事業単位 [Business unit
+  * バリュー ストリーム [Value stream]]
+  * 部門 [Department]
+  * 小売チャネル [Retail channel]
+  * 支店 [Branch]
+  * レンタル場所 [Rental Location]
+  * リージョン [Region]
+  * チーム [Teams]
+
+#### 内部組織を法人と作業単位のどちらでモデル化するかを決定する ####
+
+* Finance and Operations アプリの法人は、必ずしもビジネスの実体と対応している必要はありません
+  * たとえば、取引に関与する会社に子会社法人を持たせることもできます。 この例では、取引を行う法人が必要であり、子会社法人の連結決算を行うには、仮想的な法人が必要です。
+
+* マスター データ [Master data]
+* モジュールのパラメーター [Module parameters]
+* データ セキュリティ [Data security]
+* 元帳 [Ledgers]
+* 会計カレンダー [Fiscal calendars]
+* 連結 [Consolidation]
+* 集中支払 [Centralized payments]
+
+#### 目的とポリシーの適用 ####
+
+階層は、次の目的で使用できます。
+
+* 調達内部統制 [Procurement internal control]
+* 経費内部統制 [Expenditure internal control]
+* 組織図 [Organization charts]
+* 署名権限の内部統制 [Signature authority internal control]
+* 仕入先支払の内部統制 [Vendor payment internal control]
+* 監査内部統制 [Audit internal control]
+* 集中支払 [Centralized payments]
+* セキュリティ [Security]
+* 小売品揃え [Retail assortment]
+* 小売補充 [Retail replenishment]
+* 小売レポート [Retail reporting]
+* 給付金の適格性制御 [Benefit eligibility control]
+* 予算計画 [Budget planning]
+* Retail POS の転記 [Retail POS posting]
+* プロジェクト管理 [Project management]
+* 割増所得の生成 [Premium earning generation]
+* 分散型注文管理 (DOM) [Distributed order management]
+
 ## Bookmark ##
 
-https://docs.microsoft.com/ja-jp/learn/modules/get-started-supply-chain-management-dyn365-supply-chain-mgmt/11-production-control
-https://docs.microsoft.com/en-us/learn/modules/get-started-supply-chain-management-dyn365-supply-chain-mgmt/11-production-control
+https://docs.microsoft.com/ja-jp/learn/modules/plan-implement-security-finance-operations/
+https://docs.microsoft.com/en-us/learn/modules/plan-implement-security-finance-operations/6-exercise-1
