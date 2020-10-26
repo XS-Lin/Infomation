@@ -634,7 +634,15 @@ left side
 * 割増所得の生成 [Premium earning generation]
 * 分散型注文管理 (DOM) [Distributed order management]
 
+#### IoT インテリジェンスとインサイト ####
+
+* 生産管理および IoT [Production control and IoT]
+* オーダーの遅延 [Delayed orders]
+* 設備の故障 [Equipment down]
+* 品質異常 [Quality anomaly]
+* コードなしの運用 [No-code onboarding]
+
 ## Bookmark ##
 
-https://docs.microsoft.com/ja-jp/learn/modules/plan-implement-security-finance-operations/
-https://docs.microsoft.com/en-us/learn/modules/plan-implement-security-finance-operations/6-exercise-1
+https://docs.microsoft.com/ja-jp/learn/modules/get-started-production-control-dyn365-supply-chain-mgmt/12-exercise-1
+https://docs.microsoft.com/en-us/learn/modules/get-started-production-control-dyn365-supply-chain-mgmt/12-exercise-1
