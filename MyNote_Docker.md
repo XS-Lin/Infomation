@@ -119,4 +119,11 @@ docker-compose rm
    docker pull node
    ~~~
 
+1. フォルダコピー
 
+   ~~~bash
+   # コンテナに指定ディレクトリがない場合
+   docker cp ./bar test:/foo/bar
+   # コンテナに指定ディレクトリがある場合
+   docker cp ./bar/. test4:/foo/bar
+   ~~~

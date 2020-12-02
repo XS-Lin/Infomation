@@ -2,11 +2,53 @@
 
 ## たまに使われ、知らないと困るコマンドのまとめ ##
 
+[GNUオペレーティング・システム](https://www.gnu.org/software/)
+[sed](https://www.gnu.org/software/sed/manual/html_node/index.html)
+[awk](https://www.gnu.org/software/gawk/manual/gawk.html)
+
 ~~~sh
 # Windowの改行コードをLinuxの改行コードに変更
 sed -i 's/\r//' file_name
 # treeコマンドがない環境でtree同等機能
 pwd;find . | sort | sed '1d;s/^\.//;s/\/\([^/]*\)$/|--\1/;s/\/[^/|]*/|  /g'
+
+# awk [option][command][file]
+ls -t | awk "/^[0-9A-F]{24}$/{if(++n>2048)print;}" #フォルダ内WALファイルが最新の2048個以外のWALファイル削除
+
+cp -p # パーミッションと所有者とタイムスタンプ保持
+
+ls -t # ファイル更新日時の新しい順
+
+du -s /tmp #/tmpのサイズを調べる（単位:kB）, -hで適当な単位表示
+
+xxd # 16進数表示(-c 表示桁数1~256 default:16)
+sed 's \x15\x42\x02 \x12\x12\x02 g' test | xxd -c 6 # バイト置き換え16進数表示
+# sed 注意:0x24 $ 0x5E ^ 0x5c \ は特別な意味があるため、変換時は要注意
+~~~
+
+~~~sh
+# test_sjis.txt の21~28バイトは8桁の日付で、最小値が00000000、最大値が99999999、Postgresqlに登録するときエラーがあるため置換が必要。
+# マルチバイト文字があるため、バイト単位で置換が必要。（41バイト固定長）
+cat test_sjis.txt | awk -b '/^.{20}0{8}.*${printf "%s%s%s%s",substr($1,1,20),"        ",substr($1,29,length($1)-28)}' | xxd -c 41 -p # 21~28byteの"00000000"を"        "に置き換え
+cat test_sjis.txt | awk -b '
+BEGIN { FIELDWIDTHS = "20 8 12" }
+{
+    str = $2
+    if (str == "00000000") {
+        printf "%s%s%s%s",$1,"        ",$3,"\n"
+    }
+    else if (str == "99999999") {
+        printf "%s%s%s%s",$1,"20991231",$3,"\n"
+    }
+    else {
+        printf "%s%s%s%s",$1,$2,$3,"\n"
+    }
+}' | xxd -c 41 -p # 21~28byteの"00000000"を"        "に、"99999999"を"20991231"に置き換え
+~~~
+
+~~~sh
+tail -c 1 # ファイルの末尾1 byte取得
+if [ "`tail -c 1 filename | xxd -p`" = "0a" ]; then echo "1"; fi # ファイルの末尾が改行か確認
 ~~~
 
 ## rootパスワードリセット ##
@@ -27,3 +69,4 @@ chroot /sysroot
 # 8 パスワードファイルを更新すると、SELinux セキュリティーコンテキストが正しくないファイルが作成されます。次回のシステムのブート時にすべてのファイルを再ラベルするには、以下のコマンドを入力します。
 touch /.autorelabel
 ~~~
+

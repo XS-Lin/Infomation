@@ -12,6 +12,12 @@
    "aaa" | Out-File test.txt -Encode ASCII
    ~~~
 
+## テキストファイル出力(LF) ##
+
+   ~~~powershell
+   0..99 | ForEach-Object { "a,b,c,{0:00}`n" -f $_ } | Out-File test.csv -Encode ASCII -NoNewline
+   ~~~
+
 ## CSV操作 ##
 
    ~~~powershell

@@ -646,3 +646,6 @@ left side
 
 https://docs.microsoft.com/ja-jp/learn/modules/get-started-production-control-dyn365-supply-chain-mgmt/12-exercise-1
 https://docs.microsoft.com/en-us/learn/modules/get-started-production-control-dyn365-supply-chain-mgmt/12-exercise-1
+
+https://docs.microsoft.com/ja-jp/learn/modules/create-use-workflows-finance-operations/2-types
+https://docs.microsoft.com/en-us/learn/modules/create-use-workflows-finance-operations/2-types

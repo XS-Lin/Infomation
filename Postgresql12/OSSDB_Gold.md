@@ -186,6 +186,10 @@
    * CHECKPOINT
    * PITR
    * WAL
+     * WALフラッシュのタイミング
+       * トランザクションがコミットされたとき
+       * ­wal_writer_dilay時間が経過したとき デフォルト3秒
+       * WALバッファが一杯になったとき
    * pg_dump
    * pg_dumpall
    * pg_basebackup
@@ -297,7 +301,7 @@
    * TOAST
       * [68.2. TOAST] pg_class.reltoastrelid
    * FILLFACTOR
-      * [格納パラメータ] テーブルのフィルファクタ(fillfactor)は10から100までの間の割合（パーセント）です。 100（すべて使用）がデフォルトです。
+      * [格納パラメータ] テーブルのフィルファクタ(fillfactor)は10から100までの間の割合（パーセント）です。 100（すべて使用）がデフォルトです。(BTREEのルートページ、インターナルページのFILLFACTORは70%)
    * アーカイブログ
       * [25.3.6.2. 圧縮アーカイブログ]
    * ページヘッダ
@@ -352,76 +356,6 @@
    * スタンバイへ伝搬される処理とされない処理
    * スタンバイで実行可能な問い合わせ
    * ロジカルレプリケーションのサブスクライバ―へ伝搬される処理とされない処理
-
-1. 勉強法
-
-   1. ストリーミングレプリケーション
-
-      ~~~bash
-      # 通信ネットワーク定義
-      docker network create --driver bridge postgres_net
-      docker network inspect postgres_net
-      # 読み書き、マスター、プライマリ
-      docker run -d --name postgres-test1 --net=postgres_net -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=test1 -p 5432:5432 postgres
-      # スタンバイ、セカンダリ
-      docker run -d --name postgres-test2 --net=postgres_net -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=test1 -p 5433:5432 postgres
-      # スタンバイ、セカンダリ(もう一つ)
-      docker run -d --name postgres-test3 --net=postgres_net -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=test1 -p 5434:5432 postgres
-      ~~~
-
-      ~~~sql
-      --レプリケーション動作の研究のため、ユーザ名を別々にする
-      --サーバpostgres-test1
-      CREAETE ROLE repuser1 WITH LOGIN REPLICATION PASSWORD 'repuser1';
-      --サーバpostgres-test2
-      CREAETE ROLE repuser2 WITH LOGIN REPLICATION PASSWORD 'repuser2';
-      --サーバpostgres-test3
-      CREAETE ROLE repuser3 WITH LOGIN REPLICATION PASSWORD 'repuser3';
-      ~~~
-
-      ~~~bash
-      # サーバpostgres-test1 $PGDATA/pg_hba.conf
-      host    repdb     repuser1       0.0.0.0/0            md5
-      # サーバpostgres-test2 $PGDATA/pg_hba.conf
-      host    repdb     repuser2       0.0.0.0/0            md5
-      # サーバpostgres-test1 $PGDATA/pg_hba.conf
-      host    repdb     repuser3       0.0.0.0/0            md5
-      ~~~
-
-      ~~~bash
-      # サーバpostgres-test1 $PGDATA/postgresql.conf
-      listen_addresses = '*'
-      wal_level = replica
-      max_wal_senders = 2
-      archive_mode = off
-      wal_keep_segments = 8
-      # サーバpostgres-test2 $PGDATA/postgresql.conf
-      hot_standby = on
-      # サーバpostgres-test3 $PGDATA/postgresql.conf
-      hot_standby = on
-      ~~~
-
-      ~~~bash
-      # 全てのコンテナ開始
-      docker start postgres-test1
-      docker start postgres-test2
-      docker start postgres-test3
-      ~~~
-
-      ~~~bash
-      # ネットワーク削除
-      docker network rm postgres_net
-      # 全てのコンテナ停止
-      docker stop postgres-test1
-      docker stop postgres-test2
-      docker stop postgres-test3
-      # 全てのコンテナ削除
-      docker rm postgres-test1
-      docker rm postgres-test2
-      docker rm postgres-test3
-      ~~~
-
-   2. ロジカルレプリケーション
 
 ## 性能監視（30％） ##
 
@@ -722,6 +656,7 @@
 1. 重要な用語、コマンド、パラメータなど
 
    * statement_timeout
+     * 
    * lock_timeout
    * idle_in_transaction_session_timeout
    * スタンバイでの問い合わせのコンフリクト(衝突)
@@ -809,6 +744,390 @@
 _ok boolean])
 * [9.26.10. 勧告的ロック用関数]
 * [第11章 インデックス]
+
+## 実機演習 ##
+
+[WG3活動報告書 レプリケーション調査編](https://pgecons-sec-tech.github.io/tech-report/pdf/wg3_replica.pdf)
+[PostgreSQL13 検証レポート](https://www.sraoss.co.jp/tech-blog/wp-content/uploads/2020/07/pg13_report_0728.pdf)
+
+### 1.ストーミングレプリケーション ###
+
+1. レプリケーション環境構成
+
+   ~~~powershell
+   docker network create --driver bridge postgres_net
+   docker run -d --name postgres-test1 --net=postgres_net -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=test1 -p 5432:5432 -p 5433:5433 postgres
+   docker run -d --name postgres-test2 --net=postgres_net -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=test1 -p 5532:5432 -p 5533:5433 postgres
+   docker network inspect postgres_net
+   # "Containers": {
+   #         "3f045c776596dff41b7ea6387dcae32836f7b5f6c7fddfefd7db110180a1800f": {
+   #             "Name": "postgres-test2",
+   #             "EndpointID": "79eeca96a5f4e852e5778bd73996d18cf215c037987e6471c3fad9d0d8de5519",
+   #             "MacAddress": "02:42:ac:13:00:03",
+   #             "IPv4Address": "172.19.0.3/16",
+   #             "IPv6Address": ""
+   #         },
+   #         "e285d9f1efb1ae8d579fde9ae3ada0b99169faa10b1b1702c3ec15a2d2a5a4be": {
+   #             "Name": "postgres-test1",
+   #             "EndpointID": "709043824b5f94179a0fe1c2a4e59e942ab9207d1cf4a5b0abfa418461d6d791",
+   #             "MacAddress": "02:42:ac:13:00:02",
+   #             "IPv4Address": "172.19.0.2/16",
+   #             "IPv6Address": ""
+   #         }
+   #     }
+   cd D:\Infomation\Postgresql12
+   docker cp postgres-test1:/var/lib/postgresql/data/postgresql.conf postgresql.conf
+   docker cp postgres-test1:/var/lib/postgresql/data/pg_hba.conf pg_hba.conf
+
+   #docker cp postgresql1_bak.conf postgres-test1:/var/lib/postgresql/data/postgresql.conf
+   #docker cp postgresql.conf postgres-test1:/var/lib/postgresql/data/postgresql.conf
+   #docker cp postgresql1_bak.conf postgres-test2:/var/lib/postgresql/data/postgresql.conf
+   #docker container restart postgres-test2
+   ~~~
+
+   ~~~bash
+   # postgres-test1
+   # edit /var/lib/postgresql/data/postgresql.conf
+   su - postgres
+   mkdir -p /var/lib/postgresql/backups/archive
+   sed -i -e "
+   s/^#max_connections/max_connections/
+   s/^#shared_buffers = 128MB/shared_buffers = 256MB/
+   s/^#work_mem = 4MB/work_mem = 8MB/
+   s/^#synchronous_commit = on/synchronous_commit = on/
+   s/^#full_page_writes = on/full_page_writes = on/
+   s/^#wal_log_hints = off/wal_log_hints = on/
+   s/^#archive_mode = off/archive_mode = always/
+   s/^#archive_command = ''/archive_command = 'test ! -f \/var\/lib\/postgresql\/backups\/archive\/%f \&\& cp -p %p \/var\/lib\/postgresql\/backups\/archive\/%f'/
+   s/^#restore_command = ''/restore_command = 'cp -p \/var\/lib\/postgresql\/backups\/archive\/%f %p'/
+   s/^#max_wal_senders = 10/max_wal_senders = 10/
+   s/^#synchronous_standby_names = ''/synchronous_standby_names = '1 (test2)'/
+   s/^#primary_conninfo = ''/primary_conninfo = 'postgresql:\/\/repl_user:password\@172.19.0.2:5432\/testdb\?application_name=testdb2'/
+   s/^#primary_slot_name = ''/primary_slot_name = 'testslot2'/
+   s/^#logging_collector = off/logging_collector = on/
+   s/^#log_min_duration_statement = -1/log_min_duration_statement = 2s/
+   s/^#autovacuum = on/autovacuum = on/
+   s/^#shared_preload_libraries = ''/shared_preload_libraries = '\$libdir\/pg_stat_statements'/
+   " -e '$apg_stat_statements\.max = 1000\npg_stat_statements\.track = top\npg_stat_statements\.save = on' /var/lib/postgresql/data/postgresql.conf
+   # edit /var/lib/postgresql/data/hba.conf
+   sed -i '$ahost    replication     repl_user       0.0.0.0/0               md5' /var/lib/postgresql/data/pg_hba.conf
+   sed -i '$ahost    testdb          rewind_user     0.0.0.0/0               md5' /var/lib/postgresql/data/pg_hba.conf
+   ~~~
+
+   ~~~sql
+   CREATE ROLE repl_user WITH LOGIN REPLICATION PASSWORD 'password';
+   SELECT pg_create_physical_replication_slot('testslot2');
+   CREATE USER rewind_user_s LOGIN SUPERUSER  PASSWORD 'password';
+   CREATE USER test_user LOGIN PASSWORD 'password';
+   CREATE DATABASE testdb WITH OWNER=test_user TEMPLATE=template0 ENCODING=UTF8 LC_COLLATE='C' LC_CTYPE='C';
+   ~~~
+
+   ~~~bash
+   # postgres-test2
+   su - postgres
+   # add /var/lib/postgresql/.pgpass
+   echo "172.19.0.2:5432:testdb:repl_user:password" > ~/.pgpass
+   chmod 0600 ~/.pgpass
+
+   mkdir -p /var/lib/postgresql/backups/archive
+   mkdir /var/lib/postgresql/data1
+   chmod 700 /var/lib/postgresql/data1
+
+   pg_basebackup -D /var/lib/postgresql/data1 -X fetch -c fast -P -v -h 172.19.0.2 -p 5432 -U repl_user
+   touch /var/lib/postgresql/data1/standby.signal
+   sed -i -e "s/^#listen_addresses = '\*'/listen_addresses = 'localhost'/" -e "s/^#port = 5432/port = 5433/" /var/lib/postgresql/data1/postgresql.conf
+   /usr/lib/postgresql/13/bin/pg_ctl start -D /var/lib/postgresql/data1
+
+   #ls /var/lib/postgresql/data1/log
+   #cat /var/lib/postgresql/data1/log/postgresql-2020-11-13_031031.log
+   #tail -n 20 /var/lib/postgresql/data1/log/postgresql-2020-11-13_050649.log
+   #cat /var/lib/postgresql/data1/postgresql.conf | grep primary_conninfo
+   # /usr/lib/postgresql/13/bin/pg_ctl stop -D /var/lib/postgresql/data1
+   # rm -r /var/lib/postgresql/data1/*
+   psql -p 5433 -d testdb -x
+   ~~~
+
+   ~~~sql
+   --postgres-test2
+   SELECT * FROM pg_stat_wal_receiver;
+   ~~~
+
+   ~~~sql
+   --postgres-test1
+   SELECT * FROM pg_stat_replication;
+   ~~~
+
+1. スタンバイがダウンの場合、起動できない時の対処
+
+データフォルダを削除し、プライマリーから再作成※プライマリーに接続できる前提（プライマリーに接続できない場合はリスドア）
+
+   ~~~bash
+   # postgres-test2
+   su - postgres
+   rm -r /var/lib/postgresql/data1/*
+   pg_basebackup -D /var/lib/postgresql/data1 -X fetch -c fast -P -v -h 172.19.0.2 -p 5432 -U repl_user -w
+   touch /var/lib/postgresql/data1/standby.signal
+   #chmod -R 700 /var/lib/postgresql/data1
+   sed -i -e "s/^#listen_addresses = '\*'/listen_addresses = 'localhost'/" -e "s/^#port = 5432/port = 5433/" /var/lib/postgresql/data1/postgresql.conf
+   /usr/lib/postgresql/13/bin/pg_ctl start -D /var/lib/postgresql/data1
+   ~~~
+
+1. プライマリーがダウンの場合、起動できる時の対処
+
+   ~~~bash
+   # postgres-test2
+   su - postgres
+   /usr/lib/postgresql/13/bin/pg_ctl -D /var/lib/postgresql/data1 -w promote
+   # ls /var/lib/postgresql/data1/log
+   # tail -n 20 /var/lib/postgresql/data1/log/postgresql-2020-11-13_051357.log
+   # ls /var/lib/postgresql/data1/standby.signal
+   ~~~
+
+   ~~~bash
+   # TODO 検証中
+   # postgres-test1
+   su - postgres
+   mkdir /var/lib/postgresql/data1
+   chmod 700 /var/lib/postgresql/data1
+   /usr/lib/postgresql/13/bin/pg_rewind -D /var/lib/postgresql/data1 --source-server='postgresql://rewind_user_s:password@172.19.0.2:5432/testdb' -P
+   # pg_rewind: fatal: target server needs to use either data checksums or "wal_log_hints = on"
+   sed -i -e "s/^#listen_addresses = '\*'/listen_addresses = 'localhost'/" -e "s/^#port = 5432/port = 5433/" /var/lib/postgresql/data1/postgresql.conf
+   /usr/lib/postgresql/13/bin/pg_ctl start -D /var/lib/postgresql/data1
+   #/usr/lib/postgresql/13/bin/pg_ctl stop -D /var/lib/postgresql/data1
+   ~~~
+
+1. プライマリーがダウンの場合、起動できない時の対処
+
+   ~~~bash
+   # postgres-test2
+   pg_ctl promote -D /var/lib/postgresql/data1 -w promote
+   ~~~
+
+   ~~~sql
+   SELECT pg_create_physical_replication_slot('testslot1');
+   ~~~
+
+   ~~~bash
+   # TODO 検証中
+   # postgres-test1
+   # edit /var/lib/postgresql/data/postgresql.conf
+   rm -r /var/lib/postgresql/data1/*
+   pg_basebackup -D /var/lib/postgresql/data1 -X fetch -c fast -P -v -h 172.19.0.2 -p 5432 -U repl_user
+   touch /var/lib/postgresql/data1/standby.signal
+   sed -i "
+   /^synchronous_standby_names\>/s/= *'[^']*'/= '1 (test1)'/;
+   /^primary_conninfo\>/{s/@[^:]*:5432/@172.19.0.3:5433/; s/=[a-z0-9]*'/=test1'/;}
+   /^primary_slot_name\>/s/= *'[^']*'/= 'testslot1'/;
+   " /var/lib/postgresql/data1/postgresql.conf
+
+   #sed -e "
+   #/^synchronous_standby_names\>/s/= *'[^']*'/= '1 (test1)'/;
+   #/^primary_conninfo\>/{s/@[^:]*:5432/@172.19.0.3:5433/; s/=[a-z0-9]*'/=test1'/;}
+   #/^primary_slot_name\>/s/= *'[^']*'/= 'testslot1'/;
+   #" /var/lib/postgresql/data1/postgresql.conf | grep primary_conninfo
+   ~~~
+
+### 2.バックアップとリカバリー ###
+
+1. 準備
+
+[PostgreSQL Sample Database](https://www.postgresqltutorial.com/postgresql-sample-database/)
+
+   ~~~bash
+   # postgres-test2 p5432
+   su - postgres
+   mkdir -p /var/lib/postgresql/backups/archive2
+   mkdir -p /var/lib/postgresql/backups/dump1
+   mkdir -p /var/lib/postgresql/backups/dump2
+   mkdir -p /var/lib/postgresql/backups/pitr
+   sed -i -e "
+   s/^#max_connections/max_connections/
+   s/^#shared_buffers = 128MB/shared_buffers = 256MB/
+   s/^#work_mem = 4MB/work_mem = 8MB/
+   s/^#full_page_writes = on/full_page_writes = on/
+   s/^#wal_log_hints = off/wal_log_hints = on/
+   s/^#archive_mode = off/archive_mode = on/
+   s/^#archive_command = ''/archive_command = 'test ! -f \/var\/lib\/postgresql\/backups\/archive2\/%f \&\& cp -p %p \/var\/lib\/postgresql\/backups\/archive2\/%f'/
+   s/^#restore_command = ''/restore_command = 'cp -p \/var\/lib\/postgresql\/backups\/archive2\/%f %p'/
+   s/^#max_wal_senders = 10/max_wal_senders = 10/
+   s/^#logging_collector = off/logging_collector = on/
+   s/^#log_min_duration_statement = -1/log_min_duration_statement = 2s/
+   s/^#autovacuum = on/autovacuum = on/
+   s/^#shared_preload_libraries = ''/shared_preload_libraries = '\$libdir\/pg_stat_statements'/
+   " -e '$apg_stat_statements\.max = 1000\npg_stat_statements\.track = top\npg_stat_statements\.save = on' /var/lib/postgresql/data/postgresql.conf
+   ~~~
+
+   ~~~powershell
+   # postgres-test2 p5432
+   docker container restart postgres-test2
+   docker cp dvdrental.tar postgres-test2:/tmp/dvdrental.tar
+   ~~~
+
+   ~~~sql
+   --postgres-test2 p5432
+   --psql -d postgres -p 5432
+   CREATE USER test_user LOGIN PASSWORD 'password';
+   CREATE DATABASE testdb WITH OWNER=test_user TEMPLATE=template0 ENCODING=UTF8 LC_COLLATE='C' LC_CTYPE='C';
+   ~~~
+
+   ~~~bash
+   # postgres-test2 p5432
+   pg_restore -U postgres -d testdb /tmp/dvdrental.tar
+   ~~~
+
+1. SQLによるダンプ
+
+* テキスト
+
+   ~~~bash
+   # ダンプ
+   pg_dumpall -f /var/lib/postgresql/backups/dump2/dump_global -g
+   pg_dump -f /var/lib/postgresql/backups/dump2/dump_testdb testdb
+   ~~~
+
+   ~~~sql
+   --psql -U postgres -d testdb -p 5432
+   select count(*) from payment; --14596
+   select count(*) from rental; --16044
+   drop table payment cascade;
+   delete from rental;
+   ~~~
+
+   ~~~bash
+   # リスドア
+   psql -U postgres -d testdb -p 5432 < /var/lib/postgresql/backups/dump2/dump_global
+   psql -U postgres -d testdb -p 5432 < /var/lib/postgresql/backups/dump2/dump_testdb
+   ~~~
+
+   ~~~sql
+   --psql -U postgres -d testdb -p 5432
+   select count(*) from payment;
+   select count(*) from rental;
+   ~~~
+
+* カスタム
+
+   ~~~bash
+   pg_dump -p 5432 -Fc testdb > /var/lib/postgresql/backups/dump1/testdb.dump
+   ~~~
+
+   ~~~sql
+   --psql -U postgres -d testdb -p 5432
+   select count(*) from payment; --14596
+   select count(*) from rental; --16044
+   drop table payment cascade;
+   delete from rental;
+   ~~~
+
+   ~~~bash
+   pg_restore -h localhost -p 5432 -d testdb /var/lib/postgresql/backups/dump1/testdb.dump
+   pg_restore -h localhost -p 5432 -d postgres --clean --create /var/lib/postgresql/backups/dump1/testdb.dump
+   ~~~
+
+   ~~~sql
+   --psql -U postgres -d testdb -p 5432
+   select count(*) from payment;
+   select count(*) from rental;
+   ~~~
+
+1. 継続的アーカイブとポイントインタイムリカバリ（PITR）
+
+   ~~~bash
+   pg_basebackup -D /var/lib/postgresql/backups/pitr -Ft -X fetch -c fast -P -v -w
+   pg_basebackup -D /var/lib/postgresql/backups/pitr2 -Ft -c fast -P -v
+   # pg_basebackup -D /var/lib/postgresql/backups/pitr --wal-method=fetch --checkpoint=fast --write-recovery-conf --slot='testslot2' --progress --verbose -U postgresql
+   ~~~
+
+   ~~~sql
+   
+   ~~~
+
+   ~~~bash
+
+   ~~~
+
+   ~~~sql
+
+   ~~~
+
+### 3.パフォーマンスチューニング ###
+
+### 4.故障対応 ###
+
+1. 環境準備
+
+   ~~~bash
+   # postgres-test1 p5433
+   echo "localhost:testdb:repl_user:password" > ~/.pgpass
+   mkdir -p /var/lib/postgresql/backups/pitr
+   mkdir -p /var/lib/postgresql/data1
+   chmod 700 /var/lib/postgresql/data1
+   pg_basebackup -D /var/lib/postgresql/data1 -X fetch -c fast -P -v -U repl_user -w
+   sed -i -e "s/^#listen_addresses = '\*'/listen_addresses = 'localhost'/" -e "s/^#port = 5432/port = 5433/" /var/lib/postgresql/data1/postgresql.conf
+   cat /var/lib/postgresql/data1/postgresql.conf | grep listen_addresses
+   cat /var/lib/postgresql/data1/postgresql.conf | grep port
+   /usr/lib/postgresql/13/bin/pg_ctl start -D /var/lib/postgresql/data1
+   ls /var/lib/postgresql/data1/log
+   cat /var/lib/postgresql/data1/log/postgresql-2020-11-16_013115.log
+   ~~~
+
+2. 各種テスト
+
+   ~~~bash
+   /usr/lib/postgresql/13/bin/pg_ctl stop -D /var/lib/postgresql/data1
+   # 注意! :正常のDBで実施しないこと。最後の手段として利用すること。ダンプ、バックアップ事前実施すること。
+   # 回復失敗の場合、DBのダメージがさらに深刻になる。
+   /usr/lib/postgresql/13/bin/pg_resetwal --dry-run -D /var/lib/postgresql/data1
+   # --next-transaction-id=xid 安全な値は、データディレクトリの下のpg_xactディレクトリの中で数値的に最も大きなファイル名を探し、1を加えてから、1048576(0x100000)を掛けること
+   # 例えば、0011がpg_xactで最も大きなエントリであれば、-x 0x1200000とすれば良いです
+   ~~~
+
+3. 内部情報取得
+
+   ~~~sql
+   CREATE EXTENSION pageinspect;
+
+   SELECT * FROM get_raw_page('pg_class', 0);
+
+   SELECT * FROM page_header(get_raw_page('pg_class','main', 0));
+   SELECT * FROM heap_page_items(get_raw_page('pg_class','main', 0));
+   SELECT lp as tuple, t_xmin, t_xmax, t_field3 as t_cid, t_ctid FROM heap_page_items(get_raw_page('pg_class', 0));
+   SELECT tuple_data_split('pg_class'::regclass, t_data, t_infomask, t_infomask2, t_bits) FROM heap_page_items(get_raw_page('pg_class', 0));
+   ~~~
+
+   ~~~sql
+   CREATE EXTENSION pg_buffercache;
+
+   SELECT n.nspname, c.relname, count(*) AS buffers
+   FROM pg_buffercache b JOIN pg_class c
+   ON b.relfilenode = pg_relation_filenode(c.oid) AND
+      b.reldatabase IN (0, (SELECT oid FROM pg_database WHERE datname = current_database()))
+   JOIN pg_namespace n ON n.oid = c.relnamespace
+   GROUP BY n.nspname, c.relname
+   ORDER BY 3 DESC LIMIT 10;
+
+   SELECT pg_buffercache.*
+   FROM pg_buffercache
+   JOIN pg_class
+   ON pg_buffercache.relfilenode = pg_relation_filenode(pg_class.oid)
+   WHERE pg_class.relname = 'pg_class';
+   ~~~
+
+   [Sample pg_class_0_0.txt]()
+
+### 5.開発者向けオプション ###
+
+   [19.17. 開発者向けのオプション](https://www.postgresql.jp/document/12/html/runtime-config-developer.html)
+
+   ~~~bash
+   # ignore_system_indexes
+   # ignore_checksum_failure
+   # シングルユーザモード
+   ~~~
+
+   ~~~sql
+
+   ~~~
 
 ## サンプル問題勉強 ##
 
@@ -1177,7 +1496,7 @@ _ok boolean])
     * A. on にすると、WALがスタンバイ機のディスクに正常に書き出されたタイミングでコミット成功とする
     * B. off にすると、WALがプライマリ機にもスタンバイ機にもまだ書き出されていない状況でもコミット成功とする
     * C. local にすると、WALがスタンバイ機のディスクに書き出される前の、バッファに書き出されたタイミングでコミット成功とする
-    * D. remote_apply にすると、スタンバイ機でのWALのディスク書き込みだけでなく、WALの記述内容がデータベースに適用されたタイミングでコミット成功とする
+    * D. remote_apply にすると���スタンバイ機でのWALのディスク書き込みだけでなく、WALの記述内容がデータベースに適用されたタイミングでコミット成功とする
 
 1. Q3.14 buffers_backendに関する説明として適切なものをすべて選びなさい。
 
@@ -1867,6 +2186,13 @@ _ok boolean])
        * Max file size 256 KB
    * transaction status
      * IN_PROGRESS,COMMITTED,ABORTED,SUB_COMMITTED
+   * Transaction Snapshot
+     * SELECT txid_current_snapshot();
+       * xmin:xmax:xip_list
+         * xmin 最小有効txid
+         * xmax 最小未使用txid
+         * xip_list 使用中のtxid
+       * 100:104:100,102 の意味は txid 99以下は無効、104以上は使用されていない、100と102は使用中、101と103はCOMMITまたはABORT。つまり、100,102,104以後のtxidは有効
    * Visibility Check Rules
      * Rule 1: If Status(t_xmin) = ABORTED ⇒ Invisible
      * Rule 2: If Status(t_xmin) = IN_PROGRESS ∧ t_xmin = current_txid ∧ t_xmax = INVAILD ⇒ Visible
@@ -1964,6 +2290,71 @@ _ok boolean])
      * To ensure that no data has been lost by server failures, PostgreSQL supports the WAL mechanism. WAL data (also referred to as XLOG records) are transaction log in PostgreSQL; and WAL buffer is a buffering area of the WAL data before writing to a persistent storage.
    * commit log
      * Commit Log(CLOG) keeps the states of all transactions (e.g., in_progress,committed,aborted) for Concurrency Control (CC) mechanism.
+
+## Buffer Manager ##
+
+[Buffer Manager](http://www.interdb.jp/pg/pgsql08.html#_8.1.)
+
+1. Buffer Manager Structure (a buffer table, buffer descriptors, and buffer pool)
+
+   * each page of all data files can be assigned a unique tag,i.e. a buffer tag.
+     * typedef struct buftag [BufferTag](https://github.com/postgres/postgres/blob/master/src/include/storage/buf_internals.h)
+       * RelFileNode rnode
+         * [RelFileNode](https://github.com/postgres/postgres/blob/master/src/include/storage/relfilenode.h)
+           * Oid spcNode    # tablespace
+           * Oid dbNode     # database
+           * Oid relNode    # relation
+       * ForkNumber forkNum
+         * [ForkNumber](https://github.com/postgres/postgres/blob/master/src/include/common/relpath.h)
+           * typedef enum ForkNumber {InvalidForkNumber = -1,MAIN_FORKNUM = 0,FSM_FORKNUM,VISIBILITYMAP_FORKNUM,INIT_FORKNUM}
+       * BlockNumber blockNum
+         * [BlockNumber](https://github.com/postgres/postgres/blob/master/src/include/storage/block.h)
+           * typedef uint32 BlockNumber;
+   * How a Backend Process Reads Pages
+     * (1) When reading a table or index page, a backend process sends a request that includes the page's buffer_tag to the buffer manager
+     * (2) The buffer manager returns the buffer_ID of the slot that stores the requested page. (if not exist then load from disk)
+     * (3) The backend process accesses the buffer_ID's slot (to read the desired page).
+   * Page Replacement Algorithm : clock sweep
+   * Flushing Dirty Pages : checkpointer,background writer
+
+   * Buffer Manager Structure
+     * buffer pool layer
+       * is an array of slots,each slot stores a data file page,index is buffer_id
+     * buffer descriptors layer
+       * is an array of descriptors, each descriptor has one-to-one correspondence to a buffer pool slot and holds metadata of the stored page in the corresponding slot
+       * buffer descriptor [BufferDesc](https://github.com/postgres/postgres/blob/master/src/include/storage/buf_internals.h)
+       * Retrieve an empty descriptor from the top of the freelist, Insert the new entry, Load the new page, Save the metadata
+     * buffer table layer
+       * a hash table stores relations between the buffer_tags of stored pages and the buffer_ids of the descriptors that hold the stored pages' respective metadata
+         * hash function
+           * map buffer_tag to bucket slots and use separate chaining with linked lists to resolve collisions
+         * hash bucket slots
+         * data entries
+           * data entry
+             * buffer_tag
+             * buffer_id
+   * How the Buffer Manager Works
+     * Accessing a Page Stored in the Buffer Pool
+       * (1) Create the buffer_tag of the desired page and compute the hash bucket slot, which contains the associated entry of the created buffer_tag, using the hash function.
+       * (2) Acquire the BufMappingLock partition that covers the obtained hash bucket slot in shared mode (this lock will be released in step (5)).
+       * (3) Look up the entry and obtain the buffer_id from the entry.
+       * (4) Pin the buffer descriptor the refcount and usage_count of the descriptor are increased by 1
+       * (5) Release the BufMappingLock.
+       * (6) Access the buffer pool slot.
+     * Loading a Page from Storage to Empty Slot
+       * (1) Look up the buffer table (we assume it is not found).
+       * (2) Obtain the empty buffer descriptor from the freelist, and pin it.
+       * (3) Acquire the BufMappingLock partition in exclusive mode (this lock will be released in step (6)).
+       * (4) Create a new data entry
+       * (5) Load the desired page data from storage to the buffer pool slot
+       * (6) Release the BufMappingLock.
+       * (7) Access the buffer pool slot
+     * Loading a Page from Storage to a Victim Buffer Pool Slot
+       * (1) Create the buffer_tag of the desired page and look up the buffer table.
+       * (2) Select a victim buffer pool slot using the clock-sweep algorithm, obtain the old entry
+       * (3) Flush (write and fsync) the victim page data if it is dirty; otherwise proceed to step (4).
+       * (4) Acquire the old BufMappingLock partition that covers the slot that contains the old entry, in exclusive mode.
+       * (5) Acquire the new BufMappingLock partition and insert the new entry to the buffer table
 
 ## WAL-PITR-Replication ##
 
@@ -2134,6 +2525,112 @@ CLUSTERは、index_nameで指定されたインデックスに基づき、table_
 1. EXPLAIN
 
 1. [enable_seqscan](https://www.postgresql.jp/document/12/html/runtime-config-query.html)
+
+­fsync
+­full_page_writes
+­synchronous_commit
+­commit_delay
+­wal_sync_method
+
+データベースサーバ構築 【重要度：2】
+pg_notify
+pg_serial
+pg_snapshots
+pg_stat_tmp
+pg_subtrans
+pg_twophase
+pgcrypto
+initdb -data-checksums (-k)
+log_statement
+track_functions
+track_activities
+運用管理用コマンド全般 【重要度：4】
+vacuumdb
+pgstattuple
+pg_cancel_backend()
+pg_terminate_backend()
+pg_isready
+log_connections
+log_disconnections
+log_duration
+ホット・スタンバイ運用 【重要度：1】
+max_logical_replication_workers
+CREATE/ALTER/DROP PUBLICATION/SUBSCRIPTION
+recovery_min_apply_delay
+スタンバイでの問い合わせのコンフリクト(衝突)
+hot_standby_feedback
+max_standby_streaming_delay
+pg_wal_replay_pause()
+pg_wal_replay_resume()
+pg_receivewal
+スタンバイへ伝搬される処理とされない処理
+ロジカルレプリケーションのサブスクライバ―へ伝搬される処理とされない処理
+アクセス統計情報 【重要度：3】
+pg_locks
+pg_stat_activity、pg_stat_database
+pg_stat_all_tables 等、行レベル統計情報
+pg_statio_all_tables 等、ブロックレベル統計情報
+pg_stat_archiver
+pg_stat_bgwriter
+pg_stat_activity.wait_event
+pg_stat_progress_vacuum
+テーブル / カラム統計情報 【重要度：2】
+pg_statistic
+pg_stats
+null_frac
+n_distinct
+most_common_freqs
+histogram_bounds
+correlation
+default_statistics_target
+effective_cache_size
+その他の性能監視 【重要度：1】
+shared_preload_libraries
+auto_explain
+auto_explain.*
+log_min_duration_statement
+pg_stat_statements
+log_autovacuum_min_duration
+log_lock_waits
+log_checkpoints
+log_temp_files
+性能に関係するパラメータ 【重要度：4】
+huge_pages
+fsync
+synchronous_commit
+checkpoint_timeout
+checkpoint_completion_target
+deadlock_timeout
+起こりうる障害のパターン 【重要度：3】
+statement_timeout
+lock_timeout
+idle_in_transaction_session_timeout
+スタンバイでの問い合わせのコンフリクト(衝突)
+hot_standby_feedback
+vacuum_defer_cleanup_age
+max_standby_archive_delay
+max_standby_streaming_delay
+fsync
+synchronous_commit
+restart_after_crash
+pg_cancel_backend()
+pg_terminate_backend()
+pg_ctl kill
+max_locks_per_transaction
+max_files_per_process
+破損クラスタ復旧 【重要度：2】
+pg_resetwal
+ignore_system_indexes
+ignore_checksum_failure
+コミットログ(pg_xact)
+シングルユーザモード
+VACUUM FREEZE
+ホット・スタンバイ復旧 【重要度：1】
+pg_ctl promote
+pg_receivewal
+pg_rewind
+
+
 
 ## 2回目 ##
 
