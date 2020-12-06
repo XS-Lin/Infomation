@@ -566,6 +566,23 @@
     RMAN> exit
     ~~~
 
+### テスト用一時ユーザ ###
+
+   ~~~sql
+   --sysdba
+   CREATE USER testuser1 IDENTIFIED BY "test";
+   GRANT UNLIMITED TABLESPACE TO testuser1;
+   ALTER SESSION SET CURRENT_SCHEMA=testuser1;
+   CREATE TABLE tb (id int,loc varchar2(2),name varchar(30))
+   PARTITION BY RANGE (loc)
+   (
+     PARTITION pt_tb_1 VALUES LESS THAN ('02'),
+     PARTITION pt_tb_2 VALUES LESS THAN ('03'),
+     PARTITION pt_tb_3 VALUES LESS THAN ('10')
+   );
+   INSERT INTO tb VALUES(1,'2','testx');--ORA-14400 パテーションキーはどのパテーションにもマップされていません。
+   ~~~
+
 ## 検証環境:CDB + GI + RAC + OSB ##
 
 * Hyper-v10 + CentOs7 Minimal
