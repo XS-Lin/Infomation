@@ -1,5 +1,15 @@
 ﻿# PowerShell #
 
+## 環境変数 ##
+
+   ~~~powershell
+   # 環境変数表示
+   $env:JAVA_HOME
+   # 環境変数設定
+   $env:JAVA_HOME='C:\Program Files (x86)\Java\jdk1.8.0_161'
+   # C:\Program Files\Java\jdk-11.0.1
+   ~~~
+
 ## ファイル存在チェック ##
 
    ~~~powershell
