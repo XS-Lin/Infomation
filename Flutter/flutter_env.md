@@ -37,6 +37,7 @@ Review licenses that have not been accepted (y/N)? y
 ~~~
 
 ~~~powershell
+flutter channel # チャンネル一覧表示
 # 2021/02/28時点、stableはandroid studio 4.1.2 未対応のため、開発ブランチ利用
 flutter channel dev
 flutter upgrade
@@ -45,6 +46,17 @@ flutter devices #検出できない
 # Android device の開発者モード有効、debug有効
 flutter devices
 ~~~
+
+~~~powershell
+flutter upgrade
+
+PS C:\Users\linxu> flutter --version
+Flutter 2.1.0-10.0.pre • channel dev • https://github.com/flutter/flutter.git
+Framework • revision cc9b78fc5c (8 days ago) • 2021-02-25 13:26:03 -0800
+Engine • revision a252ec09b7
+Tools • Dart 2.13.0 (build 2.13.0-77.0.dev)
+~~~
+
 
 
 
