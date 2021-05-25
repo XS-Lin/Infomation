@@ -4,6 +4,15 @@
 
 [source code](https://github.com/postgres/postgres)
 
+## 各種定義取得 ##
+
+~~~sql
+\l+
+\df pg_get*def
+\dt tablename*
+describe tablename1
+~~~
+
 ## docker postgresql env ##
 
 ~~~bash
@@ -12,6 +21,12 @@
 # default postgresql installed path
 /usr/lib/postgresql/12/bin
 export PATH=/usr/lib/postgresql/12/bin:$PATH
+~~~
+
+## 日本語で結果出力 ##
+
+~~~bash
+PGCLIENTENCODING=SJIS psql -d <dbname> -c "SELECT ..." -o <out_filename>
 ~~~
 
 ## 実行プラン確認 ##
@@ -37,6 +52,29 @@ oid2name -d test -i
 
 ~~~sql
 select oid,spcname,spcowner,spcacl,spcoptions,pg_tablespace_location(oid) from pg_tablespace;
+~~~
+
+## データベースのサイズ ##
+
+~~~cpp
+/*
+以下のファイルを参照し、psql -l のソースコード確認
+/src/bin/psql/describe.c
+/src/backend/utils/dbsize.c
+linuxで<sys/stat.h>を参照している
+
+linuxのstatコマンドも<sys/stat.h>参照している
+http://github.com/rofl0r/gnulib/blob/master/lib/stat.c
+
+
+--apparent-size ディスク上のサイズ
+--block-size    duの出力の単位(default:1024)
+du --apparent-size --block-size=1024
+*/
+
+// Windows の場合 /src/include/port/win32_port.h でlinuxの <sys/stat.h> を互換する 
+include <sys/stat.h>
+
 ~~~
 
 ## その他 ##
@@ -65,6 +103,39 @@ and exists (
     where pg_namespace.oid = pg_class.relnamespace
     and pg_namespace.nspname in ('public')
 )
+~~~
+
+## ユーザテーブル取得(パーティション深さ) ##
+
+~~~sql
+WITH RECURSIVE t(rel_oid,child_oid,level,root_oid) AS (
+  SELECT
+    pg_class.oid AS rel_oid,
+    pg_inherits.inhrelid AS child_oid,
+    CASE WHEN pg_inherits.inhrelid IS NULL 0 ELSE 1 AS level,
+    pg_class.oid AS root_oid
+  FROM pg_class
+  LEFT JOIN pg_inherits
+  ON pg_class.relkind IN ('p','r')
+  AND pg_class.relnamespace = 'public':: regnamespace
+  AND pg_class.relowner = 'username'::regrole
+  UNION ALL
+  SELECT
+    t.child_oid,
+    pg_inherits.inhrelid,
+    t.level + 1,
+    t.root_oid
+  FROM t
+  INNER JOIN pg_inherits
+  ON t.child_oid = pg_inherits.inhparent
+)
+SELECT
+  root_oid::regclass AS table_name,
+  MAX(t.level) AS level
+FROM t
+WHERE NOT EXISTS (SELECT 'x' FROM pg_inherits WHERE pg_inherits.inhrelid = t.root_oid)
+GROUP BY root_oid
+ORDER BY table_name
 ~~~
 
 ## ユーザテーブル取得(パテーション関係がないテーブル) ##
@@ -147,6 +218,42 @@ join pg_class
 on pg_index.indrelid = pg_class.oid
 where pg_class.relname = 'tb_name'
 ;
+~~~
+
+## シーケンス一覧取得(serial以外) ##
+
+~~~sql
+SELECT c.relname
+FROM pg_class c
+WHERE c.relkind = 'S'
+AND NOT EXISTS (
+  SELECT 'x'
+  FROM pg_depend
+  WHERE pg_depend.obhid = c.oid
+  AND pg_depend.deptype = 'a'
+)
+;
+~~~
+
+## シーケンス(serial)と付随するテーブル取得 ##
+
+~~~sql
+SELECT
+  n1.nspname table_schema,
+  c1.relname table_name,
+  n2.nspname seq_schema,
+  c2.relname seq_name
+FROM
+  pg_class c1
+JOIN
+  pg_namespace n1 ON c1.relnamespace = n1.oid
+JOIN
+  pg_depend d ON d.refobjid = c1.oid
+JOIN
+  pg_class c2 ON d.objid = c2.oid AND c2.relkind = 'S'
+JOIN
+  pg_namespace n2 ON c2.relnamespace = n2.oid
+; 
 ~~~
 
 ## Free Space Map ##
@@ -321,7 +428,7 @@ SELECT pg_relation_filepath('relname');
 ## VACCUM設定 ##
 
 [AUTOVACUUM](https://www.postgresql.jp/document/12/html/routine-vacuuming.html#AUTOVACUUM)
-[Chapter 6 Vacuum Processing](http://www.interdb.jp/pg/pgsql06.html)
+[Chapter 6 Vacuum Processing](se)
 
 * AUTOVACUUM
   * テーブルのrelfrozenxid値(pg_class.relfrozenxid)がautovacuum_freeze_max_age トランザクション年齢よりも古い場合、そのテーブルは常にバキューム実施

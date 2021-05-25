@@ -154,3 +154,9 @@
    ~~~
 
    [Powershell数字フォーマット](https://docs.microsoft.com/ja-jp/dotnet/standard/base-types/custom-numeric-format-strings)
+
+   ~~~powershell
+   # フォルダ以下のファイル一覧表示(相対パス)
+   Get-ChildItem -File -Recurse -Name
+   ~~~
+

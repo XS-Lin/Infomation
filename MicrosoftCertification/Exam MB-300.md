@@ -642,6 +642,23 @@ left side
 * 品質異常 [Quality anomaly]
 * コードなしの運用 [No-code onboarding]
 
+### モジュール: Finance and Operations アプリにおけるデータ管理の使用 ###
+
+#### データ エンティティを使用したデータの管理と統合 ####
+
+* エンティティのカテゴリ [Categories of entities]
+  * パラメーター [Parameters]
+  * 照会 [Reference]
+  * マスター [Master]
+  * ドキュメント [Document]
+  * トランザクション [Transactions]
+
+
+
+
+
+
+
 ## Bookmark ##
 
 https://docs.microsoft.com/ja-jp/learn/modules/get-started-production-control-dyn365-supply-chain-mgmt/12-exercise-1

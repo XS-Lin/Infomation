@@ -24,6 +24,9 @@ du -s /tmp #/tmpのサイズを調べる（単位:kB）, -hで適当な単位表
 xxd # 16進数表示(-c 表示桁数1~256 default:16)
 sed 's \x15\x42\x02 \x12\x12\x02 g' test | xxd -c 6 # バイト置き換え16進数表示
 # sed 注意:0x24 $ 0x5E ^ 0x5c \ は特別な意味があるため、変換時は要注意
+
+# 0byte ファイル削除
+find . -name "*.txt" -type f -size 0 -delete
 ~~~
 
 ~~~sh
@@ -51,6 +54,11 @@ tail -c 1 # ファイルの末尾1 byte取得
 if [ "`tail -c 1 filename | xxd -p`" = "0a" ]; then echo "1"; fi # ファイルの末尾が改行か確認
 ~~~
 
+~~~sh
+# sqlldrのコントロールファイルよりテーブル名確認
+grep -n -dskip -e "INTO TABLE" sqlldr/*
+~~~
+
 ## rootパスワードリセット ##
 
 [26.10. ブート中のターミナルメニューの編集](https://access.redhat.com/documentation/ja-jp/red_hat_enterprise_linux/7/html/system_administrators_guide/sec-terminal_menu_editing_during_boot#proc-Resetting_the_Root_Password_Using_rd.break)
@@ -70,3 +78,111 @@ chroot /sysroot
 touch /.autorelabel
 ~~~
 
+## awk ##
+
+Sqlldrのコントロールファイルからテーブル名とカラム名取得
+
+~~~awk
+#!/bin/awk -f 
+#    get_ctl_info.awk /path/*.ctl
+BEGIN {
+    output_header = "ctl_name,table_name,column_name,byte,start_position"
+    ctlInfoRowIndex = 1
+}
+BEGINFILE {
+    current_file_name = FILENAME
+    sub(".*/", "", current_file_name)
+}
+{
+    if (match($0,/INTO\s+TABLE\s+(\w+)\s*/,arrTable)) {
+        ctlTableName = arrTable[1]
+    }
+
+    if (match($0, /\s*(\w+)\s+POSITION\(([0-9]+):([0-9]+)\)\s*(\S*),?/, arrPostion)) {
+        gsub("^0*", "", arrPostion[2])
+        gsub("^0*", "", arrPostion[3])
+        gsub(",$", "", arrPostion[4])
+
+        ctlInfoArr[ctlInfoRowIndex][1] = current_file_name
+        ctlInfoArr[ctlInfoRowIndex][2] = ctlTableName
+        ctlInfoArr[ctlInfoRowIndex][3] = arrPostionh[1]
+        ctlInfoArr[ctlInfoRowIndex][4] = strtonum(arrPostionh[3]) - strtonum(arrPostionh[2]) + 1
+        ctlInfoArr[ctlInfoRowIndex][5] = strtonum(arrPostionh[2])
+        ctlInfoArr[ctlInfoRowIndex][6] = arrPostionh[4]
+
+        printf "%s,%s,%s,%s,%s,%s\n",ctlInfoArr[ctlInfoRowIndex][1],ctlInfoArr[ctlInfoRowIndex][2],ctlInfoArr[ctlInfoRowIndex][3],ctlInfoArr[ctlInfoRowIndex][4],ctlInfoArr[ctlInfoRowIndex][5],ctlInfoArr[ctlInfoRowIndex][6]
+
+        ctlInfoRowIndex ++
+    }
+}
+ENDFILE {}
+END {}
+~~~
+
+個別ファイル読み取り
+
+~~~awk
+# awk -v test=test.csv ...
+if (system("test -f " test) == 0) {
+    input = "cat " test
+    while((input | getline) > 0) {
+        patsplit($0,arrR,"([^,]+)|(\"[^\"]+\")")
+        print arrR[1],arrR[2] #arrR[3]...
+    }
+}
+~~~
+
+個別ファイル出力
+
+~~~awk
+print "field1","field2","field3" > "test.csv"
+~~~
+
+## curl ##
+
+~~~bash
+# ステータス取得
+# -L,--location -I,--head -w,--write-out -s,--silent
+curl -LI http://www.google.co.jp -o /dev/null -w '%{http_code}\n' -s
+
+# HEADER
+# -D,--dump-header <filename>
+
+# POST
+# --data-binary --data-raw --data-urlencode -d,--data -o,--output
+
+# FTP
+# -a,--append --ftp-create-dirs --disable-eprt --disable-epsv -P,--ftp-port --fep-pasv --ftp-account <data> 
+
+# TLS
+# -E,--cert <certificate[:password]> --key
+~~~
+
+## ファイルサイズ ##
+
+physical_block_size デバイスが動作できる最小の内部ユニット
+logical_block_size  デバイス上の場所指定に外部で使用される
+alignment_offset    基礎となる物理的なアライメントのオフセットとなるLinuxブロックデバイス(パーティション/MD/LVM)の先頭部分のバイト数
+minimum_io_size     ランダムIOに対して推奨のデバイスの最小ユニット
+optimal_io_size     ストリーミングIOに対して推奨のデバイスの最小ユニット
+
+~~~bash
+# NAME,       device name
+# KNAME,      internal kernel device name
+# FSTYPE,     file system
+# MOUNTPOINT, where the device is mounted
+# RA,         read-ahead of the device
+# MIN-IO,     minimum I/O size 
+# OPT-IO,     optimal I/O size
+# PHY-SEC,    physical sector size
+# LOG-SEC     logical sector size
+lsblk -o NAME,KNAME,FSTYPE,MOUNTPOINT,RA,MIN-IO,OPT-IO,PHY-SEC,LOG-SEC
+~~~
+
+## システム状態監視 ##
+
+~~~bash
+vmstat -n 10
+vmstat -dn 10
+while true; do df /tmp; sleep 30s; done
+~~~
