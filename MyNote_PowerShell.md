@@ -256,7 +256,26 @@ Invoke-RestMethod -URI $uri -Method POST -ContentType 'application/json' -Body $
 ~~~
 
 ~~~powershell
-
+# 1. ユーザのログインでuser_id取得
+$uri_base = 'http://localhost:80'
+$uri_get_user_info=$uri_base + '/users.json?status=1'
+$users=Invoke-RestMethod -URI $uri_get_user_info -Method GET -Credential $cred
+$target_users = $users.users | Where-Object { $redmine_logins -contains $_.login } # $redmine_logins 定義から取得
+# 2. プロジェクトid取得
+$uri_get_project_info=$uri_base + '/projects.json'
+$projects=Invoke-RestMethod -URI $uri_get_project_info -Method GET -Credential $cred
+$target_project = $projects.projects | Where-Object { $_.name -eq $project_name } # $project_name 定義から取得
+# 3. トラカーid取得
+$uri_get_tracker=$uri_base + '/trackers.json'
+$trackers=Invoke-RestMethod -URI $uri -Method GET -Credential $cred
+$target_tracker = $trackers.trackers | Where-Object { $tracker_names -contains $_.name } # $tracker_names 定義から取得
+# 4. 対象チケット一覧取得(project_id,tracker_id,status_id=open,user_id)
+$uri='http://localhost:80/issues.json?project_id=1&tracker_id=1&status_id=open&assigned_to_id=5'
+$issues=Invoke-RestMethod -URI $uri -Method GET -Credential $cred
+$issues.issues[0].priority.name
+$issues.issues[0].due_date
+# 5. 期日計算(期日直前,期限切れ)※休日計算機能
+# 6. マークダウン形式結果出力
 ~~~
 
 ## Teams送信(webhook) ##
