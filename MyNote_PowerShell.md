@@ -160,3 +160,132 @@
    Get-ChildItem -File -Recurse -Name
    ~~~
 
+## Redmine情報取得 ##
+
+[Redmine API](https://www.redmine.org/projects/redmine/wiki/rest_api#General-topics)
+
+admin/testadmin
+testuser/testpass/testfirstname testlastname/testuser@mail.test
+
+~~~powershell
+# 
+http://[Redmineurl]/projects.xml
+http://[Redmineurl]/trackers.xml
+http://[Redmineurl]/users.xml
+http://[Redmineurl]/groups.xml
+
+http://[Redmineurl]/projects.xml?limit=200
+~~~
+
+~~~powershell
+# 認証
+#  1. ファイルに記載
+$user='admin'
+$pass= ConvertTo-SecureString 'testadmin' -AsPlainText -Force
+$cred = New-Object System.Management.Automation.PSCredential($user,$pass)
+#  2. 入力
+$cred = Get-Credential
+~~~
+
+[Rest_Users](https://www.redmine.org/projects/redmine/wiki/Rest_Users)
+
+~~~powershell
+# user
+#  GET
+$uri='http://localhost:80/users.json?status=1'
+$users=Invoke-RestMethod -URI $uri -Method GET -Credential $cred
+$uri='http://localhost:80/users.json?name=jplang'
+$users=Invoke-RestMethod -URI $uri -Method GET -Credential $cred
+$uri='http://localhost:80/my/account.json'
+$me=Invoke-RestMethod -URI $uri -Method GET -Credential $cred
+$me
+#  PUT
+$data='{
+    "user": {
+        "login": "jplang",
+        "firstname": "Jean-Philippe",
+        "lastname": "Lang",
+        "mail": "jp_lang@yahoo.fr",
+        "password": "secret01" 
+    }
+}'
+$uri='http://localhost:80/users.json'
+$postBody = [Text.Encoding]::UTF8.GetBytes($data)
+Invoke-RestMethod -URI $uri -Method POST -ContentType 'application/json' -Body $postBody -Credential $cred
+~~~
+
+[Rest_Projects](https://www.redmine.org/projects/redmine/wiki/Rest_Projects)
+
+~~~powershell
+# project
+#  GET
+$uri='http://localhost:80//projects.json'
+$projects=Invoke-RestMethod -URI $uri -Method GET -Credential $cred
+$projects
+~~~
+
+[Rest_Issues](https://www.redmine.org/projects/redmine/wiki/Rest_Issues)
+
+~~~powershell
+$user='testuser'
+$pass= ConvertTo-SecureString 'testpass' -AsPlainText -Force
+$cred = New-Object System.Management.Automation.PSCredential($user,$pass)
+# GET Issues LIST
+$uri='http://localhost:80/issues.json'
+$issues=Invoke-RestMethod -URI $uri -Method GET -Credential $cred
+$issues
+$uri='http://localhost:80/issues.json?project_id=1&tracker_id=1&status_id=open&assigned_to_id=5'
+$issues=Invoke-RestMethod -URI $uri -Method GET -Credential $cred
+$issues.issues[0].priority.name
+$issues.issues[0].due_date
+# GET Issue
+GET /issues/[id].[format]
+# CREATE Issue
+$data='{
+    "issue": {
+        "project_id": 1,
+        "tracker_id": 1,
+        "subject": "テストAPI",
+        "description": "テスト専用です",
+        "assigned_to_id": 5
+    }
+}'
+$uri='http://localhost:80/issues.json'
+$postBody = [Text.Encoding]::UTF8.GetBytes($data)
+Invoke-RestMethod -URI $uri -Method POST -ContentType 'application/json' -Body $postBody -Credential $cred
+~~~
+
+~~~powershell
+
+~~~
+
+## Teams送信(webhook) ##
+
+[Invoke-RestMethod](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/invoke-restmethod?view=powershell-7.1)
+
+~~~powershell
+[String]$var = "This is a sample content"
+$JSONBody = [PSCustomObject][Ordered]@{
+    "@type"      = "MessageCard"
+    "@context"   = "http://schema.org/extensions"
+    "summary"    = "My first alert summary!"
+    "themeColor" = '0078D7'
+    "title"      = "My first alert."
+    "text"       = "Add detailed description of the alert here!
+                         You can also use variables: $var"
+}
+$TeamMessageBody = ConvertTo-Json $JSONBody -Depth 100
+# ConvertFrom-Json
+$parameters = @{
+    "URI"         = '<webhook-URL>'
+    "Method"      = 'POST'
+    "Body"        = $TeamMessageBody
+    "ContentType" = 'application/json'
+}
+Invoke-RestMethod @parameters
+~~~
+
+~~~powershell
+$URI=<webhook-URL>
+Invoke-RestMethod -URI $URI -Method 'POST' -ContentType 'application/json' -Infile message.json
+~~~

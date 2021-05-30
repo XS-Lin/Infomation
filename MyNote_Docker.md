@@ -127,3 +127,24 @@ docker-compose rm
    # コンテナに指定ディレクトリがある場合
    docker cp ./bar/. test4:/foo/bar
    ~~~
+
+## docker redmine ##
+
+[docker redmine](https://hub.docker.com/_/redmine)
+
+~~~powershell
+docker pull redmine
+
+# postgres + redmine
+docker network create -d bridge my-bridge-network
+docker run --rm -d --name redmine-postgres --network my-bridge-network  -e POSTGRES_PASSWORD=secret -e POSTGRES_USER=redmine postgres
+docker run --rm -d --name my-redmine --network my-bridge-network -p 80:3000 -e REDMINE_DB_POSTGRES=redmine-postgres -e REDMINE_DB_USERNAME=redmine -e REDMINE_DB_PASSWORD=secret redmine
+
+docker stop my-redmine 
+docker stop redmine-postgres
+docker rm my-redmine
+docker rm redmine-postgres
+
+# default amdin user: admin/admin
+~~~
+
