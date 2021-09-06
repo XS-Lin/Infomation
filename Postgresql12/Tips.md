@@ -653,3 +653,19 @@ select c.relname,t.spcname from pg_class c join pg_tablespace t on c.reltablespa
 * プロセス取得
   * ps -ef | grep postgres # get pid
   * pstree -p pid
+
+## pgplsql エラー処理 ##
+
+[エラー捕捉](https://www.postgresql.jp/document/12/html/plpgsql-control-structures.html#PLPGSQL-ERROR-TRAPPING)
+[メッセージ](https://www.postgresql.jp/document/12/html/plpgsql-errors-and-messages.html#PLPGSQL-STATEMENTS-RAISE)
+
+## pg_basebackupのXfオプション ##
+
+オプション「-Xf (--wal-method=method=fetch)」の場合、先行書き込みログファイルはバックアップの最後に収集される。
+ログの転送時点でそのログがローテートされていた場合、バックアップは失敗し、使用することができない。
+回避方法として、wal_keep_segmentsパラメータを、バックアップの最後までログが削除されない程度に十分大きくする。
+または、-Xsを利用する。
+
+[fetch](https://www.postgresql.jp/document/12/html/app-pgbasebackup.html)
+
+オプション「-Xs (-wal-method=method=stream)」の場合、「-S slotname (--slot=slotname)」を利用するかの考慮が必要。

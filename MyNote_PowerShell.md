@@ -308,3 +308,8 @@ Invoke-RestMethod @parameters
 $URI=<webhook-URL>
 Invoke-RestMethod -URI $URI -Method 'POST' -ContentType 'application/json' -Infile message.json
 ~~~
+
+~~~powershell
+# フォルダ以下のファイル、サブフォルダのファイル一覧表示
+Get-ChildItem -Name -File -Recurese -Path .
+~~~

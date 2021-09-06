@@ -62,3 +62,12 @@ myMessageSection.addImage("http://i.imgur.com/c4jt321l.png", ititle="This Is Fin
 # Add your section to the connector card object before sending
 myTeamsMessage.addSection(myMessageSection)
 ~~~
+
+## プロキシ環境(windows) ##
+
+~~~python
+set HTTP_PROXY=<proxy>
+set HTTPS_PROXY=<proxy>
+py -m pip install -U pip
+py -m pip install numpy
+~~~
