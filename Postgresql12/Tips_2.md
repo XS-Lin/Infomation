@@ -106,3 +106,168 @@ pg_archivecleanup -d -n $PGDATA/pg_wal <WAL>
 # 不要になったWALを削除
 pg_archivecleanup -d $PGDATA/pg_wal <WAL>
 ~~~
+
+## テスト ##
+
+~~~bash
+docker run --name test-postgres -e POSTGRES_PASSWORD=mysecretpassword -d postgres
+
+su - postgres
+psql
+psql -U testuser -d testdb
+~~~
+
+~~~sql
+CREATE ROLE testuser LOGIN PASSWORD 'testuser1';
+
+CREATE DATABASE testdb WITH OWNER=testuser ENCODING=UTF8 LC_COLLATE='C' LC_CTYPE='C' TEMPLATE=template0;
+
+CREATE TEMPORARY TABLE hash_map_t (
+  id int PRIMARY KEY,
+  origin text,
+  sha_1st_origin text,
+  sha_1st text,
+  sha_1st_conflict_id int,
+  sha_2st_origin text,
+  sha_2st text,
+  sha_2st_conflict_id int,
+  conflict text,
+  result text
+);
+
+INSERT INTO hash_map_t
+WITH temp_t AS (
+  SELECT
+    s.a AS id,
+    to_char(s.a,'FM0000000') AS origin,
+    sha224('TEST' || to_char(s.a,'FM0000000')::bytea) sha_data
+  FROM
+    generate_series(0,9999999) AS s(a)
+)
+SELECT
+  temp_t.id,
+  temp_t.origin,
+  temp_t.sha_data,
+  to_char(
+    (
+      get_byte(sha_data,0) * 256 * 256 * (256 / 4) +
+      get_byte(sha_data,1) * 256 * (256 / 4) +
+      get_byte(sha_data,2) * (256 / 4) +
+      get_byte(set_bit(set_bit(substring(sha_data from 4 for 1),0,0),1,0),0) / 4
+    ) % 10000000,'FM0000000'
+  )
+FROM
+  temp_t
+;
+
+UPDATE
+  hash_map_t
+SET
+  result = conflict_list.sha_1st
+FROM (
+  SELECT
+    min(id) AS no_conflict_id,
+    sha_1st
+  FROM
+    hash_map_t
+  GROUP BY
+    sha_1st
+) conflict_list
+WHERE
+  hash_map_t.id = conflict_list.no_conflict_id
+;
+
+WITH temp_t2 AS (
+  SELECT
+    min(id) AS no_conflict_id,
+    sha_1st conflict_txt,
+    encode(sha_1st::bytea,'hex') conflict_txt_sha_origin,
+    sha224(sha_1st::bytea) conflict_txt_sha_data
+  FROM
+    hash_map_t
+  GROUP BY
+    sha_1st
+  HAVING count(*) > 1
+)
+UPDATE
+  hash_map_t
+SET
+  sha_1st_conflict_id = temp_t2.no_conflict_id,
+  sha_2st_origin = temp_t2.conflict_txt_sha_origin,
+  sha_2st = to_char((get_byte(temp_t2.conflict_txt_sha_data,0) * 256 * 256 * (256 / 4) + 
+                     get_byte(temp_t2.conflict_txt_sha_data,1) * 256 * (256 / 4) +
+                     get_byte(temp_t2.conflict_txt_sha_data,2) * (256 / 4) +
+                     get_byte(set_bit(set_bit(substring(temp_t2.conflict_txt_sha_data from 4 for 1),0,0),1,0),0) / 4 
+                     ) % 10000000,'FM0000000')                    
+FROM
+  temp_t2
+WHERE
+  hash_map_t.sha_1st = temp_t2.conflict_txt
+AND
+  hash_map_t.id <> temp_t2.no_conflict_id
+;
+
+UPDATE
+  hash_map_t
+SET
+  result = conflict_list.sha_2st
+FROM (
+  SELECT
+    min(id) AS no_conflict_id,
+    sha_2st
+  FROM
+    hash_map_t t1
+  WHERE NOT EXISTS (
+    SELECT 'x' FROM hash_map_t t2 WHERE t2.result = t1.sha_2st
+  )
+  GROUP BY
+    sha_2st
+) conflict_list
+WHERE
+  hash_map_t.id = conflict_list.no_conflict_id
+;
+
+WITH empty_result AS (
+  SELECT
+    row_number() OVER (ORDER BY s.a) AS rownum,
+    to_char(s.a,'FM0000000') AS no
+  FROM
+    generate_series(0,9999999) AS s(a)
+  WHERE NOT EXISTS (
+    SELECT 'x' FROM hash_map_t WHERE to_char(s.a,'FM0000000') = hash_map_t.result
+  )
+  ORDER BY 1
+), unallocated_id AS (
+  SELECT
+    row_number() OVER (ORDER BY hash_map_t.id) AS rownum,
+    hash_map_t.id
+  FROM
+    hash_map_t
+  WHERE
+    hash_map_t.result IS NULL
+)
+UPDATE
+  hash_map_t
+SET
+  result = empty_result.no
+FROM
+  empty_result
+JOIN
+  unallocated_id
+ON empty_result.rownum = unallocated_id.rownum
+WHERE
+  hash_map_t.id = unallocated_id.id
+;
+
+SELECT count(*) FROM (
+  SELECT
+    min(id),
+    result,
+    count(*)
+  FROM
+    hash_map_t
+  GROUP BY result
+  HAVING count(*) > 1
+) test;
+SELECT * FROM hash_map_t WHERE origin = result;
+~~~
