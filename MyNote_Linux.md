@@ -184,5 +184,14 @@ lsblk -o NAME,KNAME,FSTYPE,MOUNTPOINT,RA,MIN-IO,OPT-IO,PHY-SEC,LOG-SEC
 ~~~bash
 vmstat -n 10
 vmstat -dn 10
+# top 対話モード 'W'コマンドで ~/.toprcl に設定保存 (グローバル設定は/etc/toprc)
+# top 対話モード '1'コマンドで CPUs使用率をサマリと各コア表示に切り替え
+top -b -d 60 -n 30 > top_result.txt
 while true; do df /tmp; sleep 30s; done
+~~~
+
+## 並行 ##
+
+~~~bash
+wait
 ~~~
