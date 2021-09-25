@@ -313,3 +313,28 @@ Invoke-RestMethod -URI $URI -Method 'POST' -ContentType 'application/json' -Infi
 # フォルダ以下のファイル、サブフォルダのファイル一覧表示
 Get-ChildItem -Name -File -Recurese -Path .
 ~~~
+
+## Download ##
+
+~~~powershell
+# DownloadFile uri,local file name
+# https://docs.microsoft.com/ja-jp/dotnet/api/system.net.webclient.downloadfile?view=net-5.0
+(New-Object Net.WebClient).DownloadFile("https://dl.google.com/dl/cloudsdk/channels/rapid/GoogleCloudSDKInstaller.exe", "$env:Temp\GoogleCloudSDKInstaller.exe")
+
+# call演算子 &
+# https://docs.microsoft.com/ja-jp/powershell/module/microsoft.powershell.core/about/about_operators?view=powershell-7.1
+& $env:Temp\GoogleCloudSDKInstaller.exe
+~~~
+
+## some test ##
+
+~~~powershell
+# 以下のフォルダのリソース利用
+# https://github.com/cloud-ace/gcp-container-textbook/tree/master/06/01_min_cloudrun
+$PROJECT_ID=<your poject id>
+go get cloudace/mincloudrun
+docker build -t gcr.io/$PROJECT_ID/mincloudrun .
+gcloud auth configure-docker # 認証
+docker push gcr.io/$PROJECT_ID/mincloudrun
+gcloud run deploy mincloudrun --image gcr.io/fluent-anagram-326107/mincloudrun --platform managed --region asia-northeast --allow-unauthenticated
+~~~
