@@ -1,5 +1,11 @@
 # MyNote_Encoding #
 
+## Oと0を区別しやすいフォント ##
+
+~~~txt
+Monaco / Consolas
+~~~
+
 ## UTF8 ##
 
 ### UTF8の定義 ###

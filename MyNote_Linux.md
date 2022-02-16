@@ -195,3 +195,9 @@ while true; do df /tmp; sleep 30s; done
 ~~~bash
 wait
 ~~~
+
+## Tree ##
+
+~~~bash
+pwd ; find . | sort | sed '1d;s/^\.//;s/\/\([^/]*\)$/|--\1/;s/\/[^/|]*/|  /g' | less
+~~~
