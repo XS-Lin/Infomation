@@ -1,5 +1,20 @@
 # メモ #
 
+## Java ##
+
+1. Zip解凍の制約
+[java.util.zip.ZipInputStream.java](https://github.com/openjdk/jdk/blob/master/src/java.base/share/classes/java/util/zip/ZipInputStream.java)
+[zip定義](https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT)
+[ZIP (ファイルフォーマット) wiki](https://ja.wikipedia.org/wiki/ZIP_(%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E3%83%95%E3%82%A9%E3%83%BC%E3%83%9E%E3%83%83%E3%83%88))
+   * java.util.zipはDEFLATED,STORED のみサポートする。
+   * windowのデフォルトツールでzip圧縮の時に、2GB以下はDEFLATED、2GBを超える場合はDEFLATED64のcompression methodで圧縮する。
+   * zipのcompression methodはファイルヘッダの9と10バイトで確認できる。
+
+   ~~~bash
+   xxd -u -l 4 test.zip # 504B 0304 zipファイルヘッダ シグネチャ
+   xxd -s 8 -l 2 test.zip # 0800 deflated 0900 deflated64
+   ~~~
+
 ## OJDBC ##
 
 引用元 [Oracle JDBC FAQ](https://www.oracle.com/technetwork/jp/database/application-development/jdbc/overview/default-090281-ja.html#01_01)

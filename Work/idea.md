@@ -2,13 +2,26 @@
 
 ## プロジェクト管理(tool) ##
 
-### 課題 ###
+### 課題管理 ###
 
-Redmine
+[Redmine](https://redmine.jp/)
 
 ### コード ###
 
 バージョン管理 Git
+
+- TODO: ポリシー管理ガイド
+
+[A successful Git branching model](https://nvie.com/posts/a-successful-git-branching-model/)
+[日本語訳 A successful Git branching model](https://qiita.com/homhom44/items/9f13c646fa2619ae63d0)
+
+[6 best practices for teams using Git](https://opensource.com/article/20/7/git-best-practices)
+
+## CI/CD ##
+
+ClouldBuild or GithubAction
+
+Jenkins (オンプレミスの場合)
 
 ### 設計書 ###
 
@@ -18,13 +31,12 @@ Redmine
 
 SharePoint
 
-## 言語 ##
+## Framwork and Language ##
 
-マイクロサービス:go
+backend: go
 
-WebSite: [FastAPI](https://fastapi.tiangolo.com/ja/)
+container: k8s
 
-WebSitePage: React
+WebSite: [React](https://ja.reactjs.org/)
 
 App: Flutter
-
