@@ -338,3 +338,10 @@ gcloud auth configure-docker # 認証
 docker push gcr.io/$PROJECT_ID/mincloudrun
 gcloud run deploy mincloudrun --image gcr.io/fluent-anagram-326107/mincloudrun --platform managed --region asia-northeast --allow-unauthenticated
 ~~~
+
+## XML ##
+
+~~~powershell
+(Select-Xml -Path C:\work\test1.xml -XPath "/bookstore" -Namespace @{ ns = "urn:newbooks-schema"}).Node.InnerText
+
+~~~
