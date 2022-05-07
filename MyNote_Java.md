@@ -15,6 +15,27 @@
    xxd -s 8 -l 2 test.zip # 0800 deflated 0900 deflated64
    ~~~
 
+2. JVM調査メモ(java11)
+
+[jcmd](https://docs.oracle.com/en/java/javase/11/tools/jcmd.html#GUID-59153599-875E-447D-8D98-0078A5778F05)
+[jstat](https://docs.oracle.com/en/java/javase/11/tools/jps.html#GUID-6EB65B96-F9DD-4356-B825-6146E9EEC81E)
+[jps](https://docs.oracle.com/en/java/javase/11/tools/jstat.html#GUID-5F72A7F9-5D5A-4486-8201-E1D1BA8ACCB5)
+
+   ~~~bash
+   # 実行中のjava process確認
+   jcmd -l
+   jps
+   # Process id が 1 とする
+   jcmd 1 GC.class_histogram # クラスのインスタンスのヒープ領域使用量
+   jcmd 1 Thread.print # 各Threadのスタックトレース取得、結果のnid=0xFFはThreadId
+   # ps コマンドでThreadId Id取得
+   ps aux -L # LWP列
+   docker top <ContainerId> aux -L # LWP列
+   # pid、lwpを16進数変換
+   printf "%X\n" 12345
+   ~~~
+
+
 ## OJDBC ##
 
 引用元 [Oracle JDBC FAQ](https://www.oracle.com/technetwork/jp/database/application-development/jdbc/overview/default-090281-ja.html#01_01)
