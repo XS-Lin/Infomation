@@ -4,6 +4,9 @@
 
 [Docker ドキュメント](http://docs.docker.jp/index.html)
 [docker run](http://docs.docker.jp/engine/reference/commandline/run.html)
+[Dockerfile Linter](https://hadolint.github.io/hadolint/)
+[Dockerfile のベスト・プラクティス](http://docs.docker.jp/develop/develop-images/dockerfile_best-practices.html)
+[Dockerfile リファレンス](http://docs.docker.jp/engine/reference/builder.html)
 
 ## Cheat sheet ##
 
@@ -148,3 +151,27 @@ docker rm redmine-postgres
 # default amdin user: admin/admin
 ~~~
 
+## docker gitlab ##
+
+[docker gitlab](gitlab/gitlab-ce)
+[GitLab Docker images](https://docs.gitlab.com/ee/install/docker.html)
+
+~~~powershell
+sudo docker pull gitlab/gitlab-ce:latest
+
+docker run --detach \
+--hostname gitlab.example.com \
+--publish 443:443 --publish 80:80 --publish 22:22 \
+--name gitlab \
+--restart always \
+--volume $GITLAB_HOME/config:/etc/gitlab \
+--volume $GITLAB_HOME/logs:/var/log/gitlab \
+--volume $GITLAB_HOME/data:/var/opt/gitlab \
+--shm-size 256m \
+gitlab/gitlab-ce:latest
+
+~~~
+
+## docker file ##
+
+### test ###

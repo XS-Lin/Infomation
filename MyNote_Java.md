@@ -35,6 +35,12 @@
    printf "%X\n" 12345
    ~~~
 
+## Javaコマンド ##
+
+~~~java
+javac -classpath "." Main.java
+java -classpath "." Main
+~~~
 
 ## OJDBC ##
 

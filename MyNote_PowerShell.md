@@ -8,6 +8,10 @@
    # 環境変数設定
    $env:JAVA_HOME='C:\Program Files (x86)\Java\jdk1.8.0_161'
    # C:\Program Files\Java\jdk-11.0.1
+   # D:\Program Files\Android\Android Studio\jre
+   [Environment]::SetEnvironmentVariable('JAVA_HOME', 'C:\Program Files\Java\jdk-17.0.2', 'User')
+   [Environment]::SetEnvironmentVariable('JAVA_HOME', '', [EnvironmentVariableTarget]::User)
+   # [Environment]::SetEnvironmentVariable('JAVA_HOME', '', 'Machine')
    ~~~
 
 ## ファイル存在チェック ##
