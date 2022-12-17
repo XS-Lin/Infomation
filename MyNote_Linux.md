@@ -141,6 +141,29 @@ if (system("test -f " test) == 0) {
 print "field1","field2","field3" > "test.csv"
 ~~~
 
+~~~bash
+# CSV
+#   format
+#      field1: そのまま
+#      field2: 最後のver1部分を切り出す、"-"の数不定
+#      field3: 最後のver1部分を切り出す
+echo "\"name\",\"i-test-ver1-\",\"i-test:ver1\"" | awk '
+BEGIN {FS=","; OFS="\",\""}
+{
+    name=$1;
+    f1=$2;
+    f2=$3;
+    gsub(/"/, "", name);
+    gsub(/"/, "", f1);
+    gsub(/"/, "", f2);
+    n=split(f1,arr,"-");
+    v1=arr[n-1];
+    match(f2,/:.*$/);
+    v2=substr(f2,RSTART+1, RLENGTH);
+    printf("%s,%s,%s",name,v1,v2)
+}'
+~~~
+
 ## curl ##
 
 ~~~bash
@@ -159,6 +182,8 @@ curl -LI http://www.google.co.jp -o /dev/null -w '%{http_code}\n' -s
 
 # TLS
 # -E,--cert <certificate[:password]> --key
+
+curl -o test.txt -SL https://test
 ~~~
 
 ## ファイルサイズ ##
@@ -223,4 +248,14 @@ poetry --version
 poetry new poetry-demo
 poetry shell
 exit
+~~~
+
+## cron ##
+
+~~~txt
+0/1 means starting at 0 every 1
+1/1 means starting at 1 every 1
+* means all possible values
+  For the minutes, hours, and day of week columns the 0/1 and * are equivalent as these are 0 based
+  For the Day Of Month and Month columns 1/1 and * are equivalent as these are 1 based
 ~~~

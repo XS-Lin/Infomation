@@ -353,3 +353,18 @@ $projects
   (Select-Xml -Path C:\work\test1.xml -XPath "/bookstore" -Namespace @{ ns = "urn:newbooks-schema"}).Node.InnerText
   
   ~~~
+
+## 証明書 ##
+
+  ~~~powershell
+  $ca = Get-ChildItem cert:\CurrentUser\CA | Where-Object { $_.Subject -eq "CN=name" }
+  $ca
+  Remove-Item $ca.PSPath
+  Import-Certificate -FilePath file_name.crt -CertStoreLocation cert:\CurrentUser\CA
+  ~~~
+
+## TimeSpan ##
+
+  ~~~powershell
+  New-TimeSpan -Start ([Datetime]"1970-01-01") -End $(Get-Date)
+  ~~~
