@@ -36,10 +36,15 @@ docker port
 docker ps -aq
 
 # イメージ確認
+docker image ls
 docker images
 
 # イメージ削除
+docker image rm
 docker rmi
+
+# 使用されないイメージ削除
+docker image prune
 
 # すべてのコンテナ起動
 docker-compose up

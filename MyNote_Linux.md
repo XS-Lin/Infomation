@@ -204,3 +204,23 @@ wait
 ~~~bash
 pwd ; find . | sort | sed '1d;s/^\.//;s/\/\([^/]*\)$/|--\1/;s/\/[^/|]*/|  /g' | less
 ~~~
+
+## WSL ##
+
+~~~bash
+# python 3.10 for Ubuntu 20.04.5 LTS
+cat /etc/os-release
+sudo apt update
+sudo apt upgrade # optional
+sudo apt install software-properties-common
+sudo add-apt-repository ppa:deadsnakes/ppa
+sudo apt install python3.10
+# install poetry
+curl -sSL https://install.python-poetry.org | python3.10 - # /home/lin/.local/bin/poetry
+export PATH="/home/lin/.local/bin:$PATH"
+poetry --version
+# https://python-poetry.org/docs/basic-usage/
+poetry new poetry-demo
+poetry shell
+exit
+~~~
