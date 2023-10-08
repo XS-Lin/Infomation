@@ -71,3 +71,14 @@ set HTTPS_PROXY=<proxy>
 py -m pip install -U pip
 py -m pip install numpy
 ~~~
+
+## Flask ##
+
+~~~powershell
+cd E:\tool\python\flask_test
+# py -m venv venv
+.\venv\Scripts\activate
+pip install flask
+# python.exe -m pip install --upgrade pip
+# pip list
+~~~

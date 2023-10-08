@@ -1,4 +1,4 @@
-# Apache Beam Kafka Spark #
+# Apache Beam Kafka#
 
 ## 参照 ##
 
@@ -39,4 +39,24 @@ gradle clean
 gradle tasks # list tasks
 gradle dependencies # list dependencies
 gradle dependencies --configuration runtime # Filer
+~~~
+
+## kafka ##
+
+### basic ###
+
+~~~powershell
+cd E:\tool\kafka\kafka_2.13-3.5.1
+bin\windows\zookeeper-server-start config\zookeeper.properties
+bin\windows\kafka-server-start config\server.properties
+
+bin\windows\kafka-topics --create --topic quickstart-events --bootstrap-server localhost:9092
+
+bin\windows\kafka-topics --describe --topic quickstart-events --bootstrap-server localhost:9092
+
+bin\windows\kafka-console-producer --topic quickstart-events --bootstrap-server localhost:9092
+This is my first event
+This is my second event
+
+bin\windows\kafka-console-consumer --topic quickstart-events --from-beginning --bootstrap-server localhost:9092
 ~~~
