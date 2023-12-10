@@ -2,6 +2,10 @@
 
 ## Main ##
 
+### 参考資料 ###
+
+[powershell about_Operators](https://learn.microsoft.com/ja-jp/powershell/module/microsoft.powershell.core/about/about_operators?view=powershell-7.3)
+
 ### 開発環境 ###
 
 #### JAVA ####
@@ -24,12 +28,10 @@ $Env:GRADLE_HOME
 E:\tool\visualvm_217\bin\visualvm.exe --jdkhome "$Env:JAVA_HOME" --userdir "C:\Temp\visualvm_userdir"
 ~~~
 
-
 #### Go lang ####
 
 * go 1.21.2
   * 環境変数PATHに追加 `%USERPROFILE%\go\bin;`
-
 
 #### Python ####
 
@@ -47,6 +49,10 @@ cd $Env:USERPROFILE\AppData\Local\Programs\Python\Python312\Scripts
 # venv
 $Env:USERPROFILE\AppData\Local\Programs\Python\Python312\python.exe -m venv venv
 pip install google-cloud-bigquery google-cloud-spanner google-cloud-core google-cloud-dataflow google-cloud-kms google-cloud-logging
+
+# Windows Tensorflow (Can not use python>=3.11)
+& $Env:USERPROFILE\AppData\Local\Programs\Python\Python310\python.exe -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"
+& $Env:USERPROFILE\AppData\Local\Programs\Python\Python310\Scripts\pip.exe freeze
 ~~~
 
 #### Docker ####
@@ -107,7 +113,6 @@ docker run -it --network application_net --rm mysql:8.0.31 mysql -h mysql_instan
 
 [Nvdia TensorFlow](https://catalog.ngc.nvidia.com/orgs/nvidia/containers/tensorflow)
 [NGC Catalog User Guide](https://docs.nvidia.com/ngc/gpu-cloud/ngc-catalog-user-guide/index.html)
-
 
 ~~~powershell
 

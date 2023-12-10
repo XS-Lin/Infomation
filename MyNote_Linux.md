@@ -259,3 +259,88 @@ exit
   For the minutes, hours, and day of week columns the 0/1 and * are equivalent as these are 0 based
   For the Day Of Month and Month columns 1/1 and * are equivalent as these are 1 based
 ~~~
+
+## other ##
+
+- strace
+  - strace -o hello.log ./hello
+  - strace -T -o hello.log ./hello
+
+- sar
+  - sar -P 0 1 1
+
+- ldd
+  - ldd /bin/echo
+
+- dpkg-query (ubuntu)
+  - dpkg-query -W | grep ^lib
+
+- cc
+  - cc -static -o pause pause.c
+  - cc -o pause pause.c
+  - cc -o pause -no-pie pause.c
+    - readlf -h pause
+    - readlf -S pause
+
+- pstree
+
+- man 7 signal
+  - SIGKILL
+  - SIGHUP
+    - nohup
+    - bash disdown
+  - SIGSEGV
+  - SIGUSR1 and SIGUSR2
+
+- kill  
+  - PID
+  - PGID
+
+- sleep
+  - sleep infinity &
+  - sleep infinity &
+  - jobs
+  - fg 1
+  - ^Z
+
+- ps
+  - ps aux
+  - ps ajx
+  - ps -eLF
+
+- daemon
+  - 端末なし
+  - 独自セッション
+  - init が親
+
+- time
+  - time ./load.py
+    - real
+    - user
+    - sys
+      - user+sys > real のパターン
+        -timeコマンドの user+sys はサプロセスとブプロセスの合計。複数コアCPUの場合、別のCPUでサブプロセス動作すると発生
+
+- sysctl
+
+- dmesg
+  - プロセスが突然終了の時は oom-kill かも
+
+- socket
+  - unix
+  - tcp
+
+- flock
+
+- fio
+
+
+
+
+
+
+
+
+
+
+

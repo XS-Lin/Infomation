@@ -46,6 +46,9 @@ docker rmi
 # 使用されないイメージ削除
 docker image prune
 
+# サイズ確認
+docker system df
+
 # すべてのコンテナ起動
 docker-compose up
 
