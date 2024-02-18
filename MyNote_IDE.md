@@ -14,9 +14,3 @@
 * 前に戻る:Alt+Left
 * 新しいファイル:Ctrl+N
 * MDプレビュー:Ctrl+Shift+V
-
-## Visual  Studio(C#) ##
-
-## Eclipse ##
-
-## SqlDeveloper ##

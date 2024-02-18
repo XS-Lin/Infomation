@@ -26,9 +26,14 @@
 
 ### 注意点 ###
 
-[PostgreSQL 12.3文書 ](https://www.postgresql.jp/document/12/html/functions-matching.html#POSIX-METASYNTAX)
+[PostgreSQL 12.3文書](https://www.postgresql.jp/document/12/html/functions-matching.html#POSIX-METASYNTAX)
 
 9.7.3.2. ブラケット式
 ブラケット式で、「[（次段落を参照）のなんらかの組み合わせ、およびエスケープ（AREのみ）を例外として、他の全ての特殊文字はブラケット式内では特殊な意味を持ちません」
 9.7.3.6. 制限と互換性
 AREでは、\は[]内でも特別な文字です。したがって、ブラケット式では\を\\と記述しなければなりません。
+
+### GooglePlatform共通 R2 ###
+
+[re2 wiki Syntax](https://github.com/google/re2/wiki/Syntax)
+[Regular Expression 2 (re2.h) の構文](https://learn.microsoft.com/ja-jp/deployedge/edge-learnmore-regex)

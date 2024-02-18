@@ -8,6 +8,13 @@
 [Dockerfile のベスト・プラクティス](http://docs.docker.jp/develop/develop-images/dockerfile_best-practices.html)
 [Dockerfile リファレンス](http://docs.docker.jp/engine/reference/builder.html)
 
+## Docker Desk Top 設定 ##
+
+~~~powershell
+# デフォルト イメージ 格納先
+ls $env:LOCALAPPDATA\Docker\wsl
+~~~
+
 ## Cheat sheet ##
 
 ~~~bash
@@ -48,6 +55,12 @@ docker image prune
 
 # サイズ確認
 docker system df
+
+# コンテナ確認(デフォルトは実行中のみ表示)
+docker container ls
+
+# 実行状態確認(CPU,MEM,...)
+docker container stats
 
 # すべてのコンテナ起動
 docker-compose up
@@ -179,7 +192,5 @@ docker run --detach \
 gitlab/gitlab-ce:latest
 
 ~~~
-
-## docker file ##
 
 ### test ###

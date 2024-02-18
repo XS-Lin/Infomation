@@ -81,7 +81,167 @@ chroot /sysroot
 touch /.autorelabel
 ~~~
 
+## bash ##
+
+~~~bash
+command1 || command2 # if command1 not success, then execute command2
+command1 && command2 # if command1 success, then execute command2
+command1 ; command2 #  execute command1 , then execute command2
+
+$0 # shell script name  
+$1 # first parameter
+${10} # 10th parameter
+$# # count of parameters
+$* # all parameters
+
+myarr=(one two three four five)
+echo ${myarr[1]}
+echo ${myarr[*]}
+unset myarr[1]
+unset myarr
+
+printenv HOME
+printenv PATH
+
+# 変数スコープ
+#   デフォルト: 変数定義するプロセス
+#   export: 他プロセスは変数をコピーして利用、子プロセスがこのコピーを再度exportしても元の値に影響しない。
+
+: # 何もしないコマンド
+
+read -p "prompt" varname
+echo $varname
+
+read -sn1 -p "press any key to continue." # -s silent -n length
+
+shift # $3が$2,$2が$1になり、$1は削除される
+test $PWD == $HOME || cd $HOME
+
+who # login user
+write # send message to user 
+
+[[ ]] # パターンマッチ、正規表現
+(( )) # 数値計算、数値パラメータ操作、算術テスト
+
+for var in one "This is tow" "Now three" ; do echo "Value: $var" ; done
+
+declare -F 
+type quote
+
+$@ # 関数のパラメータを配列として使用
+$? # 関数のステータス
+
+
+
+~~~
+
+~~~bash
+declare -i i=100 # 整数
+declare -r x="read only parameter" # readonly コマンドと同じ
+declare -a a=("car" "ship" "airplane")
+declare -A a=([car]="red" [ship]="green" [airplane]="blue") # dash,ash,mkshで使えない。zshでは$(!array[@])と$(!array[*])による連想配列のインデックスリスト取得できない。
+declare -n var="$1" # 関数パラメータの参照渡し
+declare -l # 自動小文字変換
+declare -u # 自動大文字変換
+declare -x # 環境変数, export コマンドと同様
+declare -ft # 関数終了時trapコマンド実行
+~~~
+
+~~~bash
+# <<< 
+#   コマンド <<< 文字列  は  echo 文字列 | コマンド と同様、プロセスの違いがある。
+~~~
+
+~~~bash
+echo {0..10}
+echo {0..10..2}
+echo {A..F}
+echo {a..z..4}
+echo {A..z}
+echo {A..Z} {a..z}
+~~~
+
+~~~bash
+# 変数展開
+${parameter-default} # 変数未定義の場合default
+${parameter:-default} # 変数未定義またはヌルの場合default
+${param:=value} # 変数未定義またはヌルの場合、param=valueになる
+${param=value} # 変数未定義の場合、param=valueになる
+${param:+new value} # 変数未定義でもない、ヌルでもない場合new value。$param は変更しない。
+${param+new value} # 変数未定義でない場合new value。$param は変更しない。
+${param:?message} # 変数未定義またはヌルの場合,message を標準エラーに出力
+${param?message} # 変数未定義の場合,message を標準エラーに出力
+
+str="0123456789abcdef"
+echo "Length: ${#str}"
+echo "${str:10}"
+echo "${str:10:2}"
+echo "${str:10:-2}" # 10文字目から末尾2文字を除く
+echo "${str: -10}"
+echo "${str: -10:2}"
+echo "${str: -10:-2}" # 後ろから10文字目から末尾2文字を除く
+
+str="word"
+echo "${str^}"
+echo "${str^^}"
+echo "${str,}"
+echo "${str,,}"
+echo "${str~}"
+echo "${str~~}"
+
+str="/usr/share/bash-comletion/comletions"
+echo "${str#*/}" # ${param#pattern} 最短マッチ先頭削除
+echo "${str##*/}" # ${param##pattern} 最長マッチ先頭削除
+echo "${str%/*}" # ${param%pattern} 最短マッチ末尾削除
+echo "${str%%/*}" # ${param%%pattern} 最長マッチ末尾削除
+echo "${str/comletion/example}" # ${param/pattern/replacement} マッチ置換1回
+echo "${str//comletion/example}" # ${param//pattern/replacement} マッチ置換複数回
+echo "${str/#\/usr/example}" # 先頭の /usr を置換
+echo "${str/%comletions/example}" # 末尾の comletions を置換
+
+# ${!NAME*} ${!NAME@}
+echo ${!s*}
+
+# bash >= 4.4
+#   @a 変数型
+#   @A 変数定義
+#   @E エスケープ, echo -e と同様
+#   @P \u, \w をサポート
+#   @Q 単一引用符
+# bash >= 5.0.17
+#   @u 先頭大文字
+#   @U すべて大文字
+#   @L すべて小文字
+#   @K 連想配列の時に引用符出力
+# bash >= 5.2
+#   @k 
+declare -A a=([car]="red" [ship]="green" [airplane]="blue")
+echo ${a[@]@K} # ship "green" airplane "blue" car "red"
+~~~
+
+~~~bash
+# プロセス置換
+#   cmd1 <(cmd2) コマンド2の結果をファイルとしてコマンド1の入力
+#   cmd1 >(cmd2) コマンド1の結果をコマンド2の入力
+diff -u <(ls /etc/rc0.d) <(ls /etc/rc1.d)
+cat /etc/shells | tee >(grep /usr/bin > filtered.txt) | sort 
+~~~
+
+
+## sed ##
+
+FreeBSD の sed と GNU の sed のオプションは違いがある。macOSのsedはFreeBSDからのもの。
+
+~~~bash
+sed '3,5s/sed/Linux sed/gw outfile' myfile # g w 
+sed '2c\modify the 2nd line'
+sed 'y/abc/ABC/'
+sed -e 's/First/XFirst/; s/Second/XSecond/'
+~~~
+
 ## awk ##
+
+gawk, mawk, tawk, nawk がある。FreeBSD,macOSのOne True Awk はオプションと動作がgawkと違いがある。
 
 Sqlldrのコントロールファイルからテーブル名とカラム名取得
 
@@ -333,14 +493,3 @@ exit
 - flock
 
 - fio
-
-
-
-
-
-
-
-
-
-
-

@@ -57,6 +57,3 @@ ServiceNowは、ITから人事、カスタマーサービスまで企業全体�
 Now Learningでも**有料コースが多い**。
 
 [ServiceNow認定アドミニストレーター試験対策](https://qiita.com/diapers_and_snow/items/965f302bfcc262a9f629)
-
-
-

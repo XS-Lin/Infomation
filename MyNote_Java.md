@@ -75,3 +75,148 @@ java -classpath "." Main
 1. JDBC jarファイルはどこから入手できますか。
 
    必要なJDBC jarファイルは、Oracle Technology Networkの[SQLJ & JDBCダウンロード・ページ](https://www.oracle.com/database/technologies/appdev/jdbc-downloads.html)からダウンロードしてください。
+
+## Learn Java SE6 ##
+
+### System properties ###
+
+~~~bash
+java -Dstreet=sesame MainClassName # System.getProperty("street")
+~~~
+
+### ClassPath ###
+
+~~~bash
+CLASSPATH=/path # 環境変数
+javac -classpath /path # or パラメータ
+javac -d /path # 参照するclassファイルフォルダー指定
+~~~
+
+### JShell ###
+
+JShellは、Javaプログラミング言語の宣言、文および式を対話しながら評価する手段となり、言語の習得、よく知らないコードおよびAPIの試用、複雑なコードの試作がしやすくなります。Javaの文、変数定義、メソッド定義、クラス定義、インポート文および式が使用可能です。入力されたコードの断片をスニペットと呼びます。
+
+~~~java
+/exit
+~~~
+
+### jar ###
+
+~~~bash
+# c - create 
+# t - list
+# x - extract
+# v - verbose
+# f - file
+jar -cvf jarFile path [path]
+jar -tvf jarFile path [path]
+jar -xvf jarFile path [path]
+~~~
+
+### Language ###
+
+* primitive types are passed "by value" ※値をコピーする
+* reference types are passed "by reference" ※参照をコピーする
+* anonymous inner class
+  * 1回のみのクラスが作成できる。 new ClassName(){prop;fun;}
+* assert
+  * 問題発見のために利用、パラメータチェックと単体テスト目的ではない。
+* String
+  * 演算子はオーバーロードできない、equalsはできる。== はインスタンス一致を比較するが、Javaは同じ文字列で別のインスタンス作成できるので、equalsで比較すること。
+  * 正規表現
+    * [java21 regex](https://docs.oracle.com/javase/jp/21/docs/api/java.base/java/util/regex/Pattern.html)
+    * jshell> Pattern.matches("(?i)[^@]+@[^@]+\\.[a-z]+","good@some.domain")
+
+### Threads ###
+
+* Process 内のstatic and instance level variablesを共有するが、local variablesは共有しない。
+* Thread and Runnnable
+  * Runnnable 基本的にこちらを使う
+  * Thread 本当にThreadクラスの大部分の機能の場合は継承して利用
+* Control
+  * Thread.sleep()
+  * wait() and join()
+  * notify()
+  * interrupt()
+* Threadの状態※getState()
+  * NEW - 作成後未起動の状態
+  * RUNNABLE - 活動中、I/O待ちを含む
+  * BLOCKED - 同期実行待ち
+  * WAITING,TIMED_WAITING - 待ち状態
+  * TERMINATED - 終止
+  * start()
+  * stop()
+  * suspend()
+  * resume()
+* Threadの終了条件
+  * run()の return
+  * 未処理のruntime exception
+  * stop()の実行
+* Virtual Threads (Java21)
+  * 物理スレッドの数より多い仮想スレッド作成できる
+* Performance
+  * 同期コスト(Virtual Threadsのほうが低い)
+
+### I/O ###
+
+* Stream Wrappers
+  * DataInputStream, DataOutputStream - String(as chars), primitive types
+  * BufferedInputStream, BufferedOutputStream, BufferedReader, BufferedWriter - a specified size buffer
+  * PrintWriter, PrintReader - with a set of Print methods
+  * FileInputStream, FileOutputStream - file opration
+* NIO
+  * Asynchronous I/O
+  * Mapped and Locked Files - MappedByteBuffer
+  * Channels - isOpen() and close()
+    * FileChannel
+    * Pipe.SinkChannel, Pipe.SourceChannel
+    * SocketChannel, ServerSocketChannel, DatagramChannel
+
+### Lambda ###
+
+~~~java
+import java.util.function.*
+IntFunction inc = x -> x + 1
+inc.apply(1)
+~~~
+
+~~~java
+Stream.generate(()->42).limit(3).forEach(System.out::println)
+IntStream.iterate(1,i->i+1).limit(5).forEach(System.out::println)
+var names = new String[]{"Fozzie","Gonzo","Kermit","Piggy"}
+String[] names = {"Fozzie","Gonzo","Kermit","Piggy"}
+var names = new ArrayList<String>(Arrays.asList("Fozzie","Gonzo","Kermit","Piggy"))
+var names = Arrays.asList("Fozzie","Gonzo","Kermit","Piggy")
+
+names.stream().filter(n -> n.indexOf("o") > -1).count()
+names.stream().map(n -> n + "xx").forEach(System.out::println)
+List<String> onames = names.stream().filter(n -> n.indexOf("o") > -1).collect(Collectors.toList())
+~~~
+
+Reducing and Collecting
+
+* Terminal reduction operations
+  * count()
+  * findAny()
+  * findFirst()
+  * matchAll()
+  * matchAny()
+  * min()
+  * max()
+* Custom reduction
+  * [パッケージjava.util.stream](https://docs.oracle.com/javase/jp/21/docs/api/java.base/java/util/stream/package-summary.html)
+  * [Stream](https://docs.oracle.com/javase/jp/21/docs/api/java.base/java/util/stream/Stream.html)
+* Collectors
+  * [Collectors](https://docs.oracle.com/javase/jp/21/docs/api/java.base/java/util/stream/Collectors.html)
+
+~~~java
+var one = BigInteger.ONE
+Stream.iterate(one,count->count.add(one)).limit(12).reduce(one,(a,b)->a.multiply(b))
+~~~
+  
+
+
+
+
+
+
