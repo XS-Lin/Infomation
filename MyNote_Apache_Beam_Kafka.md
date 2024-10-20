@@ -60,3 +60,16 @@ This is my second event
 
 bin\windows\kafka-console-consumer --topic quickstart-events --from-beginning --bootstrap-server localhost:9092
 ~~~
+
+## Dataflow Runner ##
+
+[worker](https://github.com/apache/beam/tree/master/runners/google-cloud-dataflow-java/worker)
+
+* [WorkerStatusPages.java](https://github.com/apache/beam/blob/master/runners/google-cloud-dataflow-java/worker/src/main/java/org/apache/beam/runners/dataflow/worker/status/WorkerStatusPages.java)
+  * 以下の機能が使える
+    * healthz - OKを戻す
+    * heapz - heapdumpを戻す
+    * jfrz - ?
+    * sdk_status
+    * statusz
+    * threadz

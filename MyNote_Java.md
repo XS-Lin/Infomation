@@ -213,10 +213,125 @@ Reducing and Collecting
 var one = BigInteger.ONE
 Stream.iterate(one,count->count.add(one)).limit(12).reduce(one,(a,b)->a.multiply(b))
 ~~~
-  
 
 
+## Java Performancd ##
 
+[Java® Development Kitバージョン21ツール仕様](https://docs.oracle.com/javase/jp/21/docs/specs/man/index.html)
 
+* jar - クラスおよびリソースのアーカイブを作成し、アーカイブから個々のクラスまたはリソースを操作またはリストア
+* jarsigner - Java Archive (JAR)ファイルに署名して確認
+* java - Javaアプリケーションを起動
+* javac - Javaクラスおよびインタフェースの定義を読み取り、バイトコードおよびクラス・ファイルにコンパイル
+* javadoc - Javaソース・ファイルからのAPIドキュメントのHTMLページの生成
+* javap - 1つまたは複数のクラス・ファイルを逆アセンブル
+* jcmd - 実行中のJava Virtual Machine (JVM)への診断コマンド・リクエストの送信
+* jconsole - Javaアプリケーションを監視および管理するためのグラフィカルなコンソールの起動
+* jdb - Javaプラットフォーム・プログラムでバグを検索して修正
+* jdeprscan - 非推奨のAPI要素を使用するためにjarファイル(クラス・ファイルの他の集約)をスキャンする静的分析ツール
+* jdeps - Javaクラス依存性アナライザを起動
+* jfr - Flight Recorderファイルを解析および印刷
+* jhsdb - Javaプロセスにアタッチするか、postmortemデバッガを起動して、クラッシュしたJava Virtual Machine (JVM)からのコア・ダンプの内容を分析
+* jinfo - 指定されたJavaプロセスのJava構成情報を生成
+* jlink - 一連のモジュールとその依存性を作成し、カスタム・ランタイム・イメージに最適化
+* jmap - 指定プロセスの詳細を印刷
+* jmod - JMODファイルの作成と、既存のJMODファイルの内容のリスト
+* jpackage - 自己完結型のJavaアプリケーションをパッケージ化します
+* jps - ターゲット・システムのインストゥルメントされたJVMをリスト
+* jrunscript - 対話モードおよびバッチ・モードをサポートするコマンドライン・スクリプト・シェルを実行
+* jshell - Javaプログラミング言語の宣言、文および式をread-eval-printループ (REPL)で対話形式で評価
+* jstack - 指定されたJavaプロセスのJavaスレッドのJavaスタック・トレースのプリント
+* jstat - JVM統計の監視
+* jstatd - 計測されたJava HotSpot VMの作成と終了のモニター
+* jwebserver - Java Simple Web Serverの起動
+* keytool - 暗号化キー、X.509証明連鎖および信頼できる証明書のキーストア(database)を管理
+* rmiregistry - 現在のホストの指定したポートで、リモート・オブジェクト・レジストリを作成および起動
+* serialver - 展開するクラスへのコピーに適した形式で、1つ以上のクラスの`serialVersionUID`を返す
 
+### JVM tools ###
+
+* jcmd - 実行中のJava Virtual Machine (JVM)への診断コマンド・リクエストの送信
+  * jcmd [pid | main-class] command... | PerfCounter.print | -f filename
+    * GC.class_histogram (-all がなければ Full GCが発生する.)
+      * [I - int[].class.getName()
+      * [S - short[].class.getName()
+      * [F - float[].class.getName()
+      * [D - double[].class.getName()
+      * [J - long[].class.getName()
+      * [B - byte[].class.getName()
+      * [C - char[].class.getName()
+      * [Z - boolean[].class.getName()
+      * [Ljava.lang.Object; - Object[].class.getName()
+      * [[[I - int[][][].class.getName()
+      * java.lang.Object - Object.class.getName()
+    * GC.heap_info
+* jinfo - 指定されたJavaプロセスのJava構成情報を生成
+  * スクリプトで利用が多い
+  * 個別フラグ調査
+  * 場合によって変更もできる
+* jmap - 指定プロセスの詳細を印刷
+  * jmap [options] pid
+* jps - ターゲット・システムのインストゥルメントされたJVMをリスト
+* jstack - 指定されたJavaプロセスのJavaスレッドのJavaスタック・トレースのプリント
+  * jstack [options] pid
+    * gcutil option
+      * S0: Survivor領域0の使用率(現在の容量に対するパーセンテージ)。
+      * S1: Survivor領域1の使用率(現在の容量に対するパーセンテージ)。
+      * E: Eden領域の使用率(現在の容量に対するパーセンテージ)。
+      * O: Old領域の使用率(現在の容量に対するパーセンテージ)。
+      * M: メタスペースの使用率(現在の容量に対するパーセンテージ)。
+      * CCS: 圧縮されたクラス領域使用率をパーセンテージで指定します。
+      * YGC: Young世代のGCイベントの数。
+      * YGCT: Young世代のガベージ・コレクション時間。
+      * FGC: フルGCイベントの数。
+      * FGCT: フル・ガベージ・コレクションの時間。
+      * GCT: ガベージ・コレクションの総時間。
+
+* jstat - JVM統計の監視
+  * jstat outputOptions [-t] [-h lines] vmid [interval [count]]
+
+* JFR
+  * -XX:+FlightRecorder オプション有効が前提
+
+~~~bash
+jcmd -l # 実行されているプロセス一覧
+jcmd $process_id VM.uptime #
+jcmd $process_id VM.system_properties # jinfo -sysprops
+jcmd $process_id VM.version
+jcmd $process_id VM.command_line
+jcmd $process_id VM.flags -all # 単一flagの場合 jinfo -flag -PrintGCDetails pidのようにもできる
+jcmd $process_id GC.class_histogram -all
+jcmd $process_id GC.finalizer_info
+jcmd $process_id GC.heap_dump [options] filename
+jcmd $process_id GC.heap_dump -all "C:\Temp\test_dump.out"
+jcmd $process_id GC.heap_info
+jcmd $process_id JFR.check [options]
+jcmd $process_id JFR.configure [options]
+jcmd $process_id Thread.print -e -l # jstack $process_id
+jcmd $process_id VM.classloaders
+jcmd $process_id VM.classloader_stats
+jcmd $process_id VM.class_hierarchy # クラス階層を示す
+jcmd $process_id VM.command_line
+jcmd $process_id VM.events log
+jcmd $process_id VM.events max
+jcmd $process_id VM.info
+jcmd $process_id VM.log list
+jcmd $process_id VM.flags -all
+jcmd $process_id VM.metaspace vslist
+jcmd $process_id 
+jcmd $process_id 
+jcmd $process_id 
+~~~
+
+~~~bash
+jstat -gcutil $process_id 1000 # 1秒間隔出力、指定しない場合は1回のみ
+S0     S1     E      O      M     CCS    YGC     YGCT     FGC    FGCT     CGC    CGCT       GCT
+-      49.81  50.00  52.09  97.68  92.75      8     0.031     2     0.011     0     0.000     0.042
+~~~
+
+### メモリ ###
+
+~~~powershell
+E:\tool\visualvm_217\bin\visualvm.exe --jdkhome "C:\tools\jdk\oracle\jdk-21.0.2" --userdir "C:\Temp\visualvm_userdir"
+~~~
 

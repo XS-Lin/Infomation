@@ -18,7 +18,10 @@ $Env:GRADLE_HOME
 # PATHに追加 %JAVA_HOME%\bin;%GRADLE_HOME%\bin;
 [Environment]::SetEnvironmentVariable('JAVA_HOME', 'C:\tools\jdk\corretto_aws\jdk17.0.8_8', 'User')
 [Environment]::SetEnvironmentVariable('GRADLE_HOME', 'C:\tools\gradle\gradle-8.3', 'User')
-
+[Environment]::SetEnvironmentVariable('JAVA_HOME', 'C:\tools\jdk\oracle\jdk-22.0.1', 'User')
+[Environment]::SetEnvironmentVariable('GRADLE_HOME', 'C:\tools\gradle\gradle-8.8', 'User')
+[Environment]::SetEnvironmentVariable('JAVA_HOME', 'C:\tools\jdk\oracle\jdk-23.0.1', 'User')
+[Environment]::SetEnvironmentVariable('GRADLE_HOME', 'C:\tools\gradle\gradle-8.10.2', 'User')
 ~~~
 
 * [VisualVM](https://visualvm.github.io/download.html)
@@ -30,7 +33,7 @@ E:\tool\visualvm_217\bin\visualvm.exe --jdkhome "$Env:JAVA_HOME" --userdir "C:\T
 
 #### Go lang ####
 
-* go 1.21.2
+* go 1.23.2
   * 環境変数PATHに追加 `%USERPROFILE%\go\bin;`
 
 #### Python ####
@@ -41,6 +44,13 @@ E:\tool\visualvm_217\bin\visualvm.exe --jdkhome "$Env:JAVA_HOME" --userdir "C:\T
   * `%USERPROFILE%\AppData\Local\Programs\Python\Python312`
 
 ~~~powershell
+py -V
+py --list
+py -3.11 -V
+
+pip --python=<env> install <package>
+pip config set global.require-virtualenv true
+
 # common
 cd $Env:USERPROFILE\AppData\Local\Programs\Python\Python312\Scripts
 .\pip install numpy scipy pandas notebook matplotlib seaborn
@@ -68,14 +78,16 @@ pip install google-cloud-bigquery google-cloud-spanner google-cloud-core google-
 [hub debian](https://hub.docker.com/_/debian)
 [hub kaggle/python](https://hub.docker.com/r/kaggle/python)
 
-* Docker Engine v20.10.21
-* Kubernetes v1.25.2
+* Docker Engine v26.1.4
+* Kubernetes v1.29.2
 * Images
-  * jupyter/datascience-notebook:2023-08-14
-  * apache/airflow:slim-2.7.1-python3.11
-  * gitlab/gitlab-ce:16.3.5-ce.0
-  * postgres:16.0-bookworm
-  * mysql:8.1.0-oracle
+  * quay.io/jupyter/tensorflow-notebook:2024-06-10
+  * quay.io/jupyter/datascience-notebook:2024-06-10
+  * apache/airflow:slim-2.9.2-python3.11
+  * gitlab/gitlab-ce:17.0.2-ce.0
+  * postgres:16.3-bullseye
+  * mysql:8.0.37-debian
+  * gcr.io/kaggle-gpu-images/python:v149
 
 ~~~powershell
 # 開発環境共有ネット
@@ -83,9 +95,10 @@ docker network create --driver=bridge application_net
 ~~~
 
 ~~~powershell
-docker pull jupyter/datascience-notebook:2022-12-15
-$work_folder="d:\Site\MyScript\python_test\data_science\datascience-notebook"
-docker run -it --network application_net --name my_data_science_notebook -p 8888:8888 -v ${work_folder}:/home/jovyan/work jupyter/datascience-notebook:2022-12-15
+# docker pull jupyter/datascience-notebook:2022-12-15
+docker pull quay.io/jupyter/datascience-notebook:2024-06-10
+$work_folder="E:\project\datascience\train\LearnPython\data_science\datascience-notebook"
+docker run -it --network application_net --name my_data_science_notebook -p 8888:8888 -v ${work_folder}:/home/jovyan/work quay.io/jupyter/datascience-notebook:2024-06-10
 
 # コンテナ停止・起動
 docker stop my_data_science_notebook
@@ -93,9 +106,35 @@ docker start my_data_science_notebook
 ~~~
 
 ~~~powershell
-docker pull mysql:8.0.31
+docker pull apache/airflow:slim-2.9.2-python3.11
+
+~~~
+
+~~~powershell
+docker pull gitlab/gitlab-ce:17.0.2-ce.0
+
+~~~
+
+~~~powershell
+docker pull postgres:16.3-bullseye
+
+~~~
+
+~~~powershell
+docker pull quay.io/jupyter/tensorflow-notebook:2024-06-10
+
+~~~
+
+~~~powershell
+docker pull gcr.io/kaggle-gpu-images/python:v149
+
+~~~
+
+~~~powershell
+# docker pull mysql:8.0.31
+docker pull mysql:8.0.37-debian
 # コンテナ作成
-docker run --network application_net --name mysql_instance_1 -p 3306:3306 -e MYSQL_ROOT_PASSWORD=Password0 -d mysql:8.0.31
+docker run --network application_net --name mysql_instance_1 -p 3306:3306 -e MYSQL_ROOT_PASSWORD=Password0 -d mysql:8.0.37-debian
 # コンテナ停止・起動
 docker stop mysql_instance_1
 docker start mysql_instance_1
@@ -108,7 +147,7 @@ docker exec -it mysql_instance_1 bash
 # CREATE USER IF NOT EXISTS admin IDENTIFIED BY 'Admin_Password0';
 # GRANT ALL PRIVILEGES ON *.* TO admin;
 # リモート接続
-docker run -it --network application_net --rm mysql:8.0.31 mysql -h mysql_instance_1 -u admin -p
+docker run -it --network application_net --rm mysql:8.0.37-debian mysql -h mysql_instance_1 -u admin -p
 ~~~
 
 [Nvdia TensorFlow](https://catalog.ngc.nvidia.com/orgs/nvidia/containers/tensorflow)
@@ -122,22 +161,42 @@ docker run -it --network application_net --rm mysql:8.0.31 mysql -h mysql_instan
 
 * VS Code
 * Visual Studio Community 2022
+* IntelliJ
 
-#### other ####
+#### tool ####
 
-* Blender
-  * 3.6.4
+* [Blender](https://www.blender.org/download/)
+  * 4.1.1
 * Unreal Engine
-  * 5.3
+  * 5.4.2
 * [Wireshark](https://www.wireshark.org/download.html)
-  * 4.0.10
+  * 4.2.5
 * [owasp zap](https://www.zaproxy.org/download/)
-  * 2.13.0
+  * 2.15.0
 * [pgAdmin](https://www.pgadmin.org/download/pgadmin-4-windows/)
-  * 7.4
+  * 8.8
+* [DBeaver](https://dbeaver.io/download/)
+  * 24.1.0
 * [Graphviz](https://graphviz.org/)
   * 9.0.0
     * $Env:GRAPHVIZ_HOME="E:\tool\graphviz\windows_10_msbuild_Release_graphviz-9.0.0-win32\Graphviz"
+  * 11
+    * $Env:GRAPHVIZ_HOME="E:\tool\graphviz\windows_10_cmake_Release_Graphviz-11.0.0-win64\Graphviz-11.0.0-win64"
+* [gcloud CLI](https://cloud.google.com/sdk/docs/install?hl=ja)
+  * 480.0.0
+* GitHub Desktop
+  * 3.4.1
+* git
+  * 2.45.2
+* [CMake](https://cmake.org/download/)
+  * 3.30.0-rc3
+* [OpenCV](https://docs.opencv.org/4.x/d3/d52/tutorial_windows_install.html)
+  * 4.10.0
+
+~~~powershell
+gcloud components update
+git update-git-for-windows
+~~~
 
 ### 開発環境 WSL2 ###
 
