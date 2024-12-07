@@ -8,6 +8,16 @@
 
 ### 開発環境 ###
 
+#### Common ####
+
+~~~powershell
+# PATHに追加
+# '%CUDA_PATH%;%JAVA_HOME%\bin;%GRADLE_HOME%\bin;%GRAPHVIZ_HOME%\bin;%USERPROFILE%\go\bin'
+
+# Graphviz
+[Environment]::SetEnvironmentVariable('GRAPHVIZ_HOME', 'C:\tools\graphviz\Graphviz-12.2.0-win64', 'User')
+~~~
+
 #### JAVA ####
 
 ~~~powershell
@@ -21,7 +31,7 @@ $Env:GRADLE_HOME
 [Environment]::SetEnvironmentVariable('JAVA_HOME', 'C:\tools\jdk\oracle\jdk-22.0.1', 'User')
 [Environment]::SetEnvironmentVariable('GRADLE_HOME', 'C:\tools\gradle\gradle-8.8', 'User')
 [Environment]::SetEnvironmentVariable('JAVA_HOME', 'C:\tools\jdk\oracle\jdk-23.0.1', 'User')
-[Environment]::SetEnvironmentVariable('GRADLE_HOME', 'C:\tools\gradle\gradle-8.10.2', 'User')
+[Environment]::SetEnvironmentVariable('GRADLE_HOME', 'C:\tools\gradle\gradle-8.11.1', 'User')
 ~~~
 
 * [VisualVM](https://visualvm.github.io/download.html)
@@ -33,7 +43,7 @@ E:\tool\visualvm_217\bin\visualvm.exe --jdkhome "$Env:JAVA_HOME" --userdir "C:\T
 
 #### Go lang ####
 
-* go 1.23.2
+* go 1.23.3
   * 環境変数PATHに追加 `%USERPROFILE%\go\bin;`
 
 #### Python ####
@@ -42,6 +52,8 @@ E:\tool\visualvm_217\bin\visualvm.exe --jdkhome "$Env:JAVA_HOME" --userdir "C:\T
   * `%USERPROFILE%\AppData\Local\Programs\Python\Python311`
 * Python 3.12
   * `%USERPROFILE%\AppData\Local\Programs\Python\Python312`
+* Python 3.13
+  * `%USERPROFILE%\AppData\Local\Programs\Python\Python313`
 
 ~~~powershell
 py -V
@@ -63,6 +75,19 @@ pip install google-cloud-bigquery google-cloud-spanner google-cloud-core google-
 # Windows Tensorflow (Can not use python>=3.11)
 & $Env:USERPROFILE\AppData\Local\Programs\Python\Python310\python.exe -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"
 & $Env:USERPROFILE\AppData\Local\Programs\Python\Python310\Scripts\pip.exe freeze
+
+# ----- 2024/11/23 ---------------- 
+py -3.12 -m pip install numpy scipy scikit-learn pandas matplotlib seaborn keras
+py -3.12 -m pip install tensorflow tensorflow_datasets tf_keras
+py -3.12 -m pip install google-cloud-bigquery google-cloud-spanner google-cloud-core google-cloud-kms google-cloud-logging
+py -3.12 -m pip install pydot tqdm 
+py -3.12 -m pip install kfp
+
+# ----- 2024/11/07 ---------------- 
+py -V # 3.13
+# TODO Not support 
+#py -m pip install google-cloud-bigquery google-cloud-spanner google-cloud-core google-cloud-dataflow google-cloud-kms google-cloud-logging
+#py -m pip install numpy scipy pandas matplotlib seaborn scikit-learn tensorflow keras
 ~~~
 
 #### Docker ####
@@ -78,16 +103,8 @@ pip install google-cloud-bigquery google-cloud-spanner google-cloud-core google-
 [hub debian](https://hub.docker.com/_/debian)
 [hub kaggle/python](https://hub.docker.com/r/kaggle/python)
 
-* Docker Engine v26.1.4
-* Kubernetes v1.29.2
-* Images
-  * quay.io/jupyter/tensorflow-notebook:2024-06-10
-  * quay.io/jupyter/datascience-notebook:2024-06-10
-  * apache/airflow:slim-2.9.2-python3.11
-  * gitlab/gitlab-ce:17.0.2-ce.0
-  * postgres:16.3-bullseye
-  * mysql:8.0.37-debian
-  * gcr.io/kaggle-gpu-images/python:v149
+* Docker Engine v27.3.1
+* Kubernetes v1.30.2
 
 ~~~powershell
 # 開発環境共有ネット
@@ -96,13 +113,20 @@ docker network create --driver=bridge application_net
 
 ~~~powershell
 # docker pull jupyter/datascience-notebook:2022-12-15
-docker pull quay.io/jupyter/datascience-notebook:2024-06-10
+# docker pull quay.io/jupyter/datascience-notebook:2024-06-10
+docker pull quay.io/jupyter/datascience-notebook:2024-11-19
 $work_folder="E:\project\datascience\train\LearnPython\data_science\datascience-notebook"
-docker run -it --network application_net --name my_data_science_notebook -p 8888:8888 -v ${work_folder}:/home/jovyan/work quay.io/jupyter/datascience-notebook:2024-06-10
+docker run -it --network application_net --name my_data_science_notebook_v20241119 -p 8888:8888 -v ${work_folder}:/home/jovyan/work quay.io/jupyter/datascience-notebook:2024-11-19
 
 # コンテナ停止・起動
-docker stop my_data_science_notebook
-docker start my_data_science_notebook
+docker stop my_data_science_notebook_v20241119
+docker start my_data_science_notebook_v20241119
+
+# コンテナ接続とライブラリインストール（イメージ変更しない前提、docker停止の時には消える）
+docker exec -it my_data_science_notebook_v20241119 /bin/bash # default user: jovyan
+docker exec -it --user root my_data_science_notebook_v20241119 /bin/bash # default user: root
+apt update
+apt install graphviz
 ~~~
 
 ~~~powershell
@@ -176,18 +200,15 @@ docker run -it --network application_net --rm mysql:8.0.37-debian mysql -h mysql
 * [pgAdmin](https://www.pgadmin.org/download/pgadmin-4-windows/)
   * 8.8
 * [DBeaver](https://dbeaver.io/download/)
-  * 24.1.0
+  * 24.2.2
 * [Graphviz](https://graphviz.org/)
-  * 9.0.0
-    * $Env:GRAPHVIZ_HOME="E:\tool\graphviz\windows_10_msbuild_Release_graphviz-9.0.0-win32\Graphviz"
-  * 11
-    * $Env:GRAPHVIZ_HOME="E:\tool\graphviz\windows_10_cmake_Release_Graphviz-11.0.0-win64\Graphviz-11.0.0-win64"
+  * 12
 * [gcloud CLI](https://cloud.google.com/sdk/docs/install?hl=ja)
-  * 480.0.0
+  * 502.0.0
 * GitHub Desktop
-  * 3.4.1
+  * 3.4.9
 * git
-  * 2.45.2
+  * 2.45.2.windows.1
 * [CMake](https://cmake.org/download/)
   * 3.30.0-rc3
 * [OpenCV](https://docs.opencv.org/4.x/d3/d52/tutorial_windows_install.html)
@@ -301,6 +322,20 @@ python -c "import tensorflow as tf; print(tf.reduce_sum(tf.random.normal([1000, 
 python -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"
 deactivate
 
+~~~
+
+~~~bash
+sudo apt update
+sudo apt install software-properties-common
+sudo apt install python3.11-full
+sudo apt install bpfcc-tools
+
+python3.11 -m venv venv
+cd venv
+. ./bin/activate
+pip install bcc
+pip install numba
+python test.py
 ~~~
 
 ## 更新履歴 ##

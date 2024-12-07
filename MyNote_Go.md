@@ -6,8 +6,6 @@
 
 ~~~powershell
 go version # go version go1.22.0 windows/amd64
-
-
 ~~~
 
 ### cheat list ###

@@ -2,7 +2,12 @@
 
 ## 参考資料 ##
 
-英語：
+### 数式 ###
+
+[Latex勉強](https://colab.research.google.com/github/kalz2q/mycolabnotebooks/blob/master/learnlatex.ipynb#scrollTo=StwWQ1xuncNF)
+[【LaTeX】数式環境まとめ【amsmath】](https://mathlandscape.com/latex-eq/)
+
+### その他 ###
 
 [mit-deep-learning-book-pdf](https://github.com/janishar/mit-deep-learning-book-pdf)
 
