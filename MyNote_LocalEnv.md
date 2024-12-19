@@ -8,19 +8,12 @@
 
 ### 開発環境 ###
 
-#### Common ####
-
-~~~powershell
-# PATHに追加
-# '%CUDA_PATH%;%JAVA_HOME%\bin;%GRADLE_HOME%\bin;%GRAPHVIZ_HOME%\bin;%USERPROFILE%\go\bin'
-
-# Graphviz
-[Environment]::SetEnvironmentVariable('GRAPHVIZ_HOME', 'C:\tools\graphviz\Graphviz-12.2.0-win64', 'User')
-~~~
-
 #### JAVA ####
 
 ~~~powershell
+# バージョン確認
+java --version
+
 # 環境変数確認
 $Env:USERPROFILE
 $Env:JAVA_HOME
@@ -46,42 +39,40 @@ E:\tool\visualvm_217\bin\visualvm.exe --jdkhome "$Env:JAVA_HOME" --userdir "C:\T
 * go 1.23.3
   * 環境変数PATHに追加 `%USERPROFILE%\go\bin;`
 
+~~~powershell
+# バージョン確認
+go version # go version go1.23.3 windows/amd64
+
+# 環境変数確認
+go env
+~~~
+
 #### Python ####
 
-* Python 3.11
-  * `%USERPROFILE%\AppData\Local\Programs\Python\Python311`
 * Python 3.12
   * `%USERPROFILE%\AppData\Local\Programs\Python\Python312`
 * Python 3.13
   * `%USERPROFILE%\AppData\Local\Programs\Python\Python313`
 
 ~~~powershell
+# バージョン確認
 py -V
 py --list
 py -3.11 -V
 
+# pipサンプル
 pip --python=<env> install <package>
 pip config set global.require-virtualenv true
 
+# ----- 2024/11/23 ----------------
 # common
-cd $Env:USERPROFILE\AppData\Local\Programs\Python\Python312\Scripts
-.\pip install numpy scipy pandas notebook matplotlib seaborn
-.\pip install selenium openpyxl avro graphviz 
-
-# venv
-$Env:USERPROFILE\AppData\Local\Programs\Python\Python312\python.exe -m venv venv
-pip install google-cloud-bigquery google-cloud-spanner google-cloud-core google-cloud-dataflow google-cloud-kms google-cloud-logging
-
-# Windows Tensorflow (Can not use python>=3.11)
-& $Env:USERPROFILE\AppData\Local\Programs\Python\Python310\python.exe -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"
-& $Env:USERPROFILE\AppData\Local\Programs\Python\Python310\Scripts\pip.exe freeze
-
-# ----- 2024/11/23 ---------------- 
 py -3.12 -m pip install numpy scipy scikit-learn pandas matplotlib seaborn keras
 py -3.12 -m pip install tensorflow tensorflow_datasets tf_keras
 py -3.12 -m pip install google-cloud-bigquery google-cloud-spanner google-cloud-core google-cloud-kms google-cloud-logging
 py -3.12 -m pip install pydot tqdm 
-py -3.12 -m pip install kfp
+py -3.12 -m pip install kfp docker # kubeflow, not work in Windows 
+py -3.12 -m pip avro graphviz 
+py -3.12 -m venv venv
 
 # ----- 2024/11/07 ---------------- 
 py -V # 3.13
@@ -187,41 +178,9 @@ docker run -it --network application_net --rm mysql:8.0.37-debian mysql -h mysql
 * Visual Studio Community 2022
 * IntelliJ
 
-#### tool ####
-
-* [Blender](https://www.blender.org/download/)
-  * 4.1.1
-* Unreal Engine
-  * 5.4.2
-* [Wireshark](https://www.wireshark.org/download.html)
-  * 4.2.5
-* [owasp zap](https://www.zaproxy.org/download/)
-  * 2.15.0
-* [pgAdmin](https://www.pgadmin.org/download/pgadmin-4-windows/)
-  * 8.8
-* [DBeaver](https://dbeaver.io/download/)
-  * 24.2.2
-* [Graphviz](https://graphviz.org/)
-  * 12
-* [gcloud CLI](https://cloud.google.com/sdk/docs/install?hl=ja)
-  * 502.0.0
-* GitHub Desktop
-  * 3.4.9
-* git
-  * 2.45.2.windows.1
-* [CMake](https://cmake.org/download/)
-  * 3.30.0-rc3
-* [OpenCV](https://docs.opencv.org/4.x/d3/d52/tutorial_windows_install.html)
-  * 4.10.0
-
-~~~powershell
-gcloud components update
-git update-git-for-windows
-~~~
-
 ### 開発環境 WSL2 ###
 
-#### 環境設定 ####
+#### 環境設定 TensorFlow ####
 
 * TensorFlow
   1. Windows11 WSL2
@@ -231,6 +190,7 @@ git update-git-for-windows
   5. (Optional) TensorRT
 
 ~~~bash
+# 2023/10/08
 # linxs/local
 sudo apt-get update
 sudo apt update
@@ -321,7 +281,6 @@ python -c "import tensorflow as tf; print(tf.reduce_sum(tf.random.normal([1000, 
 # Verify the GPU setup
 python -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"
 deactivate
-
 ~~~
 
 ~~~bash
@@ -338,25 +297,75 @@ pip install numba
 python test.py
 ~~~
 
-## 更新履歴 ##
-
-----
-2023/10/08
-
-~~~python
->>> import tensorflow as tf
-#2023-10-08 12:55:26.729293: I tensorflow/core/util/port.cc:111] oneDNN custom operations are on. You may see slightly different numerical results due to #floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
-#2023-10-08 12:55:26.924816: I tensorflow/tsl/cuda/cudart_stub.cc:28] Could not find cuda drivers on your machine, GPU will not be used.
-#2023-10-08 12:55:27.824508: E tensorflow/compiler/xla/stream_executor/cuda/cuda_dnn.cc:9342] Unable to register cuDNN factory: Attempting to register factory for #plugin cuDNN when one has already been registered
-#2023-10-08 12:55:27.824547: E tensorflow/compiler/xla/stream_executor/cuda/cuda_fft.cc:609] Unable to register cuFFT factory: Attempting to register factory for #plugin cuFFT when one has already been registered
-#2023-10-08 12:55:27.828490: E tensorflow/compiler/xla/stream_executor/cuda/cuda_blas.cc:1518] Unable to register cuBLAS factory: Attempting to register factory for #plugin cuBLAS when one has already been registered
-#2023-10-08 12:55:28.330260: I tensorflow/tsl/cuda/cudart_stub.cc:28] Could not find cuda drivers on your machine, GPU will not be used.
-#2023-10-08 12:55:28.334381: I tensorflow/core/platform/cpu_feature_guard.cc:182] This TensorFlow binary is optimized to use available CPU instructions in #performance-critical operations.
-#To enable the following instructions: AVX2 AVX_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
-#2023-10-08 12:55:38.027499: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Could not find TensorRT
->>> tf.sysconfig.get_build_info()
-#OrderedDict([('cpu_compiler', '/usr/lib/llvm-16/bin/clang'), ('cuda_compute_capabilities', ['sm_35', 'sm_50', 'sm_60', 'sm_70', 'sm_75', 'compute_80']), #('cuda_version', '11.8'), ('cudnn_version', '8'), ('is_cuda_build', True), ('is_rocm_build', False), ('is_tensorrt_build', True)])
+~~~bash
+# 2024/12/07
+# CUDA 更新後、Tensorflow-gpu認識確認
+nvidia-smi # NVIDIA-SMI 565.51.01              Driver Version: 566.36         CUDA Version: 12.7
+cd /mnt/e/tool/python_for_wsl2
+. python311_venv/bin/activate 
+python -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))" # [PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')]
+deactivate
 ~~~
+
+#### 環境設定 Kubeflow piplines (local docker runner) ####
+
+~~~bash
+# 2024/12/07
+cd /mnt/e/tool/python_for_wsl2
+. python311_venv/bin/activate 
+pip install kfp docker # kubeflow
+pip install google-cloud-aiplatform
+pip install mysql-connector-python # mysql-connector-python-9.1.0
+deactivate
+
+gcloud auth application-default login --no-launch-browser # 認証情報作成
+~~~
+
+#### other tools ####
+
+* [Blender](https://www.blender.org/download/)
+  * 4.1.1
+* Unreal Engine
+  * 5.4.2
+* [Wireshark](https://www.wireshark.org/download.html)
+  * 4.2.5
+* [owasp zap](https://www.zaproxy.org/download/)
+  * 2.15.0
+* [pgAdmin](https://www.pgadmin.org/download/pgadmin-4-windows/)
+  * 8.8
+* [DBeaver](https://dbeaver.io/download/)
+  * 24.2.2
+* [Graphviz](https://graphviz.org/)
+  * 12
+* [gcloud CLI](https://cloud.google.com/sdk/docs/install?hl=ja)
+  * 502.0.0
+* GitHub Desktop
+  * 3.4.9
+* git
+  * 2.45.2.windows.1
+* [CMake](https://cmake.org/download/)
+  * 3.30.0-rc3
+* [OpenCV](https://docs.opencv.org/4.x/d3/d52/tutorial_windows_install.html)
+  * 4.10.0
+
+~~~powershell
+# PATHに追加
+# '%CUDA_PATH%;%JAVA_HOME%\bin;%GRADLE_HOME%\bin;%GRAPHVIZ_HOME%\bin;%USERPROFILE%\go\bin'
+
+# ツール格納先
+# C:\tools
+
+# Graphviz
+[Environment]::SetEnvironmentVariable('GRAPHVIZ_HOME', 'C:\tools\graphviz\Graphviz-12.2.0-win64', 'User')
+
+# gcloud CLI
+gcloud components update
+
+# git
+git update-git-for-windows
+~~~
+
+## 設定問題のメモ ##
 
 [cuda_version問題](https://stackoverflow.com/questions/75614728/cuda-12-tf-nightly-2-12-could-not-find-cuda-drivers-on-your-machine-gpu-will)
 tensorflowがcuda12.2,cudnn8.9対応待ち。

@@ -1,4 +1,6 @@
-# 面接 #
+# 雑記 #
+
+## 面接 ##
 
 [IT業界でよくある面談とは？面談の流れと注意点・コツご紹介](http://kanesuzu-san.com/it-mendan-kotsu)
 
@@ -18,3 +20,7 @@
 
 [SES面談対策質問問答集](https://takkuso.hatenablog.com/entry/2018/05/11/125331)
 
+## 意味不明 ##
+
+- エトセトラ【(ラテン)et cetera】
+  - その他いろいろ。 等々。… など。 etc.と略記する。
