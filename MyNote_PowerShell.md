@@ -368,3 +368,9 @@ $projects
   ~~~powershell
   New-TimeSpan -Start ([Datetime]"1970-01-01") -End $(Get-Date)
   ~~~
+
+## 文字化け ##
+
+~~~powershell
+[Console]::OutputEncoding = [System.Text.Encoding]::GetEncoding('utf-8')
+~~~

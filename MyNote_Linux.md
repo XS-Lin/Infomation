@@ -81,6 +81,19 @@ chroot /sysroot
 touch /.autorelabel
 ~~~
 
+## Ubuntu ##
+
+~~~bash
+# How to Remove repositories from APT in ubuntu linux?
+cd /etc/apt/sources.list.d/
+# remove the file you want
+sudo apt-get update -y 
+
+# remove key if need
+sudo apt-key list
+sudo apt-key del <key> # Warning: apt-key is deprecated. https://gihyo.jp/admin/serial/01/ubuntu-recipe/0675
+~~~
+
 ## bash ##
 
 ~~~bash
@@ -227,6 +240,16 @@ diff -u <(ls /etc/rc0.d) <(ls /etc/rc1.d)
 cat /etc/shells | tee >(grep /usr/bin > filtered.txt) | sort 
 ~~~
 
+## Linux の基礎 ##
+
+### 基本情報 ###
+
+~~~bash
+uname -r # 5.15.167.4-microsoft-standard-WSL2
+find /lib/modules/`uname -r` -name "*.ko" # 現在稼働中一覧
+lsmod
+modinfo
+~~~
 
 ## sed ##
 

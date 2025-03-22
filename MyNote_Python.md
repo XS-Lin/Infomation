@@ -82,3 +82,11 @@ pip install flask
 # python.exe -m pip install --upgrade pip
 # pip list
 ~~~
+
+## pytest ##
+
+[pytest](https://docs.pytest.org/en/stable/)
+
+~~~bash
+pip install pytest pytest-cov
+~~~

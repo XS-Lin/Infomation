@@ -5,8 +5,21 @@
 ### 参考資料 ###
 
 [powershell about_Operators](https://learn.microsoft.com/ja-jp/powershell/module/microsoft.powershell.core/about/about_operators?view=powershell-7.3)
+[OpenCV](https://opencv.org/)
 
 ### 開発環境 ###
+
+### 環境変数 ###
+
+* PATHに以下を追加
+
+~~~powershell
+%CUDA_PATH%
+%JAVA_HOME%\bin
+%GRADLE_HOME%\bin
+%GRAPHVIZ_HOME%\bin
+%USERPROFILE%\go\bin
+~~~
 
 #### JAVA ####
 
@@ -15,7 +28,6 @@
 java --version
 
 # 環境変数確認
-$Env:USERPROFILE
 $Env:JAVA_HOME
 $Env:GRADLE_HOME
 # PATHに追加 %JAVA_HOME%\bin;%GRADLE_HOME%\bin;
@@ -24,24 +36,24 @@ $Env:GRADLE_HOME
 [Environment]::SetEnvironmentVariable('JAVA_HOME', 'C:\tools\jdk\oracle\jdk-22.0.1', 'User')
 [Environment]::SetEnvironmentVariable('GRADLE_HOME', 'C:\tools\gradle\gradle-8.8', 'User')
 [Environment]::SetEnvironmentVariable('JAVA_HOME', 'C:\tools\jdk\oracle\jdk-23.0.1', 'User')
-[Environment]::SetEnvironmentVariable('GRADLE_HOME', 'C:\tools\gradle\gradle-8.11.1', 'User')
+[Environment]::SetEnvironmentVariable('GRADLE_HOME', 'C:\tools\gradle\gradle-8.12.1', 'User')
+[Environment]::SetEnvironmentVariable('JAVA_HOME', 'C:\tools\jdk\oracle\jdk-23.0.1', 'User')
+[Environment]::SetEnvironmentVariable('GRADLE_HOME', 'C:\tools\gradle\gradle-8.13', 'User')
+[Environment]::SetEnvironmentVariable('JAVA_HOME', 'C:\tools\jdk\oracle\jdk-23.0.2', 'User')
 ~~~
 
 * [VisualVM](https://visualvm.github.io/download.html)
   * [getting start](https://visualvm.github.io/gettingstarted.html)
 
 ~~~powershell
-E:\tool\visualvm_217\bin\visualvm.exe --jdkhome "$Env:JAVA_HOME" --userdir "C:\Temp\visualvm_userdir"
+C:\tools\visualvm\visualvm_2110\bin\visualvm.exe --jdkhome "$Env:JAVA_HOME" --userdir "C:\Temp\visualvm_userdir"
 ~~~
 
 #### Go lang ####
 
-* go 1.23.3
-  * 環境変数PATHに追加 `%USERPROFILE%\go\bin;`
-
 ~~~powershell
 # バージョン確認
-go version # go version go1.23.3 windows/amd64
+go version # go version go1.24.1 windows/amd64
 
 # 環境変数確認
 go env
@@ -58,13 +70,17 @@ go env
 # バージョン確認
 py -V
 py --list
-py -3.11 -V
+py -3.11 -V 
 
 # pipサンプル
 pip --python=<env> install <package>
 pip config set global.require-virtualenv true
 
-# ----- 2024/11/23 ----------------
+# ----- 2025/03/14 ----------------
+py -3.11 -V # Python 3.11.9
+
+# ----- 2025/03/14 ----------------
+py -3.12 -V # Python 3.12.9
 # common
 py -3.12 -m pip install numpy scipy scikit-learn pandas matplotlib seaborn keras
 py -3.12 -m pip install tensorflow tensorflow_datasets tf_keras
@@ -74,11 +90,11 @@ py -3.12 -m pip install kfp docker # kubeflow, not work in Windows
 py -3.12 -m pip avro graphviz 
 py -3.12 -m venv venv
 
-# ----- 2024/11/07 ---------------- 
-py -V # 3.13
-# TODO Not support 
-#py -m pip install google-cloud-bigquery google-cloud-spanner google-cloud-core google-cloud-dataflow google-cloud-kms google-cloud-logging
-#py -m pip install numpy scipy pandas matplotlib seaborn scikit-learn tensorflow keras
+# ----- 2025/03/14 ----------------
+py -V # Python 3.13.2
+# common 
+py -m pip install google-cloud-bigquery google-cloud-spanner google-cloud-core google-cloud-kms google-cloud-logging google-cloud-dataflow-client
+py -m pip install numpy scipy pandas matplotlib seaborn scikit-learn
 ~~~
 
 #### Docker ####
@@ -94,8 +110,7 @@ py -V # 3.13
 [hub debian](https://hub.docker.com/_/debian)
 [hub kaggle/python](https://hub.docker.com/r/kaggle/python)
 
-* Docker Engine v27.3.1
-* Kubernetes v1.30.2
+* Docker Desktop 4.39.0 (184744)
 
 ~~~powershell
 # 開発環境共有ネット
@@ -121,31 +136,22 @@ apt install graphviz
 ~~~
 
 ~~~powershell
-docker pull apache/airflow:slim-2.9.2-python3.11
+#### 2025-03-22
+docker pull gitlab/gitlab-ce:17.10.0-ce.0
 
 ~~~
 
 ~~~powershell
-docker pull gitlab/gitlab-ce:17.0.2-ce.0
+#### 2025-03-22
+docker pull postgres:17.4-bookworm
 
 ~~~
 
 ~~~powershell
-docker pull postgres:16.3-bullseye
+#### 2025-03-22
+docker pull mysql:8.0.41-bookworm
 
-~~~
-
-~~~powershell
-docker pull quay.io/jupyter/tensorflow-notebook:2024-06-10
-
-~~~
-
-~~~powershell
-docker pull gcr.io/kaggle-gpu-images/python:v149
-
-~~~
-
-~~~powershell
+#### 2024-06 DELETED ####
 # docker pull mysql:8.0.31
 docker pull mysql:8.0.37-debian
 # コンテナ作成
@@ -163,6 +169,7 @@ docker exec -it mysql_instance_1 bash
 # GRANT ALL PRIVILEGES ON *.* TO admin;
 # リモート接続
 docker run -it --network application_net --rm mysql:8.0.37-debian mysql -h mysql_instance_1 -u admin -p
+
 ~~~
 
 [Nvdia TensorFlow](https://catalog.ngc.nvidia.com/orgs/nvidia/containers/tensorflow)
@@ -179,6 +186,34 @@ docker run -it --network application_net --rm mysql:8.0.37-debian mysql -h mysql
 * IntelliJ
 
 ### 開発環境 WSL2 ###
+
+~~~powershell
+wsl -l -v # インストール済み
+#  NAME              STATE           VERSION
+#* Ubuntu            Running         2
+#  docker-desktop    Running         2
+wsl -l -o # オンラインで利用可能なものを確認
+# AlmaLinux-Kitten-10
+# Debian
+# SUSE-Linux-Enterprise-15-SP6
+# Ubuntu-24.04
+# openSUSE-Leap-15.6
+# OracleLinux_9_1
+wsl.exe --install -d <Distribution Name>
+wsl --status
+# 既定のディストリビューション: Ubuntu
+# 既定のバージョン: 2
+wsl --version
+wsl --help
+wsl --user <Username>
+<DistributionName> config --default-user <Username>
+
+wsl --set-default <Distribution Name>
+wsl ~ # ディレクトリをホームに変更する
+cd ~
+
+wsl --update
+~~~
 
 #### 環境設定 TensorFlow ####
 
@@ -316,9 +351,20 @@ cd /mnt/e/tool/python_for_wsl2
 pip install kfp docker # kubeflow
 pip install google-cloud-aiplatform
 pip install mysql-connector-python # mysql-connector-python-9.1.0
+pip install pytest pytest-cov pytest-xdist pytest-httpserver
 deactivate
 
 gcloud auth application-default login --no-launch-browser # 認証情報作成
+~~~
+
+#### 環境設定 for Google Cloud ####
+
+[Terraform](https://developer.hashicorp.com/terraform/install?product_intent=terraform)
+
+~~~bash
+# 2024/12/23
+terraform --version # Terraform v1.10.3
+
 ~~~
 
 #### other tools ####
@@ -338,9 +384,9 @@ gcloud auth application-default login --no-launch-browser # 認証情報作成
 * [Graphviz](https://graphviz.org/)
   * 12
 * [gcloud CLI](https://cloud.google.com/sdk/docs/install?hl=ja)
-  * 502.0.0
+  * 515.0.0
 * GitHub Desktop
-  * 3.4.9
+  * Version 3.4.18 (x64)
 * git
   * 2.45.2.windows.1
 * [CMake](https://cmake.org/download/)

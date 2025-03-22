@@ -1,6 +1,6 @@
 # メモ #
 
-## Java ##
+## Java 汎用 ##
 
 1. Zip解凍の制約
 [java.util.zip.ZipInputStream.java](https://github.com/openjdk/jdk/blob/master/src/java.base/share/classes/java/util/zip/ZipInputStream.java)
@@ -35,11 +35,118 @@
    printf "%X\n" 12345
    ~~~
 
+1. [getResource puts a leading / before the disk name using java 1.7 windows 7](https://stackoverflow.com/questions/15662820/getresource-puts-a-leading-before-the-disk-name-using-java-1-7-windows-7)
+
+## Java VS Code ##
+
+### setting ###
+
+* java.project.sourcePaths
+  * Relative paths to the workspace where stores the source files. Only effective in the WORKSPACE scope. The setting will NOT affect Maven or Gradle project.
+  * Java設定、packageのスタート
+* mvn デフォルトパス
+  * project-name>/src/main/java
+  * project-name>/src/test/java
+* gradle デフォルトパス
+  * ${project.projectDir}/src/${sourceSet.name}/java
+  * ${project.projectDir}/src/${sourceSet.name}/resources
+
+[pom.xmlの各要素デフォルト値と変数置換について](https://qiita.com/kozy4324/items/9a5976d9d264be1ef90e)
+[POM Reference](https://maven.apache.org/pom.html)
+[GradleでオリジナルのSourceSetを利用してハマった話](https://qiita.com/na0y/items/735c7aeafe53784f0587)
+[SourceSet](https://docs.gradle.org/current/dsl/org.gradle.api.tasks.SourceSet.html)
+[Building Java & JVM projects](https://docs.gradle.org/current/userguide/building_java_projects.html#sec:java_source_sets)
+
+~~~xml
+  <build>
+    <directory>${project.basedir}/target</directory>
+    <outputDirectory>${project.build.directory}/classes</outputDirectory>
+    <finalName>${project.artifactId}-${project.version}</finalName>
+    <testOutputDirectory>${project.build.directory}/test-classes</testOutputDirectory>
+    <sourceDirectory>${project.basedir}/src/main/java</sourceDirectory>
+    <scriptSourceDirectory>${project.basedir}/src/main/scripts</scriptSourceDirectory>
+    <testSourceDirectory>${project.basedir}/src/test/java</testSourceDirectory>
+~~~
+
+~~~groovy
+sourceSets {
+    main {
+        java {
+            srcDirs = [
+                'subdir1/src/main/java',
+                'subdir2/src/main/java',
+                'subdir3/src/main/java'
+            ]
+        }
+    }
+    test {
+        java {
+            srcDirs = [
+                'subdir1/src/test/java',
+                'subdir2/src/test/java',
+                'subdir3/src/test/java'
+            ]
+        }
+    }
+    integrationTest {
+        java {
+            srcDirs = [
+                'subdir1/src/int-test/java',
+                'subdir2/src/int-test/java',
+                'subdir3/src/int-test/java'
+            ]
+        }
+    }
+}
+~~~
+
 ## Javaコマンド ##
 
 ~~~java
 javac -classpath "." Main.java
 java -classpath "." Main
+~~~
+
+## Gradle ##
+
+[Command-Line Interface Reference](https://docs.gradle.org/current/userguide/command_line_interface.html)
+[Using Tasks](https://docs.gradle.org/current/userguide/tutorial_using_tasks.html)
+[The Application Plugin](https://docs.gradle.org/current/userguide/application_plugin.html)
+[JavaExec](https://docs.gradle.org/current/dsl/org.gradle.api.tasks.JavaExec.html)
+[How to run one test from a subproject with gradlew?](https://stackoverflow.com/questions/68153226/how-to-run-one-test-from-a-subproject-with-gradlew)
+[Gradle to execute Java class (without modifying build.gradle)](https://stackoverflow.com/questions/21358466/gradle-to-execute-java-class-without-modifying-build-gradle)
+[Gradle Properties の設定方法](https://qiita.com/KenjiOtsuka/items/6578d1917c387be24b56)
+
+~~~powershell
+gradle task # all project
+gradle sub_project:task # sub_project
+# 例
+gradle run # run all project
+gradle sub_project:run # run sub_project
+~~~
+
+~~~groovy
+// パラメータからmainクラス指定 
+application {
+    mainClassName = project.hasProperty("mainClass") ? project.getProperty("mainClass") : "NULL"
+}
+// or
+task execute(type:JavaExec) {
+   main = project.hasProperty("mainClass") ? getProperty("mainClass") : "NULL"
+   classpath = sourceSets.main.runtimeClasspath
+}
+~~~
+
+~~~powershell
+gradle -PmainClass=Boo run
+# or
+gradle -PmainClass=Boo execute
+~~~
+
+~~~powershell
+./gradlew -Dsomething=value # システムプロパティ
+./gradlew -Psomething=value # プロジェクトプロパティ
+./gradlew -Dorg.gradle.project.something=value # プロジェクトプロパティ
 ~~~
 
 ## OJDBC ##
@@ -214,7 +321,6 @@ var one = BigInteger.ONE
 Stream.iterate(one,count->count.add(one)).limit(12).reduce(one,(a,b)->a.multiply(b))
 ~~~
 
-
 ## Java Performancd ##
 
 [Java® Development Kitバージョン21ツール仕様](https://docs.oracle.com/javase/jp/21/docs/specs/man/index.html)
@@ -334,4 +440,3 @@ S0     S1     E      O      M     CCS    YGC     YGCT     FGC    FGCT     CGC   
 ~~~powershell
 E:\tool\visualvm_217\bin\visualvm.exe --jdkhome "C:\tools\jdk\oracle\jdk-21.0.2" --userdir "C:\Temp\visualvm_userdir"
 ~~~
-
