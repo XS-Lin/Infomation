@@ -21,6 +21,14 @@ ls $env:LOCALAPPDATA\Docker\wsl
 # 実行(docker create + start)
 docker run
 
+## https://docs.docker.jp/storage/bind-mounts.html
+## read write
+docker run -d -it --name devtest --mount type=bind,source="$(pwd)"/target,target=/app nginx:latest
+docker run -d -it --name devtest -v "$(pwd)"/target:/app nginx:latest
+## read only
+docker run -d -it --name devtest --mount type=bind,source="$(pwd)"/target,target=/app,readonly nginx:latest
+docker run -d -it --name devtest -v "$(pwd)"/target:/app:ro nginx:latest
+
 # ホストとコンテナのファイルコピー
 docker cp
 
@@ -51,17 +59,28 @@ docker image rm
 docker rmi
 
 # 使用されないイメージ削除
+docker system prune # -a
 docker image prune
+docker container prune
+docker network prune
+docker volume prune
 
 # サイズ確認
 docker system df
 
 # コンテナ確認(デフォルトは実行中のみ表示)
-docker container ls
+docker container ls # -all
 
 # 実行状態確認(CPU,MEM,...)
 docker container stats
 
+# ネットワーク
+docker network ls
+docker network connect
+docker network inspect
+~~~
+
+~~~bash
 # すべてのコンテナ起動
 docker-compose up
 
@@ -73,7 +92,6 @@ docker-compose stop
 
 # すべてのコンテナ削除
 docker-compose rm
-
 ~~~
 
 ## Example ##

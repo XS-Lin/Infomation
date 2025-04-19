@@ -13,14 +13,11 @@
 サービス＆ネットワーキング: Services & Networking (13%)
 状態の永続性: State Persistence (8%)
 
-Candidate Handbook: https://docs.linuxfoundation.org/tc-docs/certification/lf-candidate-handbook
-Frequently Asked Questions: https://docs.linuxfoundation.org/tc-docs/certification/faq-cka-ckad-cks
+[Candidate Handbook](https://docs.linuxfoundation.org/tc-docs/certification/lf-candidate-handbook)
+[Frequently Asked Questions](https://docs.linuxfoundation.org/tc-docs/certification/faq-cka-ckad-cks)
 
-https://kubernetes.io/docs/reference/kubectl/cheatsheet/
-https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands
-https://github.com/kubernetes/kubernetes
+[kubernetes cheatsheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/)
+[kubernetes kubectl-commands](https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands)
+[github kubernetes](https://github.com/kubernetes/kubernetes)
 
-https://kubernetes.io/docs/reference/kubectl/cheatsheet/#kubectl-autocomplete
-
-https://training.linuxfoundation.org/ja/certification/certified-kubernetes-application-developer-ckad/
-
+[ckad](https://training.linuxfoundation.org/ja/certification/certified-kubernetes-application-developer-ckad/)

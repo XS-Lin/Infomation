@@ -32,12 +32,6 @@ $Env:JAVA_HOME
 $Env:GRADLE_HOME
 # PATHに追加 %JAVA_HOME%\bin;%GRADLE_HOME%\bin;
 [Environment]::SetEnvironmentVariable('JAVA_HOME', 'C:\tools\jdk\corretto_aws\jdk17.0.8_8', 'User')
-[Environment]::SetEnvironmentVariable('GRADLE_HOME', 'C:\tools\gradle\gradle-8.3', 'User')
-[Environment]::SetEnvironmentVariable('JAVA_HOME', 'C:\tools\jdk\oracle\jdk-22.0.1', 'User')
-[Environment]::SetEnvironmentVariable('GRADLE_HOME', 'C:\tools\gradle\gradle-8.8', 'User')
-[Environment]::SetEnvironmentVariable('JAVA_HOME', 'C:\tools\jdk\oracle\jdk-23.0.1', 'User')
-[Environment]::SetEnvironmentVariable('GRADLE_HOME', 'C:\tools\gradle\gradle-8.12.1', 'User')
-[Environment]::SetEnvironmentVariable('JAVA_HOME', 'C:\tools\jdk\oracle\jdk-23.0.1', 'User')
 [Environment]::SetEnvironmentVariable('GRADLE_HOME', 'C:\tools\gradle\gradle-8.13', 'User')
 [Environment]::SetEnvironmentVariable('JAVA_HOME', 'C:\tools\jdk\oracle\jdk-23.0.2', 'User')
 ~~~
@@ -53,7 +47,7 @@ C:\tools\visualvm\visualvm_2110\bin\visualvm.exe --jdkhome "$Env:JAVA_HOME" --us
 
 ~~~powershell
 # バージョン確認
-go version # go version go1.24.1 windows/amd64
+go version # go1.24.2 windows/amd64
 
 # 環境変数確認
 go env
@@ -79,8 +73,8 @@ pip config set global.require-virtualenv true
 # ----- 2025/03/14 ----------------
 py -3.11 -V # Python 3.11.9
 
-# ----- 2025/03/14 ----------------
-py -3.12 -V # Python 3.12.9
+# ----- 2025/04/19 ----------------
+py -3.12 -V # Python 3.12.10
 # common
 py -3.12 -m pip install numpy scipy scikit-learn pandas matplotlib seaborn keras
 py -3.12 -m pip install tensorflow tensorflow_datasets tf_keras
@@ -90,8 +84,8 @@ py -3.12 -m pip install kfp docker # kubeflow, not work in Windows
 py -3.12 -m pip avro graphviz 
 py -3.12 -m venv venv
 
-# ----- 2025/03/14 ----------------
-py -V # Python 3.13.2
+# ----- 2025/04/19 ----------------
+py -V # Python 3.13.3
 # common 
 py -m pip install google-cloud-bigquery google-cloud-spanner google-cloud-core google-cloud-kms google-cloud-logging google-cloud-dataflow-client
 py -m pip install numpy scipy pandas matplotlib seaborn scikit-learn
@@ -110,7 +104,7 @@ py -m pip install numpy scipy pandas matplotlib seaborn scikit-learn
 [hub debian](https://hub.docker.com/_/debian)
 [hub kaggle/python](https://hub.docker.com/r/kaggle/python)
 
-* Docker Desktop 4.39.0 (184744)
+* Docker Desktop 4.40.0 (187762)
 
 ~~~powershell
 # 開発環境共有ネット
@@ -362,8 +356,8 @@ gcloud auth application-default login --no-launch-browser # 認証情報作成
 [Terraform](https://developer.hashicorp.com/terraform/install?product_intent=terraform)
 
 ~~~bash
-# 2024/12/23
-terraform --version # Terraform v1.10.3
+# 2025/04/19
+terraform --version # Terraform v1.11.2
 
 ~~~
 
@@ -374,23 +368,19 @@ terraform --version # Terraform v1.10.3
 * Unreal Engine
   * 5.4.2
 * [Wireshark](https://www.wireshark.org/download.html)
-  * 4.2.5
+  * 4.4.6 x64
 * [owasp zap](https://www.zaproxy.org/download/)
-  * 2.15.0
-* [pgAdmin](https://www.pgadmin.org/download/pgadmin-4-windows/)
-  * 8.8
+  * ZAP 2.16.1
 * [DBeaver](https://dbeaver.io/download/)
-  * 24.2.2
+  * 25.0.2
 * [Graphviz](https://graphviz.org/)
-  * 12
+  * Graphviz-12.2.1-win64
 * [gcloud CLI](https://cloud.google.com/sdk/docs/install?hl=ja)
-  * 515.0.0
+  * Google Cloud SDK 518.0.0
 * GitHub Desktop
   * Version 3.4.18 (x64)
-* git
-  * 2.45.2.windows.1
 * [CMake](https://cmake.org/download/)
-  * 3.30.0-rc3
+  * 4.0.1
 * [OpenCV](https://docs.opencv.org/4.x/d3/d52/tutorial_windows_install.html)
   * 4.10.0
 
@@ -402,7 +392,7 @@ terraform --version # Terraform v1.10.3
 # C:\tools
 
 # Graphviz
-[Environment]::SetEnvironmentVariable('GRAPHVIZ_HOME', 'C:\tools\graphviz\Graphviz-12.2.0-win64', 'User')
+[Environment]::SetEnvironmentVariable('GRAPHVIZ_HOME', 'C:\tools\graphviz\Graphviz-12.2.1-win64', 'User')
 
 # gcloud CLI
 gcloud components update
