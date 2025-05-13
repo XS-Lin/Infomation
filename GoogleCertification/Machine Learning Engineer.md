@@ -1,0 +1,121 @@
+# Professional Machine Learning Engineer #
+
+## Skill Boost ##
+
+### BigQuery ML ###
+
+- [BigQuery の AI と ML の概要](https://cloud.google.com/bigquery/docs/bqml-introduction?hl=ja)
+- [The CREATE MODEL statement](https://cloud.google.com/bigquery/docs/reference/standard-sql/bigqueryml-syntax-create)
+  - BigQuery ML で利用可能なモデル種類
+
+### Natural Language API ###
+
+- [Natural Language API Basics](https://cloud.google.com/natural-language/docs/basics)
+
+~~~bash
+curl "https://language.googleapis.com/v1/documents:analyzeEntities?key=${API_KEY}" \
+  -s -X POST -H "Content-Type: application/json" --data-binary @request.json > result.json
+~~~
+
+## その他 ##
+
+### DataProc ###
+
+~~~bash
+PROJECT_ID=$(gcloud config get-value project) && \
+gcloud config set project $PROJECT_ID
+
+PROJECT_NUMBER=$(gcloud projects describe $PROJECT_ID --format='value(projectNumber)')
+
+# Enable/disable access to Google Cloud APIs from this subnet for instances without a public ip address.
+gcloud compute networks subnets update default --region=us-east4  --enable-private-ip-google-access 
+gcloud dataproc clusters create example-cluster --worker-boot-disk-size 500 --worker-machine-type=e2-standard-4 --master-machine-type=e2-standard-4
+gcloud dataproc jobs submit spark --cluster example-cluster \
+  --class org.apache.spark.examples.SparkPi \
+  --jars file:///usr/lib/spark/examples/jars/spark-examples.jar -- 1000
+gcloud dataproc clusters update example-cluster --num-workers 4
+gcloud dataproc clusters update example-cluster --num-workers 2
+~~~
+
+~~~bash
+# hdfs 操作
+hdfs dfs -cp gs://cloud-training/gsp323/data.txt /data.txt
+hdfs dfs -ls /
+~~~
+
+### Cloud Natural Language API ###
+
+~~~bash
+export GOOGLE_CLOUD_PROJECT=$(gcloud config get-value core/project)
+gcloud iam service-accounts create my-natlang-sa \
+  --display-name "my natural language service account"
+gcloud iam service-accounts keys create ~/key.json \
+  --iam-account my-natlang-sa@${GOOGLE_CLOUD_PROJECT}.iam.gserviceaccount.com
+
+# IN SSH
+gcloud ml language analyze-entities --content="Old Norse texts portray Odin as one-eyed and long-bearded, frequently wielding a spear named Gungnir and wearing a cloak and a broad hat." > result.json
+~~~
+
+### Speech-to-Text API ###
+
+~~~bash
+export API_KEY=<YOUR_API_KEY>
+touch request.json
+nano request.json
+# Edit request.json
+curl -s -X POST -H "Content-Type: application/json" --data-binary @request.json \
+"https://speech.googleapis.com/v1/speech:recognize?key=${API_KEY}"
+~~~
+
+~~~json
+// request.json
+{
+  "config": {
+      "encoding":"FLAC",
+      "languageCode": "en-US"
+  },
+  "audio": {
+      "uri":"gs://cloud-samples-tests/speech/brooklyn.flac"
+  }
+}
+~~~
+
+### Video Intelligence ###
+
+[Video Intelligence: Qwik Start](https://www.cloudskillsboost.google/paths/17/course_templates/631/labs/526870)
+
+~~~bash
+gcloud iam service-accounts create quickstart
+gcloud iam service-accounts keys create key.json --iam-account quickstart@qwiklabs-gcp-02-15fe717123fc.iam.gserviceaccount.com
+gcloud auth activate-service-account --key-file key.json
+gcloud auth print-access-token
+
+cat > request.json <<EOF
+{
+   "inputUri":"gs://spls/gsp154/video/train.mp4",
+   "features": [
+       "LABEL_DETECTION"
+   ]
+}
+EOF
+
+curl -s -H 'Content-Type: application/json' \
+    -H 'Authorization: Bearer '$(gcloud auth print-access-token)'' \
+    'https://videointelligence.googleapis.com/v1/videos:annotate' \
+    -d @request.json
+
+curl -s -H 'Content-Type: application/json' \
+    -H 'Authorization: Bearer '$(gcloud auth print-access-token)'' \
+    'https://videointelligence.googleapis.com/v1/projects/1031248412615/locations/asia-east1/operations/3256661309120195010'
+~~~
+
+### 基本スキル ###
+
+1. データ可視化
+1. 統計
+1. データ集計
+1. 資料作り
+
+### 分析の型 ###
+
+1. リピート分析、RFM分析、デシル分析、ファネル分析、退会分析など

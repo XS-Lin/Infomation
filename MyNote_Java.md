@@ -107,6 +107,13 @@ javac -classpath "." Main.java
 java -classpath "." Main
 ~~~
 
+## よく使われるライブラリ (For me) ##
+
+[Google Guava](https://github.com/google/guava)
+[beam](https://github.com/apache/beam)
+[github shadow](https://github.com/GradleUp/shadow)
+[Gradle com.github.johnrengelman.shadow](https://plugins.gradle.org/plugin/com.github.johnrengelman.shadow)
+
 ## Gradle ##
 
 [Command-Line Interface Reference](https://docs.gradle.org/current/userguide/command_line_interface.html)
