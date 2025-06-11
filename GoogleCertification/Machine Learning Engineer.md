@@ -20,6 +20,77 @@ curl "https://language.googleapis.com/v1/documents:analyzeEntities?key=${API_KEY
   -s -X POST -H "Content-Type: application/json" --data-binary @request.json > result.json
 ~~~
 
+## VertexAI ##
+
+- [image](https://console.cloud.google.com/artifacts/docker/deeplearning-platform-release/us/gcr.io/workbench-container?invt=Abz0xg&inv=1) 
+  - gcr.io/deeplearning-platform-release/workbench-container:20250609-2200-rc0
+
+~~~dockerfile
+FROM gcr.io/deeplearning-platform-release/workbench-container:20250609-2200-rc0
+ENV TEST_ENV=test_env_x
+
+RUN echo 'root:Docker!' | chpasswd 
+# or 
+# RUN echo 'Docker!' | passwd --stdin root 
+
+RUN chown <username>:<groupname> <file_or_directory>
+# or
+# RUN chmod <mode> <file_or_directory>
+
+COPY --chown=<username>:<groupname> <src> <dest>
+
+# Dockerfile_v0.txt
+FROM gcr.io/deeplearning-platform-release/workbench-container:20250609-2200-rc0
+ENV TEST_ENV=test_env_x
+# Dockerfile_v1.txt
+FROM gcr.io/deeplearning-platform-release/workbench-container:20250609-2200-rc0
+ENV TEST_ENV=test_env_x
+ENV APP_PATH=/app
+RUN mkdir $APP_PATH
+# Dockerfile_v2.txt
+FROM gcr.io/deeplearning-platform-release/workbench-container:20250609-2200-rc0
+ENV TEST_ENV=test_env_x
+ENV APP_PATH=/app
+RUN mkdir $APP_PATH
+RUN chown jupyter:jupyter /app
+# Dockerfile_v3.txt
+FROM gcr.io/deeplearning-platform-release/workbench-container:20250609-2200-rc0
+ENV TEST_ENV=test_env_x
+ENV APP_PATH=/app
+RUN mkdir $APP_PATH
+RUN chown jupyter:jupyter /app
+RUN echo 'root:Docker!' | chpasswd
+~~~
+
+~~~powershell
+Get-Content Dockerfile_v0.txt | docker build -t customized-workbench-container:v0 -
+Get-Content Dockerfile_v1.txt | docker build -t customized-workbench-container:v1 -
+Get-Content Dockerfile_v2.txt | docker build -t customized-workbench-container:v2 -
+Get-Content Dockerfile_v3.txt | docker build -t customized-workbench-container:v3 -
+
+docker run -it --rm customized-workbench-container:v0 /bin/bash
+# root@90691109fe3b:/# ls -l /home
+# total 4
+# drwxr-x--- 11 jupyter jupyter 4096 Jun 11 11:15 jupyter
+
+docker run -it --rm customized-workbench-container:v1 /bin/bash
+# root@fd531dd42c00:/# ls -l
+# drwxr-xr-x   2 root root  4096 Jun 11 11:29 app
+
+docker run -it --rm customized-workbench-container:v2 /bin/bash
+# root@89be177a895e:/# ls -l
+# drwxr-xr-x   1 jupyter jupyter  4096 Jun 11 11:29 app
+
+docker run -it --rm --user=jupyter:jupyter customized-workbench-container:v3 /bin/bash
+# jupyter@b77455309bbc:/$
+# jupyter@b77455309bbc:/$ su
+# Password:
+# root@b77455309bbc:/#
+# root@b77455309bbc:/# exit
+# exit
+# jupyter@b77455309bbc:/$
+~~~
+
 ## Jupyter Notebook ###
 
 - Magic Tips:
