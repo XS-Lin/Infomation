@@ -81,7 +81,7 @@ docker run -it --rm customized-workbench-container:v2 /bin/bash
 # root@89be177a895e:/# ls -l
 # drwxr-xr-x   1 jupyter jupyter  4096 Jun 11 11:29 app
 
-docker run -it --rm --user=jupyter:jupyter customized-workbench-container:v3 /bin/bash
+docker run --name test -it --rm --user=jupyter:jupyter customized-workbench-container:v3 /bin/bash
 # jupyter@b77455309bbc:/$
 # jupyter@b77455309bbc:/$ su
 # Password:
