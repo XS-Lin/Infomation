@@ -7,6 +7,9 @@
 - [BigQuery の AI と ML の概要](https://cloud.google.com/bigquery/docs/bqml-introduction?hl=ja)
 - [The CREATE MODEL statement](https://cloud.google.com/bigquery/docs/reference/standard-sql/bigqueryml-syntax-create)
   - BigQuery ML で利用可能なモデル種類
+- 注意
+  - BigQuery ML will automatically treat any integer as a numerical value rather than a categorical value
+
 
 ### Natural Language API ###
 
@@ -17,7 +20,19 @@ curl "https://language.googleapis.com/v1/documents:analyzeEntities?key=${API_KEY
   -s -X POST -H "Content-Type: application/json" --data-binary @request.json > result.json
 ~~~
 
+## Jupyter Notebook ###
+
+- Magic Tips:
+  - must be the first line
+  - %%bash - Use bash
+  - %%bigquery - Use SQL access BigQuery
+
 ## その他 ##
+
+### developers google ###
+
+https://developers.google.com/machine-learning/crash-course/linear-regression/gradient-descent?hl=ja
+https://developers.google.com/machine-learning/crash-course/numerical-data?hl=ja
 
 ### DataProc ###
 

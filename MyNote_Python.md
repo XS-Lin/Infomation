@@ -1,5 +1,14 @@
 ﻿# Python #
 
+## IPython Magic ##
+
+### bigquery ###
+
+- [bigquery](https://github.com/googleapis/python-bigquery-magics/blob/main/bigquery_magics/bigquery.py)
+  - [config](https://github.com/googleapis/python-bigquery-magics/blob/main/bigquery_magics/config.py)
+    - [from_authorized_user_file](https://github.com/googleapis/google-auth-library-python/blob/main/google/oauth2/credentials.py#L500)
+    - [default auth](https://github.com/pydata/pydata-google-auth/blob/main/pydata_google_auth/auth.py)
+
 ## Oracle Database 操作 ##
 
 ~~~python
