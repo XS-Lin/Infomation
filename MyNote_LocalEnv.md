@@ -336,6 +336,53 @@ python -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU')
 deactivate
 ~~~
 
+~~~bash
+# 2025/07/15
+sudo apt update
+# https://launchpad.net/~deadsnakes
+sudo add-apt-repository ppa:deadsnakes/ppa -y
+sudo apt install python3.12-full
+sudo apt install python3.12-dev # Python.h: No such file or directory エラー対応
+pip install --upgrade pip
+
+cd /mnt/e/tool/python_for_wsl2_vllm
+python3.12 -m venv venv
+. ./venv/bin/activate
+pip install vllm --extra-index-url https://download.pytorch.org/whl/cu128 # vllm-0.9.2
+# pip install vllm --torch-backend=auto
+pip install 'apache-beam[gcp]' # apache-beam-2.66.0
+pip install pytest pytest-cov # pytest-8.4.1 pytest-cov-6.2.1
+# pip freeze > requirements.txt
+vllm --help
+
+# vLLM Sample 1
+#   terminal 1
+vllm serve Qwen/Qwen2.5-1.5B-Instruct
+#   terminal 2
+curl http://localhost:8000/v1/models
+curl http://localhost:8000/v1/completions \
+    -H "Content-Type: application/json" \
+    -d '{
+        "model": "Qwen/Qwen2.5-1.5B-Instruct",
+        "prompt": "San Francisco is a",
+        "max_tokens": 7,
+        "temperature": 0
+    }'
+
+# vLLM Sample 2: https://github.com/vllm-project/vllm/blob/main/examples/offline_inference/basic/basic.py
+
+# transformers
+python -c "from transformers import pipeline; print(pipeline('sentiment-analysis')('we love you'))"
+
+deactivate
+~~~
+
+~~~bash
+# 2025/07/16
+# install uv
+curl -LsSf https://astral.sh/uv/install.sh | sh
+~~~
+
 #### 環境設定 Kubeflow piplines (local docker runner) ####
 
 ~~~bash
@@ -361,28 +408,29 @@ terraform --version # Terraform v1.11.2
 
 ~~~
 
-#### other tools ####
+#### other main tools ####
 
 * [Blender](https://www.blender.org/download/)
-  * 4.1.1
+  * [2025/07/16]  4.5.0
 * Unreal Engine
   * 5.4.2
 * [Wireshark](https://www.wireshark.org/download.html)
-  * 4.4.6 x64
+  * [2025/07/16]  4.4.7 x64
 * [owasp zap](https://www.zaproxy.org/download/)
-  * ZAP 2.16.1
+  * [2025/07/16] ZAP 2.16.1
 * [DBeaver](https://dbeaver.io/download/)
-  * 25.0.2
+  * [2025/07/16] 25.1.2
 * [Graphviz](https://graphviz.org/)
-  * Graphviz-12.2.1-win64
+  * [2025/07/16] Graphviz-13.1.0-win64
 * [gcloud CLI](https://cloud.google.com/sdk/docs/install?hl=ja)
-  * Google Cloud SDK 518.0.0
+  * [2025/07/16] Google Cloud SDK 530.0.0
 * GitHub Desktop
-  * Version 3.4.18 (x64)
+  * [2025/07/16] Version 3.5.1 (x64)
 * [CMake](https://cmake.org/download/)
-  * 4.0.1
+  * [2025/07/16] 4.1.0-rc1
 * [OpenCV](https://docs.opencv.org/4.x/d3/d52/tutorial_windows_install.html)
-  * 4.10.0
+  * [2025/07/16] 4.12.0
+  * [2025/07/16] 3.4.16
 
 ~~~powershell
 # PATHに追加
@@ -392,13 +440,13 @@ terraform --version # Terraform v1.11.2
 # C:\tools
 
 # Graphviz
-[Environment]::SetEnvironmentVariable('GRAPHVIZ_HOME', 'C:\tools\graphviz\Graphviz-12.2.1-win64', 'User')
+[Environment]::SetEnvironmentVariable('GRAPHVIZ_HOME', 'C:\tools\graphviz\Graphviz-13.1.0-win64', 'User')
 
 # gcloud CLI
 gcloud components update
 
 # git
-git update-git-for-windows
+git update-git-for-windows # curl: (43) A libcurl function was given a bad argument
 ~~~
 
 ## 設定問題のメモ ##

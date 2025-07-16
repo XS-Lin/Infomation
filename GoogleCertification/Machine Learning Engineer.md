@@ -100,6 +100,17 @@ docker run --name test -it --rm --user=jupyter:jupyter customized-workbench-cont
 
 ## その他 ##
 
+### Books ###
+
+[直感LLM](https://github.com/HandsOnLLM/Hands-On-Large-Language-Models)
+
+### Generative AI ###
+
+- [Beginner: Introduction to Generative AI Learning Path](https://www.cloudskillsboost.google/paths/118)
+- [Build and Modernize Applications With Generative AI](https://www.cloudskillsboost.google/paths/1282)
+- [AI Labs with Gemini on Google Cloud](https://www.cloudskillsboost.google/paths/1873)
+- [Deploy and Manage Generative AI Models](https://www.cloudskillsboost.google/paths/1283)
+
 ### developers google ###
 
 https://developers.google.com/machine-learning/crash-course/linear-regression/gradient-descent?hl=ja

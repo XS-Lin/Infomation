@@ -99,3 +99,18 @@ pip install flask
 ~~~bash
 pip install pytest pytest-cov
 ~~~
+
+## Manage Tools ##
+
+### poetry ###
+
+[poetry](https://python-poetry.org/)
+
+### uv ###
+
+[uv](https://docs.astral.sh/uv/guides/install-python/)
+
+## Other Tools ##
+
+- [numba](https://numba.pydata.org/)
+  - 数学計算にスピードアップ
