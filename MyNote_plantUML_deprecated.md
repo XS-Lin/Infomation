@@ -1,5 +1,9 @@
 # MyNote VSCode PlantUML Install (windows) #
 
+## DEPRECATED ##
+
+Use [diagrams](https://diagrams.mingrammer.com/docs/getting-started/examples) instead.
+
 ## インストール(Local) ##
 
 1. Javaインストール

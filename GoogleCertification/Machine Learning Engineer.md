@@ -10,7 +10,6 @@
 - 注意
   - BigQuery ML will automatically treat any integer as a numerical value rather than a categorical value
 
-
 ### Natural Language API ###
 
 - [Natural Language API Basics](https://cloud.google.com/natural-language/docs/basics)
@@ -20,9 +19,25 @@ curl "https://language.googleapis.com/v1/documents:analyzeEntities?key=${API_KEY
   -s -X POST -H "Content-Type: application/json" --data-binary @request.json > result.json
 ~~~
 
+### Generative AI ###
+
+- [Agent Development Kit](https://google.github.io/adk-docs/)
+- [Google Gen AI SDK](https://googleapis.github.io/python-genai/)
+- [github GoogleCloudPlatform/generative-ai](https://github.com/GoogleCloudPlatform/generative-ai)
+  - [intro_gemini_2_5_flash](https://github.com/GoogleCloudPlatform/generative-ai/blob/main/gemini/getting-started/intro_gemini_2_5_flash.ipynb)
+  - [intro_gemini_curl](https://github.com/GoogleCloudPlatform/generative-ai/blob/main/gemini/getting-started/intro_gemini_curl.ipynb)
+  - [intro_genai_sdk](https://github.com/GoogleCloudPlatform/generative-ai/blob/main/gemini/getting-started/intro_genai_sdk.ipynb)
+  - [intro_function_calling](https://github.com/GoogleCloudPlatform/generative-ai/blob/main/gemini/function-calling/intro_function_calling.ipynb)
+  - [gemini-streamlit-cloudrun](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/gemini/sample-apps/gemini-streamlit-cloudrun)
+  - [setup-env](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/setup-env)
+- [Beginner: Introduction to Generative AI Learning Path](https://www.cloudskillsboost.google/paths/118)
+- [Build and Modernize Applications With Generative AI](https://www.cloudskillsboost.google/paths/1282)
+- [AI Labs with Gemini on Google Cloud](https://www.cloudskillsboost.google/paths/1873)
+- [Deploy and Manage Generative AI Models](https://www.cloudskillsboost.google/paths/1283)
+
 ## VertexAI ##
 
-- [image](https://console.cloud.google.com/artifacts/docker/deeplearning-platform-release/us/gcr.io/workbench-container?invt=Abz0xg&inv=1) 
+- [image](https://console.cloud.google.com/artifacts/docker/deeplearning-platform-release/us/gcr.io/workbench-container?invt=Abz0xg&inv=1)
   - gcr.io/deeplearning-platform-release/workbench-container:20250609-2200-rc0
 
 ~~~dockerfile
@@ -103,13 +118,6 @@ docker run --name test -it --rm --user=jupyter:jupyter customized-workbench-cont
 ### Books ###
 
 [直感LLM](https://github.com/HandsOnLLM/Hands-On-Large-Language-Models)
-
-### Generative AI ###
-
-- [Beginner: Introduction to Generative AI Learning Path](https://www.cloudskillsboost.google/paths/118)
-- [Build and Modernize Applications With Generative AI](https://www.cloudskillsboost.google/paths/1282)
-- [AI Labs with Gemini on Google Cloud](https://www.cloudskillsboost.google/paths/1873)
-- [Deploy and Manage Generative AI Models](https://www.cloudskillsboost.google/paths/1283)
 
 ### developers google ###
 

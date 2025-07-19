@@ -336,6 +336,10 @@ python -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU')
 deactivate
 ~~~
 
+#### 環境設定 LLM ####
+
+* vllm
+
 ~~~bash
 # 2025/07/15
 sudo apt update
@@ -377,10 +381,45 @@ python -c "from transformers import pipeline; print(pipeline('sentiment-analysis
 deactivate
 ~~~
 
+* llama
+  * [Required] WSL2 CUDA Toolkit
+    * [2025/07/18] [WSL2 CUDA Toolkit Ubuntu](https://developer.nvidia.com/cuda-downloads?target_os=Linux&target_arch=x86_64&Distribution=WSL-Ubuntu&target_version=2.0&target_type=deb_local)
+
+~~~bash
+wget https://developer.download.nvidia.com/compute/cuda/repos/wsl-ubuntu/x86_64/cuda-wsl-ubuntu.pin
+sudo mv cuda-wsl-ubuntu.pin /etc/apt/preferences.d/cuda-repository-pin-600
+wget https://developer.download.nvidia.com/compute/cuda/12.9.1/local_installers/cuda-repo-wsl-ubuntu-12-9-local_12.9.1-1_amd64.deb
+sudo dpkg -i cuda-repo-wsl-ubuntu-12-9-local_12.9.1-1_amd64.deb
+sudo cp /var/cuda-repo-wsl-ubuntu-12-9-local/cuda-*-keyring.gpg /usr/share/keyrings/
+sudo apt-get update
+sudo apt-get -y install cuda-toolkit-12-9
+# cat /var/lib/apt/lists/*cuda*Packages | grep "Package:" | grep cudart
+
+# 2025/07/18
+python3.12 -m venv .venv
+uv init
+. .venv/bin/activate
+#CMAKE_ARGS='-DGGML_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES="89"' uv add llama-cpp-python
+#-- Unable to find cudart library.
+#-- Could NOT find CUDAToolkit (missing: CUDA_CUDART) (found version "12.9.86")
+CUDACXX=/usr/local/cuda-12.9/bin/nvcc CMAKE_ARGS='-DGGML_CUDA=ON -DCUDA_PATH=/usr/local/cuda-12.9 -DCUDAToolkit_ROOT=/usr/local/cuda-12.9' uv add llama-cpp-python
+~~~
+
+* uv
+  * [uv](https://docs.astral.sh/uv/guides/)
+
 ~~~bash
 # 2025/07/16
 # install uv
 curl -LsSf https://astral.sh/uv/install.sh | sh
+~~~
+
+* streamlit
+  * [streamlit](https://docs.streamlit.io/)
+    * Cloud Shell で直接起動の時に --server.enableCORS=false オプションをつけると画面が表示できる
+
+~~~bash
+
 ~~~
 
 #### 環境設定 Kubeflow piplines (local docker runner) ####
@@ -403,12 +442,89 @@ gcloud auth application-default login --no-launch-browser # 認証情報作成
 [Terraform](https://developer.hashicorp.com/terraform/install?product_intent=terraform)
 
 ~~~bash
-# 2025/04/19
-terraform --version # Terraform v1.11.2
-
+# 2025/07/17
+terraform --version # Terraform v1.12.2
 ~~~
 
-#### other main tools ####
+### 開発環境 Docker ###
+
+#### Docker Desktop ####
+
+* [Install Docker Desktop on Windows](https://docs.docker.com/desktop/setup/install/windows-install/)
+  * [2025/07/17] Docker Desktop 4.43.1 (198352)
+
+#### 環境設定 ####
+
+[Docker Model Runner](https://docs.docker.com/ai/model-runner/)
+[Docker MCP Catalog and Toolkit](https://docs.docker.com/ai/mcp-catalog-and-toolkit/)
+
+* vLLM
+  * [Using Docker](https://docs.vllm.ai/en/latest/deployment/docker.html#use-vllms-official-docker-image)
+  * [chat_templates](https://github.com/chujiezheng/chat_templates/tree/main/chat_templates)
+
+~~~powershell
+# 
+docker pull vllm/vllm-openai:v0.9.2
+$HUGGING_FACE_HUB_TOKEN=$(Get-Content E:\project\docker_volume\vllm-storage\huggingface\token.txt)
+# 再利用しない場合は --rm
+docker run -it --name=vllm-worker-mistralai-Mistral-7B --runtime=nvidia --gpus=all -p 8001:8000 --ipc=host --mount type=bind,src=E:\project\docker_volume\vllm-storage\huggingface,dst=/root/.cache/huggingface --env "HUGGING_FACE_HUB_TOKEN=$HUGGING_FACE_HUB_TOKEN" vllm/vllm-openai:v0.9.2 --model mistralai/Mistral-7B-v0.1
+
+# chat_template が正しくない
+$postText = @{
+  messages=@(@{role="user"; content="Who is the Prime Minister of Japan?"})
+  chat_template="
+{% if messages[0]['role'] == 'system' %}
+    {% set system_message = messages[0]['content'] | trim + '<|end_of_turn|>' %}
+    {% set messages = messages[1:] %}
+{% else %}
+    {% set system_message = '' %}
+{% endif %}
+
+{{ bos_token + system_message }}
+{% for message in messages %}
+    {% if (message['role'] == 'user') != (loop.index0 % 2 == 0) %}
+        {{ raise_exception('Conversation roles must alternate user/assistant/user/assistant/...') }}
+    {% endif %}
+
+    {{ 'GPT4 Correct ' + message['role'] | capitalize + ': ' + message['content'] + '<|end_of_turn|>' }}
+{% endfor %}
+
+{% if add_generation_prompt %}
+    {{ 'GPT4 Correct Assistant:' }}
+{% endif %}
+"  
+} | ConvertTo-Json -Compress
+$postBody = [Text.Encoding]::UTF8.GetBytes($postText)
+$postUri = "http://localhost:8001/v1/chat/completions"
+Invoke-RestMethod -Method POST -Uri $postUri -Body $postBody -ContentType application/json
+~~~
+
+* datascience
+  * [Jupyter Docker Stacks](https://jupyter-docker-stacks.readthedocs.io/en/latest/index.html)
+  * [Selecting an Image](https://jupyter-docker-stacks.readthedocs.io/en/latest/using/selecting.html)
+
+~~~powershell
+# 
+docker pull quay.io/jupyter/datascience-notebook:2025-07-14
+# 再利用しない場合は --rm
+docker run -it -p 8888:8888 -v E:\project\datascience\train\LearnPython\data_science\datascience-notebook:/home/jovyan/work quay.io/jupyter/datascience-notebook:2025-07-14
+# Tokenは毎回起動の時に変わため、コンソールから確認
+# http://127.0.0.1:10000/lab?token=2cfea28b8c1c367c8244c652e1d2676b181e53273f84524e
+~~~
+
+* tensorflow
+  * [Selecting an Image](https://jupyter-docker-stacks.readthedocs.io/en/latest/using/selecting.html)
+
+~~~powershell
+# 
+docker pull quay.io/jupyter/tensorflow-notebook:cuda-2025-07-14
+# 再利用しない場合は --rm
+docker run -it --runtime=nvidia --gpus=all --name=tensorflow-worker -p 8888:8888 --mount type=bind,src=E:\project\docker_volume\tensorflow-notebook-storage,dst=/home/jovyan/work quay.io/jupyter/tensorflow-notebook:cuda-2025-07-14
+# Tokenは毎回起動の時に変わため、コンソールから確認
+# http://127.0.0.1:8888/lab?token=2c7cb5210a5580f80d5637fb0e68e068ca99ebf332869106
+~~~
+
+## other main tools ##
 
 * [Blender](https://www.blender.org/download/)
   * [2025/07/16]  4.5.0
@@ -431,6 +547,8 @@ terraform --version # Terraform v1.11.2
 * [OpenCV](https://docs.opencv.org/4.x/d3/d52/tutorial_windows_install.html)
   * [2025/07/16] 4.12.0
   * [2025/07/16] 3.4.16
+* [CUDA Toolkit 12.9](https://developer.nvidia.com/cuda-downloads)
+  * [2025/07/17] 12.9
 
 ~~~powershell
 # PATHに追加
@@ -447,6 +565,13 @@ gcloud components update
 
 # git
 git update-git-for-windows # curl: (43) A libcurl function was given a bad argument
+~~~
+
+~~~powershell
+# 2025/07/17
+# Nvidia
+nvidia-smi # NVIDIA-SMI 576.88 Driver Version: 576.88 CUDA Version: 12.9
+nvcc -V # Cuda compilation tools, release 12.9, V12.9.86
 ~~~
 
 ## 設定問題のメモ ##

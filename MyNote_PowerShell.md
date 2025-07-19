@@ -1,4 +1,4 @@
-﻿# PowerShell #
+# PowerShell #
 
 ## 環境変数 ##
 

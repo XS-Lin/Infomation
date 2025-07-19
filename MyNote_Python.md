@@ -1,4 +1,4 @@
-﻿# Python #
+# Python #
 
 ## IPython Magic ##
 
