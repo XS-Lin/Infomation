@@ -9,7 +9,7 @@
 
 ### 開発環境 ###
 
-### 環境変数 ###
+#### 環境変数 ####
 
 * PATHに以下を追加
 
@@ -19,6 +19,16 @@
 %GRADLE_HOME%\bin
 %GRAPHVIZ_HOME%\bin
 %USERPROFILE%\go\bin
+~~~
+
+#### Gemini cli ####
+
+[Node.js®をダウンロードする](https://nodejs.org/ja/download/current)
+[Gemini CLI](https://github.com/google-gemini/gemini-cli)
+
+~~~powershell
+npm --version # 11.4.2
+npx https://github.com/google-gemini/gemini-cli
 ~~~
 
 #### JAVA ####
@@ -403,6 +413,43 @@ uv init
 #-- Unable to find cudart library.
 #-- Could NOT find CUDAToolkit (missing: CUDA_CUDART) (found version "12.9.86")
 CUDACXX=/usr/local/cuda-12.9/bin/nvcc CMAKE_ARGS='-DGGML_CUDA=ON -DCUDA_PATH=/usr/local/cuda-12.9 -DCUDAToolkit_ROOT=/usr/local/cuda-12.9' uv add llama-cpp-python
+uv add langchain
+uv add langchain-community
+~~~
+
+* pydantic_ai
+
+~~~bash
+# 2025/07/26
+python3.12 -m venv .venv
+uv init
+. .venv/bin/activate
+uv add pydantic_ai
+
+~~~
+
+~~~powershell
+py -3.12 -m venv .venv
+. .\.venv\Scripts\activate
+pip install uv
+uv init
+uv add pydantic_ai
+$env:GEMINI_API_KEY=(Get-Content 'E:\tool\Gemini API Key.txt')
+
+~~~
+
+* mcp
+
+~~~powershell
+
+py -3.12 -m venv .venv
+. .venv\Scripts\activate
+pip install uv
+uv init
+uv add mcp
+uv add psutil
+
+
 ~~~
 
 * uv

@@ -2,6 +2,20 @@
 
 ## 参考資料 ##
 
+### Tensorflow ###
+
+- [初心者のための TensorFlow 2.0 入門](https://www.tensorflow.org/tutorials/quickstart/beginner?hl=ja&_gl=1*tkbsb8*_up*MQ..*_ga*MTQ3MTc5MzQ5OC4xNzUzMDc0NTUw*_ga_W0YLR4190T*czE3NTMwNzQ1NTAkbzEkZzAkdDE3NTMwNzQ1NTAkajYwJGwwJGgw)
+
+### 書籍 ###
+
+- [scikit-learn、Keras、TensorFlowによる実践機械学習 第3版](https://www.oreilly.co.jp/books/9784814400935/)
+  - [Machine Learning Notebooks, 3rd edition](https://github.com/ageron/handson-ml3)
+- [データビジュアライゼーションの基礎](https://www.oreilly.co.jp/books/9784873119533/)
+  - [dataviz](https://github.com/clauswilke/dataviz)
+- [直感 LLM](https://www.oreilly.co.jp/books/9784814401154/)
+  - [hands-on-llm-ja](https://github.com/oreilly-japan/hands-on-llm-ja)
+  - [Hands-On Large Language Models](https://github.com/HandsOnLLM/Hands-On-Large-Language-Models)
+
 ### 数式 ###
 
 [Latex勉強](https://colab.research.google.com/github/kalz2q/mycolabnotebooks/blob/master/learnlatex.ipynb#scrollTo=StwWQ1xuncNF)
