@@ -357,15 +357,16 @@ sudo apt update
 sudo add-apt-repository ppa:deadsnakes/ppa -y
 sudo apt install python3.12-full
 sudo apt install python3.12-dev # Python.h: No such file or directory エラー対応
-pip install --upgrade pip
 
 cd /mnt/e/tool/python_for_wsl2_vllm
-python3.12 -m venv venv
-. ./venv/bin/activate
-pip install vllm --extra-index-url https://download.pytorch.org/whl/cu128 # vllm-0.9.2
-# pip install vllm --torch-backend=auto
-pip install 'apache-beam[gcp]' # apache-beam-2.66.0
-pip install pytest pytest-cov # pytest-8.4.1 pytest-cov-6.2.1
+python3.12 -m venv .venv
+. .venv/bin/activate
+pip install --upgrade pip
+pip install --upgrade uv
+# pip install vllm --extra-index-url https://download.pytorch.org/whl/cu128 # vllm-0.9.0.1
+uv pip install vllm --torch-backend=cu128
+uv add 'apache-beam[gcp]' # apache-beam-2.66.0
+uv add pytest pytest-cov # pytest-8.4.1 pytest-cov-6.2.1
 # pip freeze > requirements.txt
 vllm --help
 

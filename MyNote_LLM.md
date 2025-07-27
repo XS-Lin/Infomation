@@ -8,7 +8,15 @@
 
 [大規模言語モデル](https://ja.wikipedia.org/wiki/%E5%A4%A7%E8%A6%8F%E6%A8%A1%E8%A8%80%E8%AA%9E%E3%83%A2%E3%83%87%E3%83%AB)
 
+ChatGPT、Geminiなどを触ったことがあると思います。質問の回答や文章の要約などイメージがあるでしょう。
 明確な定義はまだないですが、わかりやすくいうと、確率に基づいてテキストを生成するシステムです。
+
+ChatGPT,Gemini,Claude,Gork のようなサービスはAPIで利用可能ですが、ここではまずローカルでモデルをホストする方法を簡単に紹介してから、PythonでLLMを利用する方法を説明します。ローカルでLLMを利用することはモデルをダウンロードし、サービスとして起動することです。
+余談ですが、セキュリティ問題はローカルでホストできること＝GCEのVMでホストできることなので、アクセス制限することで解決できます。
+
+ここではvllmとllama_cppでハギングフェイスのモデルを利用します（他にollama, Docker Model Runnerなども使えます）。方法は2種類：Pythonに組み込みとウェブサービス。ウェブサービスにすると、Gemini等のAPI利用と同じになります（REST APIかクライアントかで利用できます）。
+
+以下はPythonで直接使用する例です。
 
 ~~~python
 # vllm
@@ -64,7 +72,42 @@ def main():
 
 if __name__ == "__main__":
     main()
+~~~
 
+以下ではサービスの例です。
+
+~~~bash
+# ウェブサービスとして起動
+vllm serve Qwen/Qwen2.5-1.5B-Instruct
+
+# curlでアクセス
+curl http://localhost:8000/v1/completions \
+    -H "Content-Type: application/json" \
+    -d '{
+        "model": "Qwen/Qwen2.5-1.5B-Instruct",
+        "prompt": "San Francisco is a",
+        "max_tokens": 7,
+        "temperature": 0
+    }'
+
+# ウェブサービスとして起動
+python -m llama_cpp.server --model ./models/Phi-3-mini-4k-instruct-fp16.gguf
+
+# curlでアクセス
+curl http://localhost:8000/v1/completions \
+    -H "Content-Type: application/json" \
+    -d '{
+        "model": "Qwen/Qwen2.5-1.5B-Instruct",
+        "prompt": "San Francisco is a",
+        "max_tokens": 7,
+        "temperature": 0
+    }'
+~~~
+
+LLMの推論能力を利用することには複数回呼び出し、複数種類のLLMを組み合わせるなどが考えられます。
+以下はLLMを組み合わせて使う方法です。
+
+~~~python
 # LangChain
 from langchain_community.llms.llamacpp import LlamaCpp
 from langchain_core.prompts import PromptTemplate
@@ -113,10 +156,72 @@ def main():
 [AI エージェント](https://cloud.google.com/discover/what-are-ai-agents?hl=ja)
 
 AI を使用してユーザーの代わりに目標を追求し、タスクを完了させるソフトウェア システムです。
+わかりやすくいうと、自然言語でタスクおよびタスクを実行するための各ツールのインターフェースをLLM提示し、LLMがツールを選んでタスクを実行します。
 
 ~~~python
+# main.py
+from pydantic_ai.models.gemini import GeminiModel
+from pydantic_ai import Agent
 
+from dotenv import load_dotenv
+import tools
 
+load_dotenv()
+model = GeminiModel("gemini-2.5-flash")
+
+agent = Agent(model,
+              system_prompt="You are an experienced programmer",
+              tools=[tools.read_file, tools.list_files, tools.rename_file])
+
+def main():
+    history = []
+    while True:
+        user_input = input("Input: ")
+        resp = agent.run_sync(user_input,
+                              message_history=history)
+        history = list(resp.all_messages())
+        print(resp.output)
+
+if __name__ == "__main__":
+    main()
+
+# tools.py
+from pathlib import Path
+import os
+
+base_dir = Path("./test")
+
+def read_file(name: str) -> str:
+    """Return file content. If not exist, return error message.
+    """
+    print(f"(read_file {name})")
+    try:
+        with open(base_dir / name, "r") as f:
+            content = f.read()
+        return content
+    except Exception as e:
+        return f"An error occurred: {e}"
+
+def list_files() -> list[str]:
+    print("(list_file)")
+    file_list = []
+    for item in base_dir.rglob("*"):
+        if item.is_file():
+            file_list.append(str(item.relative_to(base_dir)))
+    return file_list
+
+def rename_file(name: str, new_name: str) -> str:
+    print(f"(rename_file {name} -> {new_name})")
+    try:
+        new_path = base_dir / new_name
+        if not str(new_path).startswith(str(base_dir)):
+            return "Error: new_name is outside base_dir."
+
+        os.makedirs(new_path.parent, exist_ok=True)
+        os.rename(base_dir / name, new_path)
+        return f"File '{name}' successfully renamed to '{new_name}'."
+    except Exception as e:
+        return f"An error occurred: {e}"
 ~~~
 
 ## MCP ##
@@ -127,12 +232,57 @@ AI を使用してユーザーの代わりに目標を追求し、タスクを�
 [データベース向け MCP ツールボックス](https://cloud.google.com/blog/ja/products/ai-machine-learning/mcp-toolbox-for-databases-now-supports-model-context-protocol)
 [wiki Model Context Protocol](https://ja.wikipedia.org/wiki/Model_Context_Protocol#cite_note-TheVerge20241125-2)
 [zenn Model Context Protocol（MCP）とは？生成 AI の可能性を広げる新しい標準](https://zenn.dev/cloud_ace/articles/model-context-protocol)
+[note AIエージェント時代を変える「MCP」とは？その可能性と活用法](https://note.com/gabc/n/n9d3b8e852d34)
 
-AIアシスタントなどの生成AIがデータの存在するシステムに対して接続可能にするためのプロトコルであり、データを保有するシステムの開発者はMCPに対応することによって、MCPに対応する生成AIへそのデータへのアクセスを提供することが可能である。
+AIアシスタントなどの生成AIがデータの存在するシステムに対して接続可能にするためのプロトコルであり、データを保有するシステムの開発者はMCPに対応することによって、MCPに対応する生成AIへそのデータへのアクセスを提供することが可能になります。
+わかりやすいように、AIエージェントと密結合しているツールを分離してサービスとして提供します。これによって、AIエージェントの縛りがなくなり、複数エージェントの併用などは可能になります。余談ですが、MCP自体とAIはほぼ関係がないです。
 
 ~~~python
+from mcp.server.fastmcp import FastMCP
+import tools
 
+mcp = FastMCP("host info mcp")
+#mcp.add_tool(tools.get_host_info)
 
+@mcp.tool()
+def get_host_info() -> str:
+    import platform
+    import psutil
+    import subprocess
+    import json
+    """get host information
+    Returns:
+        str: the host information in JSON string
+    """
+    info: dict[str, str] = {
+        "system": platform.system(),
+        "release": platform.release(),
+        "machine": platform.machine(),
+        "processor": platform.processor(),
+        "memory_gb": str(round(psutil.virtual_memory().total / (1024**3), 2)),
+    }
+
+    cpu_count = psutil.cpu_count(logical=True)
+    if cpu_count is None:
+        info["cpu_count"] = "-1"
+    else:
+        info["cpu_count"] = str(cpu_count)
+    
+    try:
+        cpu_model = subprocess.check_output(
+            ["sysctl", "-n", "machdep.cpu.brand_string"]
+        ).decode().strip()
+        info["cpu_model"] = cpu_model
+    except Exception:
+        info["cpu_model"] = "Unknown"
+
+    return json.dumps(info, indent=4)
+
+def main():
+    mcp.run("stdio") # sse
+
+if __name__ == "__main__":
+    main()
 ~~~
 
 ## Docker ##
