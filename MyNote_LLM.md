@@ -2,6 +2,11 @@
 
 ## 概要 ##
 
+- Open AI
+- Gemini
+- Claude
+- Grok
+
 [youtube LLM](https://www.youtube.com/andrejkarpathy)
 
 ### 基本 ###
@@ -224,6 +229,17 @@ def rename_file(name: str, new_name: str) -> str:
         return f"An error occurred: {e}"
 ~~~
 
+[Agent Development Kit エージェントを開発する](https://cloud.google.com/vertex-ai/generative-ai/docs/agent-engine/develop/adk?hl=ja)
+[Agent Development Kit](https://google.github.io/adk-docs/)
+[Agent Development Kit: Using Open & Local Models via LiteLLM](https://google.github.io/adk-docs/agents/models/#using-open-local-models-via-litellm)
+[Agent Development Kit: LLM Agent](https://google.github.io/adk-docs/agents/llm-agents/)
+[Agent Development Kit: MCP](https://google.github.io/adk-docs/mcp/)
+
+~~~python
+
+
+~~~
+
 ## MCP ##
 
 [Model Context Protocol](https://nshipster.com/model-context-protocol/)
@@ -301,3 +317,10 @@ if __name__ == "__main__":
 
 [pgvector](https://github.com/pgvector/pgvector)
 [chromadb](https://github.com/chroma-core/chroma)
+
+## Supported Models ##
+
+- [vllm](https://docs.vllm.ai/en/latest/models/supported_models.html#text-generation)
+- [llama.cpp](https://github.com/ggml-org/llama.cpp/discussions/5141)
+- [litellm](https://docs.litellm.ai/docs/providers)
+- [langchain](https://python.langchain.com/docs/integrations/llms/)
