@@ -1,5 +1,16 @@
 # Professional Machine Learning Engineer #
 
+## Common ##
+
+### 未分類 ###
+
+- loss
+  - Loss is a number indicating how bad the model's predication was on a single example. If the model's predication is perfect, the loss is zero; otherwise, the loss is greater.
+  - Loss is nothing but a predication error of neural net.
+  - The method to calculate the loss is called loss function.
+  - Loss is used to calculate the gradients. And the gradients are used to update the weight of neural net.
+  - The goal of training a model is to find a set of weights and biases that have low loss, on average, accross all examples.
+
 ## Skill Boost ##
 
 ### BigQuery ML ###
