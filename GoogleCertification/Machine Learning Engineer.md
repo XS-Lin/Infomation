@@ -35,6 +35,9 @@ curl "https://language.googleapis.com/v1/documents:analyzeEntities?key=${API_KEY
 - [AI Labs with Gemini on Google Cloud](https://www.cloudskillsboost.google/paths/1873)
 - [Deploy and Manage Generative AI Models](https://www.cloudskillsboost.google/paths/1283)
 
+- [Advanced: Generative AI for Developers Learning Path](https://www.cloudskillsboost.google/paths/183?utm_source=cgc&utm_medium=website&utm_campaign=evergreen)
+- [Machine Learning Engineer Learning Path](https://www.cloudskillsboost.google/paths/17)
+
 ## VertexAI ##
 
 - [image](https://console.cloud.google.com/artifacts/docker/deeplearning-platform-release/us/gcr.io/workbench-container?invt=Abz0xg&inv=1)

@@ -305,6 +305,18 @@ if __name__ == "__main__":
 
 [model-runner](https://docs.docker.com/ai/model-runner/)
 
+### Docker model runner ###
+
+~~~powershell
+.\.venv\Scripts\activate
+pip install -U uv
+uv init
+uv add langchain
+uv add langchain_openai 
+uv add "langchain[google-genai]" 
+
+~~~
+
 ## Hugging Face ##
 
 [deepsex](https://huggingface.co/TheBloke/deepsex-34b-GGUF?not-for-all-audiences=true)
@@ -318,9 +330,18 @@ if __name__ == "__main__":
 [pgvector](https://github.com/pgvector/pgvector)
 [chromadb](https://github.com/chroma-core/chroma)
 
+## GUI ##
+
+[Streamlit vs Gradio in 2025: AIアプリフレームワークとしての比較](https://www.squadbase.dev/ja/blog/streamlit-vs-gradio-in-2025-a-framework-comparison-for-ai-apps)
+[Streamlit vs Gradio：PythonでWebアプリ開発に最適なフレームワークの比較](https://eusi.jp/streamlit-vs-gradio%EF%BC%9Apython%E3%81%A7web%E3%82%A2%E3%83%97%E3%83%AA%E9%96%8B%E7%99%BA%E3%81%AB%E6%9C%80%E9%81%A9%E3%81%AA%E3%83%95%E3%83%AC%E3%83%BC%E3%83%A0%E3%83%AF%E3%83%BC%E3%82%AF%E3%81%AE/)
+
 ## Supported Models ##
 
 - [vllm](https://docs.vllm.ai/en/latest/models/supported_models.html#text-generation)
 - [llama.cpp](https://github.com/ggml-org/llama.cpp/discussions/5141)
 - [litellm](https://docs.litellm.ai/docs/providers)
+  - [LiteLLM supports all models on VLLM](https://docs.litellm.ai/docs/providers/vllm)
 - [langchain](https://python.langchain.com/docs/integrations/llms/)
+  - [langchain-litellm](https://python.langchain.com/docs/integrations/providers/litellm/)
+  - [langchain-vllm](https://docs.vllm.ai/en/v0.9.1/serving/integrations/langchain.html)
+  - [langchain-llamacpp](https://python.langchain.com/docs/integrations/llms/llamacpp/)

@@ -465,6 +465,8 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 * streamlit
   * [streamlit](https://docs.streamlit.io/)
     * Cloud Shell で直接起動の時に --server.enableCORS=false オプションをつけると画面が表示できる
+* fastapi
+  * [fastapi](https://github.com/fastapi/fastapi)
 
 ~~~bash
 
