@@ -2,6 +2,8 @@
 
 ## Common ##
 
+https://www.credly.com/badges/208d618e-c3d8-4449-9ce7-57e45f324865/public_url
+
 ### 未分類 ###
 
 - loss
