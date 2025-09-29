@@ -1,6 +1,7 @@
 # Professional Machine Learning Engineer #
 
 ## Common ##
+## Professional Machine Learning Engineer 認定試験ガイド ##
 
 https://www.credly.com/badges/208d618e-c3d8-4449-9ce7-57e45f324865/public_url
 
@@ -12,6 +13,104 @@ https://www.credly.com/badges/208d618e-c3d8-4449-9ce7-57e45f324865/public_url
   - The method to calculate the loss is called loss function.
   - Loss is used to calculate the gradients. And the gradients are used to update the weight of neural net.
   - The goal of training a model is to find a set of weights and biases that have low loss, on average, accross all examples.
+
+- [Choosing the right orchestrator in Google Cloud](https://cloud.google.com/blog/topics/developers-practitioners/choosing-right-orchestrator-google-cloud?hl=en)
+
+## crash-course ##
+
+- [Linear regression](https://developers.google.com/machine-learning/crash-course/linear-regression)
+- [Linear regression: Loss](https://developers.google.com/machine-learning/crash-course/linear-regression/loss)
+  - Loss is a numerical metric that describes how wrong a model's predictions are. Loss measures the distance between the model's predictions and the actual labels. The goal of training a model is to minimize the loss, reducing it to its lowest possible value.
+  - Types of loss
+    - L1 loss
+      - The sum of the absolute values of the difference between the predicted values and the actual values.
+      - NOTE: 予測値と実際の値の差の絶対値の和
+    - Mean absolute error (MAE)
+      - The average of L1 losses across a set of *N* examples.
+      - NOTE: N個のサンプルのセットにおける L1 損失の平均。
+    - L2 loss
+      - The sum of the squared difference between the predicted values and the actual values.
+      - NOTE: 予測値と実際の値の差の二乗和
+    - Mean squared error (MSE)
+      - The average of L2 losses across a set of *N* examples.
+      - NOTE: N個のサンプルセット全体の L2 損失の平均。
+- [Linear regression: Gradient descent](https://developers.google.com/machine-learning/crash-course/linear-regression/gradient-descent)
+  - Gradient descent is a mathematical technique that iteratively finds the weights and bias that produce the model with the lowest loss.
+- [Linear regression: Hyperparameters](https://developers.google.com/machine-learning/crash-course/linear-regression/hyperparameters)
+  - Hyperparameters are variables that control different aspects of training. Three common hyperparameters are:
+    - Learning rate
+      - Learning rate is a floating point number you set that influences how quickly the model converges.
+      - If the learning rate is too low, the model can take a long time to converge.
+      - However, if the learning rate is too high, the model never converges, but instead bounces around the weights and bias that minimize the loss.
+      - The goal is to pick a learning rate that's not too high nor too low so that the model converges quickly.
+    - Batch size
+      - Batch size is a hyperparameter that refers to the number of examples the model processes before updating its weights and bias.
+      - You might think that the model should calculate the loss for every example in the dataset before updating the weights and bias. However, when a dataset contains hundreds of thousands or even millions of examples, using the full batch isn't practical.
+      - Stochastic gradient descent (SGD) - 確率的勾配降下法
+        - 1 of batch size
+      - Mini-batch stochastic gradient descent (mini-batch SGD) - ミニバッチ確率的勾配降下法
+        - 1 ~ batch size of batch size
+      - When training a model, you might think that noise is an undesirable characteristic that should be eliminated. However, a certain amount of noise can be a good thing. In later modules, you'll learn how noise can help a model generalize better and find the optimal weights and bias in a neural network.
+    - Epochs
+      - During training, an epoch means that the model has processed every example in the training set once. For example, given a training set with 1,000 examples and a mini-batch size of 100 examples, it will take the model 10 iterations to complete one epoch.
+- [Logistic regression: Calculating a probability with the sigmoid function](https://developers.google.com/machine-learning/crash-course/logistic-regression/sigmoid-function)
+  - Logistic regression is an extremely efficient mechanism for calculating probabilities.
+  - Converted to a binary category such as True or False, Spam or Not Spam.
+  - Sigmoid function
+  - Transforming linear output using the sigmoid function
+- [Logistic regression: Loss and regularization](https://developers.google.com/machine-learning/crash-course/logistic-regression/loss-regularization)
+  - Log Loss
+  - Regularization in logistic regression
+- [Thresholds and the confusion matrix](https://developers.google.com/machine-learning/crash-course/classification/thresholding)
+  - Confusion matrix
+- [Classification: Accuracy, recall, precision, and related metrics](https://developers.google.com/machine-learning/crash-course/classification/accuracy-precision-recall)
+  - Accuracy = correct / total = (TP + TN)/(TP + TN + FP + FN)
+    - Use as a rough indicator of model training progress/convergence for balanced datasets.
+    - For model performance, use only in combination with other metrics.
+    - Avoid for imbalanced datasets. Consider using another metric.
+  - Recall, or true positive rate = correct classified actual positives / all actual positives = TP/(TP + FN)
+    - Use when false negatives are more expensive than false positives.
+  - False positive rate = incorrectly classified actual negatives / all actual negatives = FP/(FP + TN)
+    - Use when false positives are more expensive than false negatives.
+  - Precision = correctly classified actual positives / everything classified actual positives = TP/(TP + FP)
+    - Use when it's very important for positive predictions to be accurate.
+  - F1 score = 2 x precision x recal/(precision + recal) = 2TP/(2TP+FP+FN)
+    - The F1 score is the harmonic mean (a kind of average) of precision and recall.
+- [Classification: ROC and AUC](https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc)
+  - Receiver-operating characteristic curve (ROC)
+    - The ROC curve is a visual representation of model performance across all thresholds.
+    - Vertical axis: TPR = TP/(TP + FN) = recall
+    - Horizontal axis: FPR = FP/(FP + TN)
+  - Area under the curve (AUC)
+    - The area under the ROC curve (AUC) represents the probability that the model, if given a randomly chosen positive and negative example, will rank the positive higher than the negative.
+- [Numerical data: How a model ingests data using feature vectors](https://developers.google.com/machine-learning/crash-course/numerical-data/feature-vectors)
+  - feature engineering - determine the best way to represent raw dataset values as trainable values in the feature vector
+    - Normalization: Converting numerical values into a standard range.
+    - Binning (also referred to as bucketing): Converting numerical values into buckets of ranges.
+- [Numerical data: First steps](https://developers.google.com/machine-learning/crash-course/numerical-data/first-steps)
+  - [Working with Missing Data (pandas Documentation)](http://pandas.pydata.org/pandas-docs/stable/missing_data.html)
+  - [Visualizations (pandas Documentation)](http://pandas.pydata.org/pandas-docs/stable/visualization.html)
+- [Numerical data: Normalization](https://developers.google.com/machine-learning/crash-course/numerical-data/normalization)
+  - Linear scaling
+  - Z-score scaling
+    - A Z-score is the number of standard deviations a value is from the mean
+  - Log scaling
+  - Clipping
+    - Clipping is a technique to minimize the influence of extreme outliers.
+  - [Summary of normalization techniques](https://developers.google.com/machine-learning/crash-course/numerical-data/normalization#summary_of_normalization_techniques)
+- [Numerical data: Qualities of good numerical features](https://developers.google.com/machine-learning/crash-course/numerical-data/qualities-of-good-numerical-features)
+- [過学習: L2 正則化](https://developers.google.com/machine-learning/crash-course/overfitting/regularization?hl=ja)
+  - 重みの二乗和、0近い重みは全体の影響に少ない
+  - Setting the regularization rate to zero removes regularization completely. In this case, training focuses exclusively on minimizing loss, which poses the highest possible overfitting risk.
+  - The ideal regularization rate produces a model that generalizes well to new, previously unseen data. Unfortunately, that ideal value is data-dependent, so you must do some tuning.
+  - Early stopping: an alternative to complexity-based regularization
+  - Finding equilibrium between learning rate and regularization rate
+    - If the regularization rate is high with respect to the learning rate, the weak weights tend to produce a model that makes poor predictions. Conversely, if the learning rate is high with respect to the regularization rate, the strong weights tend to produce an overfit model.
+- [過学習: 損失曲線の解釈](https://developers.google.com/machine-learning/crash-course/overfitting/interpreting-loss-curves?hl=ja)
+- [ニューラル ネットワーク: ノードと隠れ層](https://developers.google.com/machine-learning/crash-course/neural-networks/nodes-hidden-layers?hl=ja)
+- []()
+- []()
+- []()
 
 ## Skill Boost ##
 
@@ -240,3 +339,7 @@ curl -s -H 'Content-Type: application/json' \
 ### 分析の型 ###
 
 1. リピート分析、RFM分析、デシル分析、ファネル分析、退会分析など
+
+### udemy ###
+
+- [udemy GCP Professional ML Engineer Practice Exams 2025](https://www.udemy.com/course/gcp-professional-ml-engineer-practice-exams-2025/?couponCode=CP190825Q3JP)
