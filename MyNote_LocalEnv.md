@@ -41,26 +41,27 @@ java --version
 $Env:JAVA_HOME
 $Env:GRADLE_HOME
 # PATHに追加 %JAVA_HOME%\bin;%GRADLE_HOME%\bin;
-[Environment]::SetEnvironmentVariable('JAVA_HOME', 'C:\tools\jdk\corretto_aws\jdk17.0.8_8', 'User')
-[Environment]::SetEnvironmentVariable('GRADLE_HOME', 'C:\tools\gradle\gradle-8.13', 'User')
-[Environment]::SetEnvironmentVariable('JAVA_HOME', 'C:\tools\jdk\oracle\jdk-23.0.2', 'User')
+#[Environment]::SetEnvironmentVariable('JAVA_HOME', 'C:\tools\jdk\corretto_aws\jdk17.0.8_8', 'User')
+[Environment]::SetEnvironmentVariable('GRADLE_HOME', 'C:\tools\gradle\gradle-9.1.0', 'User')
+[Environment]::SetEnvironmentVariable('JAVA_HOME', 'C:\tools\jdk\oracle\jdk-25', 'User')
 ~~~
 
 * [VisualVM](https://visualvm.github.io/download.html)
   * [getting start](https://visualvm.github.io/gettingstarted.html)
 
 ~~~powershell
-C:\tools\visualvm\visualvm_2110\bin\visualvm.exe --jdkhome "$Env:JAVA_HOME" --userdir "C:\Temp\visualvm_userdir"
+C:\tools\visualvm\visualvm_22\bin\visualvm.exe --jdkhome "$Env:JAVA_HOME" --userdir "C:\Temp\visualvm_userdir"
 ~~~
 
 #### Go lang ####
 
 ~~~powershell
-# バージョン確認
-go version # go1.24.2 windows/amd64
-
 # 環境変数確認
 go env
+
+# ----- 2025/10/12 ----------------
+# バージョン確認
+go version # go1.25.2 windows/amd64
 ~~~
 
 #### Python ####
@@ -69,19 +70,13 @@ go env
   * `%USERPROFILE%\AppData\Local\Programs\Python\Python312`
 * Python 3.13
   * `%USERPROFILE%\AppData\Local\Programs\Python\Python313`
+* Python 3.14
+  * `%USERPROFILE%\AppData\Local\Programs\Python\Python314`
 
 ~~~powershell
-# バージョン確認
-py -V
-py --list
-py -3.11 -V 
-
 # pipサンプル
 pip --python=<env> install <package>
 pip config set global.require-virtualenv true
-
-# ----- 2025/03/14 ----------------
-py -3.11 -V # Python 3.11.9
 
 # ----- 2025/04/19 ----------------
 py -3.12 -V # Python 3.12.10
@@ -99,6 +94,12 @@ py -V # Python 3.13.3
 # common 
 py -m pip install google-cloud-bigquery google-cloud-spanner google-cloud-core google-cloud-kms google-cloud-logging google-cloud-dataflow-client
 py -m pip install numpy scipy pandas matplotlib seaborn scikit-learn
+
+# ----- 2025/10/12 ----------------
+py --list # 3.12 ~ 3.14
+py -V # Python 3.14.0
+py -3.13 -V # Python 3.13.8
+py -3.12 -V # Python 3.12.10
 ~~~
 
 #### Docker ####
@@ -114,7 +115,7 @@ py -m pip install numpy scipy pandas matplotlib seaborn scikit-learn
 [hub debian](https://hub.docker.com/_/debian)
 [hub kaggle/python](https://hub.docker.com/r/kaggle/python)
 
-* Docker Desktop 4.40.0 (187762)
+* Docker Desktop 4.48.0
 
 ~~~powershell
 # 開発環境共有ネット
@@ -142,13 +143,11 @@ apt install graphviz
 ~~~powershell
 #### 2025-03-22
 docker pull gitlab/gitlab-ce:17.10.0-ce.0
-
 ~~~
 
 ~~~powershell
 #### 2025-03-22
 docker pull postgres:17.4-bookworm
-
 ~~~
 
 ~~~powershell
@@ -173,7 +172,10 @@ docker exec -it mysql_instance_1 bash
 # GRANT ALL PRIVILEGES ON *.* TO admin;
 # リモート接続
 docker run -it --network application_net --rm mysql:8.0.37-debian mysql -h mysql_instance_1 -u admin -p
+~~~
 
+~~~powershell
+# ----- 2025/10/12 ----------------
 ~~~
 
 [Nvdia TensorFlow](https://catalog.ngc.nvidia.com/orgs/nvidia/containers/tensorflow)
@@ -187,11 +189,11 @@ docker run -it --network application_net --rm mysql:8.0.37-debian mysql -h mysql
 
 * VS Code
 * Visual Studio Community 2022
-* IntelliJ
 
 ### 開発環境 WSL2 ###
 
 ~~~powershell
+# ----- 2025/10/12 ----------------
 wsl -l -v # インストール済み
 #  NAME              STATE           VERSION
 #* Ubuntu            Running         2
@@ -199,10 +201,7 @@ wsl -l -v # インストール済み
 wsl -l -o # オンラインで利用可能なものを確認
 # AlmaLinux-Kitten-10
 # Debian
-# SUSE-Linux-Enterprise-15-SP6
 # Ubuntu-24.04
-# openSUSE-Leap-15.6
-# OracleLinux_9_1
 wsl.exe --install -d <Distribution Name>
 wsl --status
 # 既定のディストリビューション: Ubuntu
@@ -320,29 +319,33 @@ python -c "import tensorflow as tf; print(tf.reduce_sum(tf.random.normal([1000, 
 # Verify the GPU setup
 python -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"
 deactivate
-~~~
 
-~~~bash
+# ----- 2025/10/12 ----------------
 sudo apt update
-sudo apt install software-properties-common
-sudo apt install python3.11-full
-sudo apt install bpfcc-tools
+sudo apt install python3.12-full
+sudo apt install python3.13-full
 
-python3.11 -m venv venv
-cd venv
-. ./bin/activate
-pip install bcc
-pip install numba
-python test.py
+python3.11 -V # Python 3.11.0rc1
+python3.12 -V # Python 3.12.12
+python3.13 -V # Python 3.13.8
+
+cd /mnt/e/tool/python313_for_wsl2
+python3.13 -m venv .venv
+. .venv/bin/activate
+pip install uv
+uv init
+uv add tensorflow[and-cuda]
+python -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"
+deactivate
 ~~~
 
 ~~~bash
-# 2024/12/07
+# ----- 2025/10/12 ----------------
 # CUDA 更新後、Tensorflow-gpu認識確認
-nvidia-smi # NVIDIA-SMI 565.51.01              Driver Version: 566.36         CUDA Version: 12.7
+nvidia-smi # NVIDIA-SMI 580.95.02              Driver Version: 581.42         CUDA Version: 13.0
 cd /mnt/e/tool/python_for_wsl2
 . python311_venv/bin/activate 
-python -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))" # [PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')]
+python -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"
 deactivate
 ~~~
 
@@ -351,7 +354,7 @@ deactivate
 * vllm
 
 ~~~bash
-# 2025/07/15
+# ----- 2025/07/15 ----------------
 sudo apt update
 # https://launchpad.net/~deadsnakes
 sudo add-apt-repository ppa:deadsnakes/ppa -y
@@ -418,41 +421,6 @@ uv add langchain
 uv add langchain-community
 ~~~
 
-* pydantic_ai
-
-~~~bash
-# 2025/07/26
-python3.12 -m venv .venv
-uv init
-. .venv/bin/activate
-uv add pydantic_ai
-
-~~~
-
-~~~powershell
-py -3.12 -m venv .venv
-. .\.venv\Scripts\activate
-pip install uv
-uv init
-uv add pydantic_ai
-$env:GEMINI_API_KEY=(Get-Content 'E:\tool\Gemini API Key.txt')
-
-~~~
-
-* mcp
-
-~~~powershell
-
-py -3.12 -m venv .venv
-. .venv\Scripts\activate
-pip install uv
-uv init
-uv add mcp
-uv add psutil
-
-
-~~~
-
 * uv
   * [uv](https://docs.astral.sh/uv/guides/)
 
@@ -468,10 +436,6 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 * fastapi
   * [fastapi](https://github.com/fastapi/fastapi)
 
-~~~bash
-
-~~~
-
 #### 環境設定 Kubeflow piplines (local docker runner) ####
 
 ~~~bash
@@ -485,6 +449,9 @@ pip install pytest pytest-cov pytest-xdist pytest-httpserver
 deactivate
 
 gcloud auth application-default login --no-launch-browser # 認証情報作成
+
+# ----- 2025/10/12 ----------------
+
 ~~~
 
 #### 環境設定 for Google Cloud ####
@@ -494,6 +461,13 @@ gcloud auth application-default login --no-launch-browser # 認証情報作成
 ~~~bash
 # 2025/07/17
 terraform --version # Terraform v1.12.2
+
+# ----- 2025/10/12 ----------------
+# https://developer.hashicorp.com/terraform/install
+wget -O - https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(grep -oP '(?<=UBUNTU_CODENAME=).*' /etc/os-release || lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+sudo apt update && sudo apt install terraform
+terraform --version # Terraform v1.13.3
 ~~~
 
 ### 開発環境 Docker ###
@@ -501,7 +475,6 @@ terraform --version # Terraform v1.12.2
 #### Docker Desktop ####
 
 * [Install Docker Desktop on Windows](https://docs.docker.com/desktop/setup/install/windows-install/)
-  * [2025/07/17] Docker Desktop 4.43.1 (198352)
 
 #### 環境設定 ####
 
@@ -576,39 +549,48 @@ docker run -it --runtime=nvidia --gpus=all --name=tensorflow-worker -p 8888:8888
 
 ## other main tools ##
 
+* Unreal Engine
 * [Blender](https://www.blender.org/download/)
   * [2025/07/16]  4.5.0
-* Unreal Engine
-  * 5.4.2
+  * [2025/10/12]  4.5.3
 * [Wireshark](https://www.wireshark.org/download.html)
   * [2025/07/16]  4.4.7 x64
+  * [2025/10/12]  4.6.0 x64
 * [owasp zap](https://www.zaproxy.org/download/)
-  * [2025/07/16] ZAP 2.16.1
+  * [2025/10/12] ZAP 2.16.1
 * [DBeaver](https://dbeaver.io/download/)
   * [2025/07/16] 25.1.2
+  * [2025/10/12] 25.2.2
 * [Graphviz](https://graphviz.org/)
   * [2025/07/16] Graphviz-13.1.0-win64
+  * [2025/10/12] Graphviz-14.0.1-win64
 * [gcloud CLI](https://cloud.google.com/sdk/docs/install?hl=ja)
   * [2025/07/16] Google Cloud SDK 530.0.0
+  * [2025/10/12] Google Cloud SDK 540.0.0
 * GitHub Desktop
   * [2025/07/16] Version 3.5.1 (x64)
+  * [2025/10/12] Version 3.5.2 (x64)
 * [CMake](https://cmake.org/download/)
   * [2025/07/16] 4.1.0-rc1
+  * [2025/10/12] 4.2.0
 * [OpenCV](https://docs.opencv.org/4.x/d3/d52/tutorial_windows_install.html)
   * [2025/07/16] 4.12.0
   * [2025/07/16] 3.4.16
-* [CUDA Toolkit 12.9](https://developer.nvidia.com/cuda-downloads)
+  * [2025/10/12] 5.0.0-alpha
+* [CUDA Toolkit](https://developer.nvidia.com/cuda-downloads)
   * [2025/07/17] 12.9
+  * [2025/10/12] 13.0.2
 
 ~~~powershell
 # PATHに追加
 # '%CUDA_PATH%;%JAVA_HOME%\bin;%GRADLE_HOME%\bin;%GRAPHVIZ_HOME%\bin;%USERPROFILE%\go\bin'
 
-# ツール格納先
-# C:\tools
+# Nvidia
+nvidia-smi # NVIDIA-SMI 581.42                 Driver Version: 581.42         CUDA Version: 13.0
+nvcc -V # Cuda compilation tools, release 13.0, V13.0.88
 
 # Graphviz
-[Environment]::SetEnvironmentVariable('GRAPHVIZ_HOME', 'C:\tools\graphviz\Graphviz-13.1.0-win64', 'User')
+[Environment]::SetEnvironmentVariable('GRAPHVIZ_HOME', 'C:\tools\graphviz\Graphviz-14.0.1-win64', 'User')
 
 # gcloud CLI
 gcloud components update
@@ -616,15 +598,3 @@ gcloud components update
 # git
 git update-git-for-windows # curl: (43) A libcurl function was given a bad argument
 ~~~
-
-~~~powershell
-# 2025/07/17
-# Nvidia
-nvidia-smi # NVIDIA-SMI 576.88 Driver Version: 576.88 CUDA Version: 12.9
-nvcc -V # Cuda compilation tools, release 12.9, V12.9.86
-~~~
-
-## 設定問題のメモ ##
-
-[cuda_version問題](https://stackoverflow.com/questions/75614728/cuda-12-tf-nightly-2-12-could-not-find-cuda-drivers-on-your-machine-gpu-will)
-tensorflowがcuda12.2,cudnn8.9対応待ち。
