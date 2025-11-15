@@ -90,9 +90,10 @@ https://civitai.com/models/13068/russian-doll-likeness
 
 ## 起動 ##
 
-~~~python
+~~~powershell
 cd E:\tool\ai\stable-diffusion-webui
-.\venv\Scripts\activate
+py -3.11 -m venv .venv
+.venv\Scripts\activate
 .\webui-user.bat
 ~~~
 

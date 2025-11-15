@@ -533,6 +533,10 @@ docker pull quay.io/jupyter/datascience-notebook:2025-07-14
 docker run -it -p 8888:8888 -v E:\project\datascience\train\LearnPython\data_science\datascience-notebook:/home/jovyan/work quay.io/jupyter/datascience-notebook:2025-07-14
 # Tokenは毎回起動の時に変わため、コンソールから確認
 # http://127.0.0.1:10000/lab?token=2cfea28b8c1c367c8244c652e1d2676b181e53273f84524e
+
+# ----- 2025/10/13 ----------------
+docker pull quay.io/jupyter/datascience-notebook:2025-10-06
+docker run -it -p 8888:8888 -v E:\project\datascience\train\LearnPython\data_science\datascience-notebook:/home/jovyan/work quay.io/jupyter/datascience-notebook:2025-10-06
 ~~~
 
 * tensorflow
@@ -545,6 +549,15 @@ docker pull quay.io/jupyter/tensorflow-notebook:cuda-2025-07-14
 docker run -it --runtime=nvidia --gpus=all --name=tensorflow-worker -p 8888:8888 --mount type=bind,src=E:\project\docker_volume\tensorflow-notebook-storage,dst=/home/jovyan/work quay.io/jupyter/tensorflow-notebook:cuda-2025-07-14
 # Tokenは毎回起動の時に変わため、コンソールから確認
 # http://127.0.0.1:8888/lab?token=2c7cb5210a5580f80d5637fb0e68e068ca99ebf332869106
+
+# ----- 2025/10/13 ----------------
+docker pull quay.io/jupyter/tensorflow-notebook:cuda-2025-10-06
+docker run -it --runtime=nvidia --gpus=all --name=tensorflow-worker -p 8888:8888 --mount type=bind,src=E:\project\docker_volume\tensorflow-notebook-storage,dst=/home/jovyan/work quay.io/jupyter/tensorflow-notebook:cuda-2025-10-06
+~~~
+
+~~~powershell
+# ----- 2025/10/13 ----------------
+
 ~~~
 
 ## other main tools ##
