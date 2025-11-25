@@ -27,8 +27,20 @@
 [Gemini CLI](https://github.com/google-gemini/gemini-cli)
 
 ~~~powershell
-npm --version # 11.4.2
-npx https://github.com/google-gemini/gemini-cli
+# 2025/11/23
+npm --version # 11.6.2
+npm install -g @google/gemini-cli
+gemini --version # 0.17.1
+~~~
+
+#### jules cli ####
+
+[jules cli](https://jules.google/docs/cli/reference/)
+
+~~~powershell
+# 2025/11/23
+npm install -g @google/jules
+jules version # v0.1.40
 ~~~
 
 #### JAVA ####
@@ -114,6 +126,8 @@ py -3.12 -V # Python 3.12.10
 [hub alpine](https://hub.docker.com/_/alpine)
 [hub debian](https://hub.docker.com/_/debian)
 [hub kaggle/python](https://hub.docker.com/r/kaggle/python)
+[github pgvector](https://github.com/pgvector/pgvector?tab=readme-ov-file#docker)
+[hub pgvector](https://hub.docker.com/r/pgvector/pgvector/tags)
 
 * Docker Desktop 4.48.0
 
@@ -174,16 +188,22 @@ docker exec -it mysql_instance_1 bash
 docker run -it --network application_net --rm mysql:8.0.37-debian mysql -h mysql_instance_1 -u admin -p
 ~~~
 
-~~~powershell
-# ----- 2025/10/12 ----------------
-~~~
-
 [Nvdia TensorFlow](https://catalog.ngc.nvidia.com/orgs/nvidia/containers/tensorflow)
 [NGC Catalog User Guide](https://docs.nvidia.com/ngc/gpu-cloud/ngc-catalog-user-guide/index.html)
 
 ~~~powershell
-
+# ----- 2025/11/20 ----------------
+docker pull pgvector/pgvector:pg18-trixie
+docker run -it --network application_net -e POSTGRES_USER=test_u -e POSTGRES_PASSWORD=test_p -e POSTGRES_DB=test_db --name test_pgvector_db -p 5432:5432 --mount type=bind,source=E:\tool\postgresql_dir\for_docker_postgresql16_pgvector,target=/var/lib/postgresql/ pgvector/pgvector:pg18-trixie
 ~~~
+
+~~~sql
+CREATE EXTENSION vector;
+CREATE TABLE items (id bigserial PRIMARY KEY, embedding vector(3));
+INSERT INTO items (embedding) VALUES ('[1,2,3]'), ('[4,5,6]');
+SELECT * FROM items ORDER BY embedding <-> '[3,1,2]' LIMIT 5;
+~~~
+
 
 #### IDE ####
 

@@ -38,3 +38,12 @@
 [AI Academy](https://aiacademy.jp/texts/)
 
 [Chainer](https://tutorials.chainer.org/ja/tutorial.html)
+
+## AIで勉強 ##
+
+### 数学 ###
+
+### 英語 ###
+
+
+
