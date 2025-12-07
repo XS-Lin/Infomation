@@ -45,5 +45,6 @@
 
 ### 英語 ###
 
+### 論理学 ###
 
-
+[wiki 誤謬](https://ja.wikipedia.org/wiki/%E8%AA%A4%E8%AC%AC)

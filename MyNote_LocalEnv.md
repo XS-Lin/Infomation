@@ -204,11 +204,11 @@ INSERT INTO items (embedding) VALUES ('[1,2,3]'), ('[4,5,6]');
 SELECT * FROM items ORDER BY embedding <-> '[3,1,2]' LIMIT 5;
 ~~~
 
-
 #### IDE ####
 
+* Antigravity
 * VS Code
-* Visual Studio Community 2022
+* Visual Studio Community 2026
 
 ### 開発環境 WSL2 ###
 
@@ -584,25 +584,21 @@ docker run -it --runtime=nvidia --gpus=all --name=tensorflow-worker -p 8888:8888
 
 * Unreal Engine
 * [Blender](https://www.blender.org/download/)
-  * [2025/07/16]  4.5.0
-  * [2025/10/12]  4.5.3
+  * [2025/12/01]  5.0.0
 * [Wireshark](https://www.wireshark.org/download.html)
-  * [2025/07/16]  4.4.7 x64
-  * [2025/10/12]  4.6.0 x64
+  * [2025/12/01]  4.6.1 x64
 * [owasp zap](https://www.zaproxy.org/download/)
   * [2025/10/12] ZAP 2.16.1
 * [DBeaver](https://dbeaver.io/download/)
-  * [2025/07/16] 25.1.2
   * [2025/10/12] 25.2.2
 * [Graphviz](https://graphviz.org/)
   * [2025/07/16] Graphviz-13.1.0-win64
   * [2025/10/12] Graphviz-14.0.1-win64
+  * [2025/12/01] Graphviz-14.0.5-win64
 * [gcloud CLI](https://cloud.google.com/sdk/docs/install?hl=ja)
-  * [2025/07/16] Google Cloud SDK 530.0.0
-  * [2025/10/12] Google Cloud SDK 540.0.0
+  * [2025/12/01] Google Cloud SDK 548.0.0
 * GitHub Desktop
-  * [2025/07/16] Version 3.5.1 (x64)
-  * [2025/10/12] Version 3.5.2 (x64)
+  * [2025/07/16] Version 3.5.4 (x64)
 * [CMake](https://cmake.org/download/)
   * [2025/07/16] 4.1.0-rc1
   * [2025/10/12] 4.2.0
