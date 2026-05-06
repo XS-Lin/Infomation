@@ -1,5 +1,9 @@
 # Windows Tips #
 
+## Win + Shift + Array ##
+
+複数ディスプレイの場合、使っているアプリを別のディスプレイへ移動
+
 ## Ctrl + Alt+ Del ##
 
 リモートデスクトップのマシンへ送信：Ctrl + Alt + End

@@ -31,6 +31,11 @@
 npm --version # 11.6.2
 npm install -g @google/gemini-cli
 gemini --version # 0.17.1
+
+# ----- 2026/03/07 ----------------
+npm view @google/gemini-cli version # 0.32.1
+npm install -g @google/gemini-cli
+gemini -v # 0.32.1
 ~~~
 
 #### jules cli ####
@@ -74,6 +79,9 @@ go env
 # ----- 2025/10/12 ----------------
 # バージョン確認
 go version # go1.25.2 windows/amd64
+# ----- 2026/03/07 ----------------
+# バージョン確認
+go version # go1.26.1 windows/amd64
 ~~~
 
 #### Python ####
@@ -107,10 +115,16 @@ py -V # Python 3.13.3
 py -m pip install google-cloud-bigquery google-cloud-spanner google-cloud-core google-cloud-kms google-cloud-logging google-cloud-dataflow-client
 py -m pip install numpy scipy pandas matplotlib seaborn scikit-learn
 
-# ----- 2025/10/12 ----------------
+# ----- 2026/01/02 ----------------
 py --list # 3.12 ~ 3.14
-py -V # Python 3.14.0
-py -3.13 -V # Python 3.13.8
+py -V # Python 3.14.2
+py -3.13 -V # Python 3.13.11
+py -3.12 -V # Python 3.12.10
+
+# ----- 2026/03/07 ----------------
+py --list # 3.12 ~ 3.14
+py -V # Python 3.14.3
+py -3.13 -V # Python 3.13.12
 py -3.12 -V # Python 3.12.10
 ~~~
 
@@ -129,7 +143,7 @@ py -3.12 -V # Python 3.12.10
 [github pgvector](https://github.com/pgvector/pgvector?tab=readme-ov-file#docker)
 [hub pgvector](https://hub.docker.com/r/pgvector/pgvector/tags)
 
-* Docker Desktop 4.48.0
+* Docker Desktop 4.63.0
 
 ~~~powershell
 # 開発環境共有ネット
@@ -137,8 +151,6 @@ docker network create --driver=bridge application_net
 ~~~
 
 ~~~powershell
-# docker pull jupyter/datascience-notebook:2022-12-15
-# docker pull quay.io/jupyter/datascience-notebook:2024-06-10
 docker pull quay.io/jupyter/datascience-notebook:2024-11-19
 $work_folder="E:\project\datascience\train\LearnPython\data_science\datascience-notebook"
 docker run -it --network application_net --name my_data_science_notebook_v20241119 -p 8888:8888 -v ${work_folder}:/home/jovyan/work quay.io/jupyter/datascience-notebook:2024-11-19
@@ -157,6 +169,8 @@ apt install graphviz
 ~~~powershell
 #### 2025-03-22
 docker pull gitlab/gitlab-ce:17.10.0-ce.0
+# ----- 2026/03/07 ----------------
+docker pull gitlab/gitlab-ce:18.7.5-ce.0
 ~~~
 
 ~~~powershell
@@ -236,6 +250,19 @@ wsl ~ # ディレクトリをホームに変更する
 cd ~
 
 wsl --update
+~~~
+
+~~~powershell
+# ----- 2025/10/12 ----------------
+wsl --uninstall Ubuntu-22.04
+wsl --unregister Ubuntu-22.04
+wsl --install Ubuntu-24.04
+# Ubuntu-24.04 linxs/local
+wsl -l -v
+#   NAME              STATE           VERSION
+# * Ubuntu-24.04      Stopped         2
+#   Ubuntu            Stopped         2
+#   docker-desktop    Stopped         2
 ~~~
 
 #### 環境設定 TensorFlow ####
@@ -369,6 +396,43 @@ python -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU')
 deactivate
 ~~~
 
+~~~bash
+# Ubuntu-24.04
+sudo apt update
+sudo apt upgrade
+
+uname -a
+# Linux PC-LIN-MAIN 6.6.87.2-microsoft-standard-WSL2 #1 SMP PREEMPT_DYNAMIC Thu Jun  5 18:30:46 UTC 2025 x86_64 x86_64 x86_64 GNU/Linux
+lsb_release -d
+# Ubuntu 24.04.4 LTS
+
+# ---- WSL2 NVIDIA GPU Setting
+# ---- https://developer.nvidia.com/cuda-downloads?target_os=Linux&target_arch=x86_64&Distribution=WSL-Ubuntu&target_version=2.0&target_type=deb_local
+wget https://developer.download.nvidia.com/compute/cuda/repos/wsl-ubuntu/x86_64/cuda-wsl-ubuntu.pin
+sudo mv cuda-wsl-ubuntu.pin /etc/apt/preferences.d/cuda-repository-pin-600
+wget https://developer.download.nvidia.com/compute/cuda/13.2.1/local_installers/cuda-repo-wsl-ubuntu-13-2-local_13.2.1-1_amd64.deb
+sudo dpkg -i cuda-repo-wsl-ubuntu-13-2-local_13.2.1-1_amd64.deb
+sudo cp /var/cuda-repo-wsl-ubuntu-13-2-local/cuda-*-keyring.gpg /usr/share/keyrings/
+sudo apt-get update
+sudo apt-get -y install cuda-toolkit-13-2
+
+gcc --version # gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
+ldd --version # ldd (Ubuntu GLIBC 2.39-0ubuntu8.7) 2.39
+
+# WSL再起動 wsl --terminate Ubuntu-24.04
+sudo apt install -y python3.12 python3.12-venv python3.12-dev
+
+mkdir tensorflow_test
+cd tensorflow_test
+python3.12 -m venv .venv
+. .venv/bin/activate
+pip install --upgrade pip
+pip install tensorflow[and-cuda]
+
+python3 -c "import tensorflow as tf; print(tf.reduce_sum(tf.random.normal([1000, 1000])))"
+python3 -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"
+~~~
+
 #### 環境設定 LLM ####
 
 * vllm
@@ -488,6 +552,18 @@ wget -O - https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/sh
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(grep -oP '(?<=UBUNTU_CODENAME=).*' /etc/os-release || lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
 sudo apt update && sudo apt install terraform
 terraform --version # Terraform v1.13.3
+
+# ----- 2026/01/02 ----------------
+terraform --version # Terraform v1.13.3
+~~~
+
+~~~bash
+# Ubuntu-24.04
+# ----- 2026/04/18 ----------------
+wget -O - https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(grep -oP '(?<=UBUNTU_CODENAME=).*' /etc/os-release || lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+sudo apt update && sudo apt install terraform
+terraform --version # Terraform v1.14.8
 ~~~
 
 ### 開発環境 Docker ###
@@ -545,6 +621,7 @@ Invoke-RestMethod -Method POST -Uri $postUri -Body $postBody -ContentType applic
 * datascience
   * [Jupyter Docker Stacks](https://jupyter-docker-stacks.readthedocs.io/en/latest/index.html)
   * [Selecting an Image](https://jupyter-docker-stacks.readthedocs.io/en/latest/using/selecting.html)
+    * [Image Repo list](https://quay.io/organization/jupyter)
 
 ~~~powershell
 # 
@@ -557,6 +634,10 @@ docker run -it -p 8888:8888 -v E:\project\datascience\train\LearnPython\data_sci
 # ----- 2025/10/13 ----------------
 docker pull quay.io/jupyter/datascience-notebook:2025-10-06
 docker run -it -p 8888:8888 -v E:\project\datascience\train\LearnPython\data_science\datascience-notebook:/home/jovyan/work quay.io/jupyter/datascience-notebook:2025-10-06
+
+# ----- 2026/03/07 ----------------
+docker pull quay.io/jupyter/datascience-notebook:2026-03-02
+docker run -it -p 8888:8888 --mount type=bind,src=E:\project\datascience\train\LearnPython\data_science\datascience-notebook,dst=/home/jovyan/work quay.io/jupyter/datascience-notebook:2026-03-02
 ~~~
 
 * tensorflow
@@ -573,11 +654,8 @@ docker run -it --runtime=nvidia --gpus=all --name=tensorflow-worker -p 8888:8888
 # ----- 2025/10/13 ----------------
 docker pull quay.io/jupyter/tensorflow-notebook:cuda-2025-10-06
 docker run -it --runtime=nvidia --gpus=all --name=tensorflow-worker -p 8888:8888 --mount type=bind,src=E:\project\docker_volume\tensorflow-notebook-storage,dst=/home/jovyan/work quay.io/jupyter/tensorflow-notebook:cuda-2025-10-06
-~~~
-
-~~~powershell
-# ----- 2025/10/13 ----------------
-
+# ----- 2026/03/07 ----------------
+docker pull quay.io/jupyter/tensorflow-notebook:2026-03-02
 ~~~
 
 ## other main tools ##
@@ -587,28 +665,35 @@ docker run -it --runtime=nvidia --gpus=all --name=tensorflow-worker -p 8888:8888
   * [2025/12/01]  5.0.0
 * [Wireshark](https://www.wireshark.org/download.html)
   * [2025/12/01]  4.6.1 x64
+  * [2026/03/07]  4.6.4 x64
 * [owasp zap](https://www.zaproxy.org/download/)
   * [2025/10/12] ZAP 2.16.1
 * [DBeaver](https://dbeaver.io/download/)
   * [2025/10/12] 25.2.2
+  * [2026/03/07] 26.0.0
 * [Graphviz](https://graphviz.org/)
   * [2025/07/16] Graphviz-13.1.0-win64
   * [2025/10/12] Graphviz-14.0.1-win64
   * [2025/12/01] Graphviz-14.0.5-win64
+  * [2026/03/07] Graphviz-14.1.3-win64
 * [gcloud CLI](https://cloud.google.com/sdk/docs/install?hl=ja)
-  * [2025/12/01] Google Cloud SDK 548.0.0
+  * [2026/04/18] Google Cloud SDK 565.0.0
 * GitHub Desktop
   * [2025/07/16] Version 3.5.4 (x64)
+  * [2025/07/16] Version 3.5.5 (x64)
 * [CMake](https://cmake.org/download/)
   * [2025/07/16] 4.1.0-rc1
   * [2025/10/12] 4.2.0
 * [OpenCV](https://docs.opencv.org/4.x/d3/d52/tutorial_windows_install.html)
   * [2025/07/16] 4.12.0
+  * [2026/01/02] 4.13.0
   * [2025/07/16] 3.4.16
   * [2025/10/12] 5.0.0-alpha
 * [CUDA Toolkit](https://developer.nvidia.com/cuda-downloads)
   * [2025/07/17] 12.9
-  * [2025/10/12] 13.0.2
+  * [2026/04/18] 13.2.1
+* [Drawio](https://www.drawio.com/)
+  * [2026/04/18] 29.6.6
 
 ~~~powershell
 # PATHに追加

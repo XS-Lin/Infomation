@@ -27,6 +27,7 @@
 [cudnn-windows-x86_64-8.7.0.84_cuda11-archive.zip](https://developer.download.nvidia.com/compute/redist/cudnn/v8.7.0/local_installers/11.8/)
 [Additional Networks for generating images](https://github.com/kohya-ss/sd-webui-additional-networks)
 [github Ultimate SD Upscale extension](https://github.com/Coyote-A/ultimate-upscale-for-automatic1111)
+[huggingface diffusion-course](https://huggingface.co/learn/diffusion-course/unit1/1)
 
 ### Model ###
 
@@ -34,6 +35,7 @@
 [hakurei waifu v1.3](https://huggingface.co/hakurei/waifu-diffusion-v1-3)
 [ControlNet models](https://huggingface.co/lllyasviel/ControlNet/tree/main/models)
 [Model Database - 4x-UltraSharp](https://upscale.wiki/wiki/Model_Database)
+[Magic-Wan-Image-V2](https://huggingface.co/wikeeyang/Magic-Wan-Image-V2)
 
 https://civitai.com/models/4384/dreamshaper
 https://civitai.com/models/10028/neverending-dream
