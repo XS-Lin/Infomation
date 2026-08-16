@@ -1,5 +1,0 @@
-# VertexAI #
-
-## Workbench ##
-
-## Pipelines ##

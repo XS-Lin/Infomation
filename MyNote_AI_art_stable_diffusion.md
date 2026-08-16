@@ -2,10 +2,23 @@
 
 ## 参考 ##
 
+- 無制限のモデルキーワード: abliterated / uncensored
+
 ### Youtube ###
 
 [AI 繪圖教學觀看順序](https://www.youtube.com/playlist?list=PLA8oR-9gke1--n2RNoWzhwDSgggvxjjOL)
 [StableDiffusion的内部结构和工作原理](https://www.youtube.com/watch?v=rz89oownA6M)
+
+### 調査 ###
+
+- Stable Diffusion / FLUX.1
+  - FLUX 採用(最近有能らしい)
+- Midnight Rose / Cydonia
+  - Midnight Miqu 70B(ギリギリ)
+  - Midnight Rose 70B(ギリギリ)
+  - Qwen3-30B-ERP (よさそう)
+- ComfyUI
+  - C:\tools\ComfyUI
 
 ### 参考資料 ###
 
@@ -28,6 +41,16 @@
 [Additional Networks for generating images](https://github.com/kohya-ss/sd-webui-additional-networks)
 [github Ultimate SD Upscale extension](https://github.com/Coyote-A/ultimate-upscale-for-automatic1111)
 [huggingface diffusion-course](https://huggingface.co/learn/diffusion-course/unit1/1)
+
+[huggingface Datasets: jtatman/stable-diffusion-prompts-uncensored](https://huggingface.co/datasets/jtatman/stable-diffusion-prompts-uncensored)
+[huggingface John6666/illustrious-xl10-improved-uncensored-v30-sdxl](https://huggingface.co/John6666/illustrious-xl10-improved-uncensored-v30-sdxl)
+
+- [huihui-ai Qwen3-30B-A3B-abliterated](https://huggingface.co/huihui-ai/Qwen3-30B-A3B-abliterated)
+  - フル精度 (BF16): 約60GBのメモリが必要
+  - 4-bit量子化 (Q4_K_M): VRAMは16GB〜18GB程度
+
+[【40時間→3時間】ローカルでNSFW画像生成AIを動かすまでに5回挫折した話](https://note.com/zain14/n/n34bd22da64e9)
+[ローカル行っちゃう？](https://note.com/wanko2859/n/nace7ad8070f4)
 
 ### Model ###
 
