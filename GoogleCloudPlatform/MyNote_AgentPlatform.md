@@ -23,6 +23,11 @@
   - [Notebook Python Components](https://www.kubeflow.org/docs/components/pipelines/user-guides/components/notebook-component/)
   - [Load and Share Components](https://www.kubeflow.org/docs/components/pipelines/user-guides/components/load-and-share-components/)
 
+### Containerized Python Components 調査 ###
+
+- Containerized Python Components
+  - components フォルダの内容をビルドする
+
 ## MLOps ##
 
 - 注意点: 各製品の通常利用方法とPipelinesとの統合を整理すること。
@@ -34,9 +39,16 @@
 - [Gemini Enterprise Agent Platform ML メタデータの概要](https://docs.cloud.google.com/gemini-enterprise-agent-platform/machine-learning/ml-metadata/introduction?hl=ja)
 - [モデル モニタリングの概要](https://docs.cloud.google.com/gemini-enterprise-agent-platform/machine-learning/model-monitoring/overview?hl=ja)
 - [Gemini Enterprise Agent Platform の試験運用版の概要](https://docs.cloud.google.com/gemini-enterprise-agent-platform/machine-learning/experiments/intro-vertex-ai-experiments?hl=ja)
+- [パイプラインのビルド](https://docs.cloud.google.com/gemini-enterprise-agent-platform/machine-learning/pipelines/build-pipeline?hl=ja)
+- [パイプライン テンプレートの作成、アップロード、使用](https://docs.cloud.google.com/gemini-enterprise-agent-platform/machine-learning/pipelines/create-pipeline-template?hl=ja)
 
 ## 用語の注意 ##
 
 レスポンスタイムはリクエスト処理時間に加えて、ネットワークの待ち時間や待ち行列に入る時間を含める。レイテンシはリクエストが処理される待ち時間。
 ここでは、機械学習コミュニティに合わせて、レイテンシはリクエスト送信からレスポンス受信時間とする（レスポンスタイムの意味で利用する）。
 ※アルゴリズム取引のHFT（High-Frequency Trading：高頻度取引、ミリ秒やマイクロ秒という極めて短い時間で株や為替の売買を大量に繰り返す取引手法）では、区別する必要はある。
+
+## データセット ##
+
+[Nemotron-Personas-Japan](https://huggingface.co/datasets/nvidia/Nemotron-Personas-Japan)
+
