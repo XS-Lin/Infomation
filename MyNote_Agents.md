@@ -161,9 +161,18 @@ curl http://localhost:8000/v1/completions \
 
 [API キー](https://aistudio.google.com/api-keys?hl=ja)
 
-## Workbench Instance ##
+## ベストプラクティス ##
 
-~~~powershell
+- 構造化出力
+  - フォーマット
+    - []()
+    - []()
+    - []()
+  - 自動
+    - 
 
+### メモ ###
 
-~~~
+- テスト自動化エージェント
+  - データ生成
+    - DBスキーマ（DB or 仕様書より）取得してJSONスキーマクラス作成

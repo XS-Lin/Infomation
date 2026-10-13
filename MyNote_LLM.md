@@ -345,3 +345,7 @@ uv add "langchain[google-genai]"
   - [langchain-litellm](https://python.langchain.com/docs/integrations/providers/litellm/)
   - [langchain-vllm](https://docs.vllm.ai/en/v0.9.1/serving/integrations/langchain.html)
   - [langchain-llamacpp](https://python.langchain.com/docs/integrations/llms/llamacpp/)
+
+## 拡張 ##
+
+- [LLM と AI モデルのファインチューニング](https://cloud.google.com/use-cases/fine-tuning-ai-models?hl=ja)
