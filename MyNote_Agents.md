@@ -161,18 +161,27 @@ curl http://localhost:8000/v1/completions \
 
 [API キー](https://aistudio.google.com/api-keys?hl=ja)
 
-## ベストプラクティス ##
-
-- 構造化出力
-  - フォーマット
-    - []()
-    - []()
-    - []()
-  - 自動
-    - 
-
 ### メモ ###
 
 - テスト自動化エージェント
   - データ生成
     - DBスキーマ（DB or 仕様書より）取得してJSONスキーマクラス作成
+
+### LEARN ###
+
+[ADK を使用して AI エージェントを構築する:基礎](https://codelabs.developers.google.com/devsite/codelabs/build-agents-with-adk-foundation?hl=ja#0)
+[ADK 集中講座 - 初心者からエキスパートまで](https://codelabs.developers.google.com/onramp/instructions?hl=ja#0)
+[ADK 2 オーケストレーション:グラフ、コラボレーション、動的ワークフロー](https://codelabs.developers.google.com/adk2/instructions?hl=ja#0)
+
+[ADK と A2UI を使用したフロントエンド エクスペリエンス](https://codelabs.developers.google.com/next26/adk-a2ui?hl=ja#0)
+[ADK と CloudSQL を使用して永続的な AI エージェントを構築する](https://codelabs.developers.google.com/persistent-adk-cloudsql?hl=ja#0)
+[ADK を使用したスキーマ対応エージェント](https://codelabs.developers.google.com/codelabs/codelabs/schema-aware-adk?hl=ja#0)
+[ADK を使用した MCP と A2A のスタートガイド](https://codelabs.developers.google.com/getting-started-mcp-a2a-adk?hl=ja#0)
+[ADK:基本からマルチツール エージェントまで](https://codelabs.developers.google.com/multi-tool-ai-agent-adk?hl=ja#0)
+[ADK と A2A を使用してマルチエージェント マラソン プランナーを構築する](https://codelabs.developers.google.com/next26/dev-keynote/build-multi-agent-marathon-planner?hl=ja#0)
+[ADK 2.0 と MCP を使用して、自律型の超パーソナライズされた CX エージェントとフルフィルメント エージェントを構築してデプロイする](https://codelabs.developers.google.com/codelabs/devsite/codelabs/adk-mcp-fulfillment-agent?hl=ja#0)
+[ADK 2.0 と MCP を使用して自律型不正行為調査エージェントを構築してデプロイする](https://codelabs.developers.google.com/build-and-deploy-an-autonomous-fraud-investigation-agent-using-adk-2-0-mcp?hl=ja#0)
+[ADK と A2A を使用してマルチエージェント マラソン プランナーを構築する](https://codelabs.developers.google.com/next26/dev-keynote/build-multi-agent-marathon-planner?hl=ja#0)
+[ADK と A2UI を使用してリッチなエージェント インターフェースを構築する](https://codelabs.developers.google.com/adk-gemini-a2ui?hl=ja#0)
+[ADK エージェントのフロントエンドを Vibecode でデプロイする](https://codelabs.developers.google.com/vibecode-frontend-with-antigravity?hl=ja#0)
+[ADK 2 オーケストレーション:グラフ、コラボレーション、動的ワークフロー](https://codelabs.developers.google.com/adk2/instructions?hl=ja#0)

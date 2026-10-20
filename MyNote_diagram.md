@@ -1,0 +1,24 @@
+# 図表 #
+
+- VS Code
+  - Excalidraw
+    - [Examples](https://plus.excalidraw.com/use-cases)
+    - Skills
+      - [Softaworks agent-toolkit](https://github.com/softaworks/agent-toolkit/tree/main/skills/excalidraw)
+      - [coleam00](https://github.com/coleam00/excalidraw-diagram-skill/tree/main/references)
+  - Drawio
+    - [Examples](https://www.drawio.com/docs/diagram-types/)
+    - Skills
+      - [jgraph](https://github.com/jgraph/drawio-mcp/blob/main/plugins/claude-code/README.md)
+      - [Agents365-ai](https://github.com/Agents365-ai/drawio-skill)
+      - [Softaworks agent-toolkit](https://github.com/softaworks/agent-toolkit/blob/main/skills/draw-io/README.md)
+- ASCII Art
+  - Skills
+    - [full-stack-skills](https://github.com/full-stack-skills/ascii-skills)
+- Graphviz
+  - [Examples](https://graphviz.org/gallery/)
+- Mermaid
+  - [Examples](https://mermaid.ai/open-source/syntax/examples.html)
+  - Skills
+    - [Softaworks agent-toolkit](https://github.com/softaworks/agent-toolkit/blob/main/skills/mermaid-diagrams/SKILL.md?plain=1)
+    - [imxv](https://github.com/imxv/Pretty-mermaid-skills)

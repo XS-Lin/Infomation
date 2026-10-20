@@ -5,7 +5,6 @@
 ### 参考資料 ###
 
 [powershell about_Operators](https://learn.microsoft.com/ja-jp/powershell/module/microsoft.powershell.core/about/about_operators?view=powershell-7.3)
-[OpenCV](https://opencv.org/)
 
 ### 開発環境 ###
 
@@ -21,33 +20,6 @@
 %USERPROFILE%\go\bin
 ~~~
 
-#### Gemini cli ####
-
-[Node.js®をダウンロードする](https://nodejs.org/ja/download/current)
-[Gemini CLI](https://github.com/google-gemini/gemini-cli)
-
-~~~powershell
-# 2025/11/23
-npm --version # 11.6.2
-npm install -g @google/gemini-cli
-gemini --version # 0.17.1
-
-# ----- 2026/03/07 ----------------
-npm view @google/gemini-cli version # 0.32.1
-npm install -g @google/gemini-cli
-gemini -v # 0.32.1
-~~~
-
-#### jules cli ####
-
-[jules cli](https://jules.google/docs/cli/reference/)
-
-~~~powershell
-# 2025/11/23
-npm install -g @google/jules
-jules version # v0.1.40
-~~~
-
 #### JAVA ####
 
 ~~~powershell
@@ -59,8 +31,8 @@ $Env:JAVA_HOME
 $Env:GRADLE_HOME
 # PATHに追加 %JAVA_HOME%\bin;%GRADLE_HOME%\bin;
 #[Environment]::SetEnvironmentVariable('JAVA_HOME', 'C:\tools\jdk\corretto_aws\jdk17.0.8_8', 'User')
-[Environment]::SetEnvironmentVariable('GRADLE_HOME', 'C:\tools\gradle\gradle-9.1.0', 'User')
-[Environment]::SetEnvironmentVariable('JAVA_HOME', 'C:\tools\jdk\oracle\jdk-25', 'User')
+[Environment]::SetEnvironmentVariable('GRADLE_HOME', 'C:\tools\gradle\gradle-9.8.1', 'User')
+[Environment]::SetEnvironmentVariable('JAVA_HOME', 'C:\tools\jdk\oracle\jdk-27', 'User')
 ~~~
 
 * [VisualVM](https://visualvm.github.io/download.html)
@@ -76,12 +48,9 @@ C:\tools\visualvm\visualvm_22\bin\visualvm.exe --jdkhome "$Env:JAVA_HOME" --user
 # 環境変数確認
 go env
 
-# ----- 2025/10/12 ----------------
+# ----- 2026/10/17 ----------------
 # バージョン確認
-go version # go1.25.2 windows/amd64
-# ----- 2026/03/07 ----------------
-# バージョン確認
-go version # go1.26.1 windows/amd64
+go version # go version go1.27.2 windows/amd64
 ~~~
 
 #### Python ####
@@ -98,33 +67,11 @@ go version # go1.26.1 windows/amd64
 pip --python=<env> install <package>
 pip config set global.require-virtualenv true
 
-# ----- 2025/04/19 ----------------
-py -3.12 -V # Python 3.12.10
-# common
-py -3.12 -m pip install numpy scipy scikit-learn pandas matplotlib seaborn keras
-py -3.12 -m pip install tensorflow tensorflow_datasets tf_keras
-py -3.12 -m pip install google-cloud-bigquery google-cloud-spanner google-cloud-core google-cloud-kms google-cloud-logging
-py -3.12 -m pip install pydot tqdm 
-py -3.12 -m pip install kfp docker # kubeflow, not work in Windows 
-py -3.12 -m pip avro graphviz 
-py -3.12 -m venv venv
-
-# ----- 2025/04/19 ----------------
-py -V # Python 3.13.3
-# common 
-py -m pip install google-cloud-bigquery google-cloud-spanner google-cloud-core google-cloud-kms google-cloud-logging google-cloud-dataflow-client
-py -m pip install numpy scipy pandas matplotlib seaborn scikit-learn
-
-# ----- 2026/01/02 ----------------
-py --list # 3.12 ~ 3.14
-py -V # Python 3.14.2
-py -3.13 -V # Python 3.13.11
-py -3.12 -V # Python 3.12.10
-
-# ----- 2026/03/07 ----------------
-py --list # 3.12 ~ 3.14
-py -V # Python 3.14.3
-py -3.13 -V # Python 3.13.12
+# ----- 2026/10/17 ----------------
+py --list # 3.12 ~ 3.15
+py -V # Python 3.15.0
+py -3.14 -V # Python 3.14.8
+py -3.13 -V # Python 3.13.16
 py -3.12 -V # Python 3.12.10
 ~~~
 
@@ -142,8 +89,13 @@ py -3.12 -V # Python 3.12.10
 [hub kaggle/python](https://hub.docker.com/r/kaggle/python)
 [github pgvector](https://github.com/pgvector/pgvector?tab=readme-ov-file#docker)
 [hub pgvector](https://hub.docker.com/r/pgvector/pgvector/tags)
+[Nvdia TensorFlow](https://catalog.ngc.nvidia.com/orgs/nvidia/containers/tensorflow)
+[NGC Catalog User Guide](https://docs.nvidia.com/ngc/gpu-cloud/ngc-catalog-user-guide/index.html)
 
-* Docker Desktop 4.63.0
+~~~powershell
+# ----- 2026/10/17 ----------------
+* Docker Desktop 4.95.0
+~~~
 
 ~~~powershell
 # 開発環境共有ネット
@@ -167,48 +119,16 @@ apt install graphviz
 ~~~
 
 ~~~powershell
-#### 2025-03-22
-docker pull gitlab/gitlab-ce:17.10.0-ce.0
-# ----- 2026/03/07 ----------------
-docker pull gitlab/gitlab-ce:18.7.5-ce.0
+# https://hub.docker.com/r/gitlab/gitlab-ce/docker pull gitlab/gitlab-ce:18.7.5-ce.0
+# ----- 2026/10/17 ----------------
+docker pull gitlab/gitlab-ce:19.5.0-ce.0
 ~~~
 
 ~~~powershell
-#### 2025-03-22
-docker pull postgres:17.4-bookworm
-~~~
-
-~~~powershell
-#### 2025-03-22
-docker pull mysql:8.0.41-bookworm
-
-#### 2024-06 DELETED ####
-# docker pull mysql:8.0.31
-docker pull mysql:8.0.37-debian
-# コンテナ作成
-docker run --network application_net --name mysql_instance_1 -p 3306:3306 -e MYSQL_ROOT_PASSWORD=Password0 -d mysql:8.0.37-debian
-# コンテナ停止・起動
-docker stop mysql_instance_1
-docker start mysql_instance_1
-# 詳細情報
-docker inspect mysql_instance_1
-# ローカル接続
-docker exec -it mysql_instance_1 bash
-# mysql -u root -p
-# SELECT user AS role_name FROM mysql.user WHERE host = '%' AND NOT LENGTH(authentication_string);
-# CREATE USER IF NOT EXISTS admin IDENTIFIED BY 'Admin_Password0';
-# GRANT ALL PRIVILEGES ON *.* TO admin;
-# リモート接続
-docker run -it --network application_net --rm mysql:8.0.37-debian mysql -h mysql_instance_1 -u admin -p
-~~~
-
-[Nvdia TensorFlow](https://catalog.ngc.nvidia.com/orgs/nvidia/containers/tensorflow)
-[NGC Catalog User Guide](https://docs.nvidia.com/ngc/gpu-cloud/ngc-catalog-user-guide/index.html)
-
-~~~powershell
-# ----- 2025/11/20 ----------------
-docker pull pgvector/pgvector:pg18-trixie
-docker run -it --network application_net -e POSTGRES_USER=test_u -e POSTGRES_PASSWORD=test_p -e POSTGRES_DB=test_db --name test_pgvector_db -p 5432:5432 --mount type=bind,source=E:\tool\postgresql_dir\for_docker_postgresql16_pgvector,target=/var/lib/postgresql/ pgvector/pgvector:pg18-trixie
+# https://hub.docker.com/r/pgvector/pgvector
+# ----- 2026/10/17 ----------------
+docker pull pgvector/pgvector:0.8.7-pg18-trixie
+docker run -it --network application_net -e POSTGRES_USER=test_u -e POSTGRES_PASSWORD=test_p -e POSTGRES_DB=test_db --name test_pgvector_db -p 5432:5432 --mount type=bind,source=E:\tool\postgresql_dir\for_docker_postgresql16_pgvector,target=/var/lib/postgresql/ pgvector/pgvector:0.8.7-pg18-trixie
 ~~~
 
 ~~~sql
@@ -366,34 +286,6 @@ python -c "import tensorflow as tf; print(tf.reduce_sum(tf.random.normal([1000, 
 # Verify the GPU setup
 python -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"
 deactivate
-
-# ----- 2025/10/12 ----------------
-sudo apt update
-sudo apt install python3.12-full
-sudo apt install python3.13-full
-
-python3.11 -V # Python 3.11.0rc1
-python3.12 -V # Python 3.12.12
-python3.13 -V # Python 3.13.8
-
-cd /mnt/e/tool/python313_for_wsl2
-python3.13 -m venv .venv
-. .venv/bin/activate
-pip install uv
-uv init
-uv add tensorflow[and-cuda]
-python -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"
-deactivate
-~~~
-
-~~~bash
-# ----- 2025/10/12 ----------------
-# CUDA 更新後、Tensorflow-gpu認識確認
-nvidia-smi # NVIDIA-SMI 580.95.02              Driver Version: 581.42         CUDA Version: 13.0
-cd /mnt/e/tool/python_for_wsl2
-. python311_venv/bin/activate 
-python -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"
-deactivate
 ~~~
 
 ~~~bash
@@ -431,6 +323,18 @@ pip install tensorflow[and-cuda]
 
 python3 -c "import tensorflow as tf; print(tf.reduce_sum(tf.random.normal([1000, 1000])))"
 python3 -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"
+
+# uv https://docs.astral.sh/uv/guides/
+curl -LsSf https://astral.sh/uv/install.sh | sh
+source $HOME/.local/bin/env
+uv self update
+uv python list # 
+uv python install 3.12 3.13 3.14 3.15 
+python3.12 -V # Python 3.12.15
+python3.13 -V # Python 3.13.16
+python3.14 -V # Python 3.14.8
+python3.15 -V # Python 3.15.0
+uv venv --python 3.12
 ~~~
 
 #### 環境設定 LLM ####
@@ -505,15 +409,6 @@ uv add langchain
 uv add langchain-community
 ~~~
 
-* uv
-  * [uv](https://docs.astral.sh/uv/guides/)
-
-~~~bash
-# 2025/07/16
-# install uv
-curl -LsSf https://astral.sh/uv/install.sh | sh
-~~~
-
 * streamlit
   * [streamlit](https://docs.streamlit.io/)
     * Cloud Shell で直接起動の時に --server.enableCORS=false オプションをつけると画面が表示できる
@@ -543,27 +438,12 @@ gcloud auth application-default login --no-launch-browser # 認証情報作成
 [Terraform](https://developer.hashicorp.com/terraform/install?product_intent=terraform)
 
 ~~~bash
-# 2025/07/17
-terraform --version # Terraform v1.12.2
-
-# ----- 2025/10/12 ----------------
+# ----- 2026/10/17 ----------------
 # https://developer.hashicorp.com/terraform/install
 wget -O - https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(grep -oP '(?<=UBUNTU_CODENAME=).*' /etc/os-release || lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
 sudo apt update && sudo apt install terraform
-terraform --version # Terraform v1.13.3
-
-# ----- 2026/01/02 ----------------
-terraform --version # Terraform v1.13.3
-~~~
-
-~~~bash
-# Ubuntu-24.04
-# ----- 2026/04/18 ----------------
-wget -O - https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(grep -oP '(?<=UBUNTU_CODENAME=).*' /etc/os-release || lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
-sudo apt update && sudo apt install terraform
-terraform --version # Terraform v1.14.8
+terraform --version # Terraform v1.16.6
 ~~~
 
 ### 開発環境 Docker ###
@@ -579,43 +459,14 @@ terraform --version # Terraform v1.14.8
 
 * vLLM
   * [Using Docker](https://docs.vllm.ai/en/latest/deployment/docker.html#use-vllms-official-docker-image)
-  * [chat_templates](https://github.com/chujiezheng/chat_templates/tree/main/chat_templates)
+  * [Docker Hub](https://hub.docker.com/r/vllm/vllm-openai/tags)
 
 ~~~powershell
-# 
-docker pull vllm/vllm-openai:v0.9.2
+# https://hub.docker.com/r/vllm/vllm-openai/tags
+docker pull vllm/vllm-openai:cu134-nightly
 $HUGGING_FACE_HUB_TOKEN=$(Get-Content E:\project\docker_volume\vllm-storage\huggingface\token.txt)
 # 再利用しない場合は --rm
-docker run -it --name=vllm-worker-mistralai-Mistral-7B --runtime=nvidia --gpus=all -p 8001:8000 --ipc=host --mount type=bind,src=E:\project\docker_volume\vllm-storage\huggingface,dst=/root/.cache/huggingface --env "HUGGING_FACE_HUB_TOKEN=$HUGGING_FACE_HUB_TOKEN" vllm/vllm-openai:v0.9.2 --model mistralai/Mistral-7B-v0.1
-
-# chat_template が正しくない
-$postText = @{
-  messages=@(@{role="user"; content="Who is the Prime Minister of Japan?"})
-  chat_template="
-{% if messages[0]['role'] == 'system' %}
-    {% set system_message = messages[0]['content'] | trim + '<|end_of_turn|>' %}
-    {% set messages = messages[1:] %}
-{% else %}
-    {% set system_message = '' %}
-{% endif %}
-
-{{ bos_token + system_message }}
-{% for message in messages %}
-    {% if (message['role'] == 'user') != (loop.index0 % 2 == 0) %}
-        {{ raise_exception('Conversation roles must alternate user/assistant/user/assistant/...') }}
-    {% endif %}
-
-    {{ 'GPT4 Correct ' + message['role'] | capitalize + ': ' + message['content'] + '<|end_of_turn|>' }}
-{% endfor %}
-
-{% if add_generation_prompt %}
-    {{ 'GPT4 Correct Assistant:' }}
-{% endif %}
-"  
-} | ConvertTo-Json -Compress
-$postBody = [Text.Encoding]::UTF8.GetBytes($postText)
-$postUri = "http://localhost:8001/v1/chat/completions"
-Invoke-RestMethod -Method POST -Uri $postUri -Body $postBody -ContentType application/json
+docker run -it --name=vllm-worker-mistralai-Mistral-7B --runtime=nvidia --gpus=all -p 8001:8000 --ipc=host --mount type=bind,src=E:\project\docker_volume\vllm-storage\huggingface,dst=/root/.cache/huggingface --env "HUGGING_FACE_HUB_TOKEN=$HUGGING_FACE_HUB_TOKEN" vllm/vllm-openai:cu134-nightly --model mistralai/Mistral-7B-v0.1
 ~~~
 
 * datascience
@@ -624,38 +475,17 @@ Invoke-RestMethod -Method POST -Uri $postUri -Body $postBody -ContentType applic
     * [Image Repo list](https://quay.io/organization/jupyter)
 
 ~~~powershell
-# 
-docker pull quay.io/jupyter/datascience-notebook:2025-07-14
-# 再利用しない場合は --rm
-docker run -it -p 8888:8888 -v E:\project\datascience\train\LearnPython\data_science\datascience-notebook:/home/jovyan/work quay.io/jupyter/datascience-notebook:2025-07-14
-# Tokenは毎回起動の時に変わため、コンソールから確認
-# http://127.0.0.1:10000/lab?token=2cfea28b8c1c367c8244c652e1d2676b181e53273f84524e
-
-# ----- 2025/10/13 ----------------
-docker pull quay.io/jupyter/datascience-notebook:2025-10-06
-docker run -it -p 8888:8888 -v E:\project\datascience\train\LearnPython\data_science\datascience-notebook:/home/jovyan/work quay.io/jupyter/datascience-notebook:2025-10-06
-
-# ----- 2026/03/07 ----------------
-docker pull quay.io/jupyter/datascience-notebook:2026-03-02
-docker run -it -p 8888:8888 --mount type=bind,src=E:\project\datascience\train\LearnPython\data_science\datascience-notebook,dst=/home/jovyan/work quay.io/jupyter/datascience-notebook:2026-03-02
+docker pull quay.io/jupyter/datascience-notebook:2026-10-12
+docker run -it -p 8888:8888 --mount type=bind,src=E:\project\datascience\train\LearnPython\data_science\datascience-notebook,dst=/home/jovyan/work quay.io/jupyter/datascience-notebook:2026-10-12
 ~~~
 
 * tensorflow
   * [Selecting an Image](https://jupyter-docker-stacks.readthedocs.io/en/latest/using/selecting.html)
+    * [Image Repo list](https://quay.io/organization/jupyter)
 
 ~~~powershell
-# 
-docker pull quay.io/jupyter/tensorflow-notebook:cuda-2025-07-14
-# 再利用しない場合は --rm
-docker run -it --runtime=nvidia --gpus=all --name=tensorflow-worker -p 8888:8888 --mount type=bind,src=E:\project\docker_volume\tensorflow-notebook-storage,dst=/home/jovyan/work quay.io/jupyter/tensorflow-notebook:cuda-2025-07-14
-# Tokenは毎回起動の時に変わため、コンソールから確認
-# http://127.0.0.1:8888/lab?token=2c7cb5210a5580f80d5637fb0e68e068ca99ebf332869106
-
-# ----- 2025/10/13 ----------------
-docker pull quay.io/jupyter/tensorflow-notebook:cuda-2025-10-06
-docker run -it --runtime=nvidia --gpus=all --name=tensorflow-worker -p 8888:8888 --mount type=bind,src=E:\project\docker_volume\tensorflow-notebook-storage,dst=/home/jovyan/work quay.io/jupyter/tensorflow-notebook:cuda-2025-10-06
-# ----- 2026/03/07 ----------------
-docker pull quay.io/jupyter/tensorflow-notebook:2026-03-02
+docker pull quay.io/jupyter/tensorflow-notebook:cuda-2026-10-12
+docker run -it --runtime=nvidia --gpus=all --name=tensorflow-worker -p 8888:8888 --mount type=bind,src=E:\project\docker_volume\tensorflow-notebook-storage,dst=/home/jovyan/work quay.io/jupyter/tensorflow-notebook:cuda-2026-10-12
 ~~~
 
 ## other main tools ##
@@ -663,48 +493,48 @@ docker pull quay.io/jupyter/tensorflow-notebook:2026-03-02
 * Unreal Engine
 * [Blender](https://www.blender.org/download/)
   * [2025/12/01]  5.0.0
+  * [2026/10/17]  5.2.2
 * [Wireshark](https://www.wireshark.org/download.html)
   * [2025/12/01]  4.6.1 x64
   * [2026/03/07]  4.6.4 x64
+  * [2026/03/07]  4.6.9 x64
 * [owasp zap](https://www.zaproxy.org/download/)
   * [2025/10/12] ZAP 2.16.1
 * [DBeaver](https://dbeaver.io/download/)
   * [2025/10/12] 25.2.2
   * [2026/03/07] 26.0.0
+  * [2026/10/17] 26.2.2
 * [Graphviz](https://graphviz.org/)
-  * [2025/07/16] Graphviz-13.1.0-win64
-  * [2025/10/12] Graphviz-14.0.1-win64
-  * [2025/12/01] Graphviz-14.0.5-win64
   * [2026/03/07] Graphviz-14.1.3-win64
+  * [2026/10/17] Graphviz-16.1.0-win64
 * [gcloud CLI](https://cloud.google.com/sdk/docs/install?hl=ja)
-  * [2026/04/18] Google Cloud SDK 565.0.0
+  * [2026/10/17] Google Cloud SDK 589.0.0
 * GitHub Desktop
-  * [2025/07/16] Version 3.5.4 (x64)
-  * [2025/07/16] Version 3.5.5 (x64)
+  * [2026/10/17] Version 3.6.7 (x64)
 * [CMake](https://cmake.org/download/)
-  * [2025/07/16] 4.1.0-rc1
-  * [2025/10/12] 4.2.0
+  * [2026/10/17] 4.5.0-rc1-windows-x86_64
 * [OpenCV](https://docs.opencv.org/4.x/d3/d52/tutorial_windows_install.html)
-  * [2025/07/16] 4.12.0
-  * [2026/01/02] 4.13.0
   * [2025/07/16] 3.4.16
-  * [2025/10/12] 5.0.0-alpha
+  * [2026/01/02] 4.13.0
+  * [2026/10/17] 5.0.0
 * [CUDA Toolkit](https://developer.nvidia.com/cuda-downloads)
   * [2025/07/17] 12.9
-  * [2026/04/18] 13.2.1
-* [Drawio](https://www.drawio.com/)
-  * [2026/04/18] 29.6.6
+  * [2026/10/17] 13.4.3
+* [Drawio](https://www.drawio.com/)[download](https://github.com/jgraph/drawio-desktop/releases)
+  * [2026/10/17] 32.4.1
+* [Comfy Desktop](https://docs.comfy.org/ja/installation/desktop/windows)
+  * [2026/10/17] v1.1.7
 
 ~~~powershell
 # PATHに追加
 # '%CUDA_PATH%;%JAVA_HOME%\bin;%GRADLE_HOME%\bin;%GRAPHVIZ_HOME%\bin;%USERPROFILE%\go\bin'
 
 # Nvidia
-nvidia-smi # NVIDIA-SMI 581.42                 Driver Version: 581.42         CUDA Version: 13.0
-nvcc -V # Cuda compilation tools, release 13.0, V13.0.88
+nvidia-smi # NVIDIA-SMI 610.57.01              KMD Version: 610.88        CUDA UMD Version: 13.3
+nvcc -V # Cuda compilation tools, release 12.0, V12.0.140 
 
 # Graphviz
-[Environment]::SetEnvironmentVariable('GRAPHVIZ_HOME', 'C:\tools\graphviz\Graphviz-14.0.1-win64', 'User')
+[Environment]::SetEnvironmentVariable('GRAPHVIZ_HOME', 'C:\tools\graphviz\Graphviz-16.1.0-win64', 'User')
 
 # gcloud CLI
 gcloud components update
