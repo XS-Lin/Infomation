@@ -12,6 +12,8 @@ $Env:ANTHROPIC_AUTH_TOKEN="lmstudio"
 $Env:ANTHROPIC_BASE_URL="http://127.0.0.1:1234"
 $Env:API_TIMEOUT_MS=1800000 # デフォルトは5分、ローカルLLMのスピードが遅いため、30分に変更
 $Env:CLAUDE_STREAM_IDLE_TIMEOUT_MS=1800000 # Claude Codeの待ち時間を延長する
+$Env:CLAUDE_CODE_MAX_CONTEXT_TOKENS=262144 # qwen3.8-27b の上限値, Claude Code デフォルト:200k 
+$Env:CLAUDE_CODE_MAX_OUTPUT_TOKENS=131072 # qwen3.8-27b の上限値, Claude Code デフォルト:32000 
 claude --model qwen/qwen3.8-27b
 ~~~
 
@@ -59,7 +61,7 @@ mkdir src
   - Claude Code で qwen/qwen3.8-27b を運用
     - Prompt: Pythonで"E:\dev\Nemotron-Personas-Japan\data\train-00000-of-00008.parquet"から1件目のデータを出力するスクリプトを作成して
       - 注意:
-        - Claude code のデフォルトEffort:high は qwen/qwen3.8-27b でサポートしないため、変更する必要がある※変更しないとxhighで処理する
+        - Claude code のデフォルトEffort:high は qwen/qwen3.8-27b でサポートしないため、変更する必要がある
           - Reasoning setting 'high' is not supported by model 'qwen/qwen3.8-27b'. Supported settings: 'xhigh', 'medium', 'low', 'on', 'off'. Falling back to reasoning setting 'on'.
         - LM Studio で qwen/qwen3.8-27b をホストしてClaude Codeで利用の場合、500エラーが発生。※テンプレート変更
           - "Engine protocol predict request returned 500: {\"error\":{\"code\":500,\"message\":\"\\n------------\\nWhile executing CallExpression at line 106, column 32 in source:\\n...first %}↵            {{- raise_exception('System message must be at the beginnin...\\n                                           ^\\nError: Jinja Exception: System message must be at the beginning.\",\"type\":\"server_error\"}}"
@@ -67,7 +69,7 @@ mkdir src
         - /effort が xhigh 回答まで時間がかかりすぎる（15分程度）
         - /effort が medium 回答まで時間がかかる（3~4分程度）、スクリプト生成完了はさらにかかる(10分程度)
         - /effort が low 回答まで時間がかかる（1分程度）、スクリプト生成完了はさらにかかる(3分程度)
-        - 但し、上記の処理に初回のプロンプト解析は5分かかる
+        - 但し、上記の処理に初回のプロンプト解析は5分ほどかかる
 
 ### テンプレート変更 ###
 
