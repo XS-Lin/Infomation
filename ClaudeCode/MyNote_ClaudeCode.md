@@ -36,3 +36,7 @@
 [claude-cookbooks](https://github.com/anthropics/claude-cookbooks)
 
 [claude-agent-sdk-python](https://github.com/anthropics/claude-agent-sdk-python)
+
+[How the Claude Code team does code review](https://claude.dev/blog/solving-code-review-at-anthropic/)
+
+[Manage costs effectively](https://code.claude.com/docs/en/costs)
